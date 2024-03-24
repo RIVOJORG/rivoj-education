@@ -1,20 +1,20 @@
 package uz.shaftoli.education.entity;
 
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.*;
 
-@Entity(name = "lesson")
+@Entity(name = "module")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Builder
-public class Lesson  extends BaseEntity{
+public class Module extends BaseEntity {
     @ManyToOne
-    private Module module;
+    private Subject subject;
+    @OneToMany
+    private Lesson lesson;
     private Integer number;
-    private String title;
-    private String content;
 }
