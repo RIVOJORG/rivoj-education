@@ -1,20 +1,18 @@
 package uz.shaftoli.education.entity;
 
-
+import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Entity(name = "lesson")
+@Entity(name = "subject")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Builder
-public class Lesson  extends BaseEntity {
+public class Subject extends BaseEntity{
+    private String title;
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "module_id", referencedColumnName = "id")
     private Module module;
-    private Integer number;
-    private String title;
-    private String content;
 }

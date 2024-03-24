@@ -1,4 +1,28 @@
 package uz.shaftoli.education.entity;
 
-public class Attendance {
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity(name = "attendance")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@Builder
+public class Attendance extends BaseEntity {
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "teacher_id", referencedColumnName = "id")
+    private UserEntity teacher;
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "student_id", referencedColumnName = "id")
+    private UserEntity student;
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "lesson_id", referencedColumnName = "id")
+    private Lesson lesson;
+    private String answer;
+    private Integer appropriation;
+    private Integer coin;
+    private Boolean status;
 }
