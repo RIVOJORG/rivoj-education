@@ -1,11 +1,10 @@
 package uz.shaftoli.education.entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.*;
 
-@Entity(name = "user")
+@Entity(name = "users")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -14,7 +13,9 @@ import lombok.*;
 public class UserEntity extends BaseEntity {
     private String name;
     private String surname;
+    @Column(unique = true, nullable = false)
     private String email;
     private String password;
+    @Enumerated(EnumType.STRING)
     private UserRole role;
 }

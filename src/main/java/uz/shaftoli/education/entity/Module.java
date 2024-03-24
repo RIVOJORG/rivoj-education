@@ -1,8 +1,6 @@
 package uz.shaftoli.education.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity(name = "module")
@@ -12,9 +10,11 @@ import lombok.*;
 @Setter
 @Builder
 public class Module extends BaseEntity {
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "subject_id", referencedColumnName = "id")
     private Subject subject;
-    @OneToMany
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "lesson_id", referencedColumnName = "id")
     private Lesson lesson;
     private Integer number;
 }

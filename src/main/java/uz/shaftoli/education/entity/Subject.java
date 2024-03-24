@@ -1,10 +1,8 @@
 package uz.shaftoli.education.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.*;
-
-import java.awt.*;
 
 @Entity(name = "subject")
 @AllArgsConstructor
@@ -14,6 +12,7 @@ import java.awt.*;
 @Builder
 public class Subject extends BaseEntity{
     private String title;
-    @OneToMany
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "module_id", referencedColumnName = "id")
     private Module module;
 }

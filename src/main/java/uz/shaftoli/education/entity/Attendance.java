@@ -2,7 +2,7 @@ package uz.shaftoli.education.entity;
 
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity(name = "attendance")
@@ -12,11 +12,14 @@ import lombok.*;
 @Setter
 @Builder
 public class Attendance extends BaseEntity {
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "teacher_id", referencedColumnName = "id")
     private UserEntity teacher;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "student_id", referencedColumnName = "id")
     private UserEntity student;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "lesson_id", referencedColumnName = "id")
     private Lesson lesson;
     private String answer;
     private Integer appropriation;
