@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import uz.shaftoli.education.dto.error.ErrorDto;
 import uz.shaftoli.education.exception.DataNotFoundException;
 import uz.shaftoli.education.exception.NotEnoughFundsException;
 import uz.shaftoli.education.exception.WrongPasswordException;
