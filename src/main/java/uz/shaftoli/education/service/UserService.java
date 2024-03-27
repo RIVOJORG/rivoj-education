@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import uz.shaftoli.education.dto.request.LoginDto;
+import uz.shaftoli.education.dto.request.LoginDTO;
 import uz.shaftoli.education.dto.request.UserCreateDTO;
 import uz.shaftoli.education.entity.UserEntity;
 import uz.shaftoli.education.entity.UserRole;
@@ -26,7 +26,7 @@ public class UserService {
         return userRepository.save(userEntity);
     }
 
-    public UserEntity login(LoginDto login) {
+    public UserEntity login(LoginDTO login) {
         UserEntity userEntity = userRepository.findUserEntityByPhoneNumber(login.getPhoneNumber())
                 .orElseThrow(
                         () -> new DataNotFoundException("user not found")
