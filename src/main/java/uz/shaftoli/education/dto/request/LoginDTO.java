@@ -6,7 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-public class LoginDto {
+public class LoginDTO {
     private String phoneNumber;
     private String password;
 }
