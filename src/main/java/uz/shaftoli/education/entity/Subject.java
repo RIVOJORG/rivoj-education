@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity(name = "subject")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,7 +14,6 @@ import lombok.*;
 @Builder
 public class Subject extends BaseEntity{
     private String title;
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "module_id", referencedColumnName = "id")
-    private Module module;
+    @OneToMany
+    private List<Module> module;
 }
