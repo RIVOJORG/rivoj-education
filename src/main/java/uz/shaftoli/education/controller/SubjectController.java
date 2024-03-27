@@ -9,5 +9,5 @@ import uz.shaftoli.education.service.SubjectService;
 @RequiredArgsConstructor
 @RequestMapping("api/v1/subject")
 public class SubjectController {
-
+    //
 }
