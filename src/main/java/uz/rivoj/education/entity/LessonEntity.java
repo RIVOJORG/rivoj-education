@@ -10,10 +10,10 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class Lesson  extends BaseEntity {
+public class LessonEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "module_id", referencedColumnName = "id")
-    private Module module;
+    private ModuleEntity module;
     private Integer number;
     private String title;
     private String content;
