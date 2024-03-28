@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uz.rivoj.education.service.SubjectService;
 import uz.rivoj.education.dto.request.SubjectCreateRequest;
 import uz.rivoj.education.dto.response.SubjectResponse;
-import uz.rivoj.education.entity.Subject;
+import uz.rivoj.education.entity.SubjectEntity;
 
 import java.util.List;
 import java.util.UUID;
@@ -37,7 +37,7 @@ public class SubjectController {
     }
 
     @GetMapping("get-subject/{id}")
-    public Subject getSubjectById(@PathVariable UUID id) {
+    public SubjectEntity getSubjectById(@PathVariable UUID id) {
         return subjectService.getSubject(id);
     }
 }

@@ -11,7 +11,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class Attendance extends BaseEntity {
+public class AttendanceEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "teacher_id", referencedColumnName = "id")
@@ -25,7 +25,7 @@ public class Attendance extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "lesson_id", referencedColumnName = "id")
-    private Lesson lesson;
+    private LessonEntity lessonEntity;
 
 
     private String answer;
