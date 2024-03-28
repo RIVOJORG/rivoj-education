@@ -13,6 +13,7 @@ import lombok.*;
 @Setter
 @Builder
 public class TeacherInfo extends BaseEntity{
+
     @OneToOne
     private UserEntity teacher;
     @OneToOne

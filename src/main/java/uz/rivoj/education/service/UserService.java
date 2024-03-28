@@ -27,6 +27,7 @@ public class UserService {
     }
 
     public UserEntity login(LoginDTO login) {
+
         UserEntity userEntity = userRepository.findUserEntityByPhoneNumber(login.getPhoneNumber())
                 .orElseThrow(
                         () -> new DataNotFoundException("user not found")
