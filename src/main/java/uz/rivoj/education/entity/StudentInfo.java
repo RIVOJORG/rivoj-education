@@ -17,6 +17,4 @@ public class StudentInfo extends BaseEntity{
     private UserEntity student;
     private String photo;
     private LocalDate birthday;
-    @OneToMany
-    private List<Attendance> attendances;
 }

@@ -13,4 +13,5 @@ import java.util.UUID;
 public class SubjectCreateRequest {
     private String title;
 
+    private UUID module_id;
 }
