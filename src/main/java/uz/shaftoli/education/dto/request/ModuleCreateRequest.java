@@ -2,6 +2,8 @@ package uz.shaftoli.education.dto.request;
 
 import lombok.*;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -10,4 +12,5 @@ import lombok.*;
 @ToString
 public class ModuleCreateRequest {
     private Integer number;
+    private UUID subjectId;
 }

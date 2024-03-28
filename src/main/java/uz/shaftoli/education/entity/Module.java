@@ -13,12 +13,13 @@ import java.util.List;
 @Setter
 @Builder
 public class Module extends BaseEntity {
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "subject_id", referencedColumnName = "id")
+    @ManyToOne
+    @JoinColumn(name = "subject_id")
     private Subject subject;
 
     @JsonIgnore
-    @OneToMany
+    @OneToMany(mappedBy = "module", cascade = CascadeType.ALL)
     private List<Lesson> lessons;
+
     private Integer number;
 }
