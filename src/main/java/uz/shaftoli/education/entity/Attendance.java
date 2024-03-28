@@ -12,15 +12,22 @@ import lombok.*;
 @Setter
 @Builder
 public class Attendance extends BaseEntity {
+
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "teacher_id", referencedColumnName = "id")
-    private UserEntity teacher;
+    private TeacherInfo teacher;
+
+
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "student_id", referencedColumnName = "id")
-    private UserEntity student;
+    private StudentInfo student;
+
+
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "lesson_id", referencedColumnName = "id")
     private Lesson lesson;
+
+
     private String answer;
     private Integer appropriation;
     private Integer coin;
