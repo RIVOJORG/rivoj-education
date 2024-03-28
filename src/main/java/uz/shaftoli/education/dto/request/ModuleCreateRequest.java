@@ -10,7 +10,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @ToString
-public class SubjectCreateRequest {
-    private String title;
-
+public class ModuleCreateRequest {
+    private Integer number;
+    private UUID subjectId;
 }
