@@ -12,5 +12,5 @@ import java.util.UUID;
 @ToString
 public class SubjectCreateRequest {
     private String title;
-    private UUID module_id;
+
 }

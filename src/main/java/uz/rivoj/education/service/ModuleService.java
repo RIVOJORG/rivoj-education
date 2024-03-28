@@ -1,8 +1,8 @@
-package uz.rivoj.education.service;
+package uz.shaftoli.education.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import uz.rivoj.education.repository.ModuleRepository;
+import uz.shaftoli.education.repository.ModuleRepository;
 
 @Service
 @RequiredArgsConstructor
