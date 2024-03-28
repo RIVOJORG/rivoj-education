@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.rivoj.education.dto.request.LessonCreateRequest;
 import uz.rivoj.education.dto.response.LessonResponse;
-import uz.rivoj.education.entity.Lesson;
+import uz.rivoj.education.entity.LessonEntity;
 import uz.rivoj.education.service.LessonService;
 
 import java.util.List;
@@ -34,7 +34,7 @@ public class LessonController {
     }
 
     @GetMapping("get-lesson/{id}")
-    public Lesson getLessonById(@PathVariable UUID id) {
+    public LessonEntity getLessonById(@PathVariable UUID id) {
         return lessonService.getLesson(id);
     }
 }
