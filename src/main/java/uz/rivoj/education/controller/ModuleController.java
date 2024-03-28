@@ -1,9 +1,9 @@
-package uz.shaftoli.education.controller;
+package uz.rivoj.education.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uz.shaftoli.education.service.ModuleService;
+import uz.rivoj.education.service.ModuleService;
 
 @RestController
 @RequiredArgsConstructor

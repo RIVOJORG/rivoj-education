@@ -1,13 +1,13 @@
-package uz.shaftoli.education.controller;
+package uz.rivoj.education.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uz.shaftoli.education.dto.request.LessonCreateRequest;
-import uz.shaftoli.education.dto.response.LessonResponse;
-import uz.shaftoli.education.entity.Lesson;
-import uz.shaftoli.education.service.LessonService;
+import uz.rivoj.education.dto.request.LessonCreateRequest;
+import uz.rivoj.education.dto.response.LessonResponse;
+import uz.rivoj.education.entity.Lesson;
+import uz.rivoj.education.service.LessonService;
 
 import java.util.List;
 import java.util.UUID;
