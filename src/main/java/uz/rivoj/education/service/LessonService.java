@@ -1,19 +1,19 @@
-package uz.shaftoli.education.service;
+package uz.rivoj.education.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import uz.shaftoli.education.dto.request.LessonCreateRequest;
-import uz.shaftoli.education.dto.request.ModuleCreateRequest;
-import uz.shaftoli.education.dto.response.LessonResponse;
-import uz.shaftoli.education.dto.response.ModuleResponse;
-import uz.shaftoli.education.entity.Lesson;
-import uz.shaftoli.education.entity.Module;
-import uz.shaftoli.education.exception.DataNotFoundException;
-import uz.shaftoli.education.repository.LessonRepository;
-import uz.shaftoli.education.repository.ModuleRepository;
-import uz.shaftoli.education.repository.SubjectRepository;
+import uz.rivoj.education.dto.request.LessonCreateRequest;
+import uz.rivoj.education.dto.request.ModuleCreateRequest;
+import uz.rivoj.education.dto.response.LessonResponse;
+import uz.rivoj.education.dto.response.ModuleResponse;
+import uz.rivoj.education.entity.Lesson;
+import uz.rivoj.education.entity.Module;
+import uz.rivoj.education.exception.DataNotFoundException;
+import uz.rivoj.education.repository.LessonRepository;
+import uz.rivoj.education.repository.ModuleRepository;
+import uz.rivoj.education.repository.SubjectRepository;
 
 import java.util.ArrayList;
 import java.util.List;

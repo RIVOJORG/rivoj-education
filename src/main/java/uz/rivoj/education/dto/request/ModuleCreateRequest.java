@@ -1,4 +1,4 @@
-package uz.shaftoli.education.dto.request;
+package uz.rivoj.education.dto.request;
 
 import lombok.*;
 
