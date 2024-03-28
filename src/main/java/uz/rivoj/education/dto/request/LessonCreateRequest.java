@@ -10,8 +10,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @ToString
-public class SubjectCreateRequest {
+public class LessonCreateRequest {
+    private Integer number;
     private String title;
-
-    private UUID module_id;
+    private String content;
+    private UUID moduleId;
 }
