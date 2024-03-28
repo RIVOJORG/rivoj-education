@@ -3,11 +3,12 @@ package uz.rivoj.education.service;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
+import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.dto.request.SubjectCreateRequest;
 import uz.rivoj.education.dto.response.SubjectResponse;
-import uz.rivoj.education.exception.DataAlreadyExistsException;
+import uz.rivoj.education.entity.SubjectEntity;
 import uz.rivoj.education.exception.DataNotFoundException;
-import uz.rivoj.education.entity.Subject;
 import uz.rivoj.education.repository.SubjectRepository;
 
 import java.util.ArrayList;
@@ -26,20 +27,20 @@ public class SubjectService {
             throw new DataAlreadyExistsException("Subject already exists with: " + createRequest.getTitle());
         }
 //        if ()
-        Subject subject = modelMapper.map(createRequest, Subject.class);
-        subjectRepository.save(subject);
-        return modelMapper.map(subject, SubjectResponse.class);
+        SubjectEntity subjectEntity = modelMapper.map(createRequest, SubjectEntity.class);
+        subjectRepository.save(subjectEntity);
+        return modelMapper.map(subjectEntity, SubjectResponse.class);
 
 
     }
 
     public String delete(UUID subjectId){
-        Subject subject = getSubject(subjectId);
-        subjectRepository.deleteById(subject.getId());
-        return "Successfully deleted: " + subject.getTitle();
+        SubjectEntity subjectEntity = getSubject(subjectId);
+        subjectRepository.deleteById(subjectEntity.getId());
+        return "Successfully deleted: " + subjectEntity.getTitle();
     }
 
-    public Subject getSubject(UUID subjectId){
+    public SubjectEntity getSubject(UUID subjectId){
         return subjectRepository.findById(subjectId)
                 .orElseThrow(() -> new DataNotFoundException("Subject not found with this id: " + subjectId));
     }
@@ -47,8 +48,8 @@ public class SubjectService {
 
     public List<SubjectResponse> getAll() {
         List<SubjectResponse> list = new ArrayList<>();
-        for (Subject subject : subjectRepository.findAll()) {
-            list.add(modelMapper.map(subject, SubjectResponse.class));
+        for (SubjectEntity subjectEntity : subjectRepository.findAll()) {
+            list.add(modelMapper.map(subjectEntity, SubjectResponse.class));
         }
         return list;
     }
