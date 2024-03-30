@@ -1,1 +1,1 @@
-# shaftoli-education
+# rivoj-education
