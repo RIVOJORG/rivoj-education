@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1/subject")
+@RequestMapping("api/v1/module")
 public class ModuleController {
     private final ModuleService moduleService;
     @PostMapping("/create-module")

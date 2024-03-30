@@ -1,7 +1,7 @@
 package uz.rivoj.education.controller;
 
 
-import jakarta.validation.Valid;
+//import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,22 +13,22 @@ import uz.rivoj.education.dto.response.UserResponse;
 import uz.rivoj.education.service.UserService;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
     private final UserService userService;
-    @PostMapping("/sign-up")
-    public UserResponse signUp(
-            @Valid
-            @RequestBody UserCreateRequest userDto
-    ) {
-        return userService.add(userDto);
-    }
+//    @PostMapping("/sign-up")
+//    public UserResponse signUp(
+//            @Valid
+//            @RequestBody UserCreateRequest userDto
+//    ) {
+//        return userService.add(userDto);
+//    }
 
-    @PostMapping("/sign-in")
-    public UserResponse signIn(
-            @RequestBody LoginRequest login
-    ) {
-        return userService.login(login);
-    }
+//    @PostMapping("/sign-in")
+//    public UserResponse signIn(
+//            @RequestBody LoginRequest login
+//    ) {
+//        return userService.login(login);
+//    }
 }
