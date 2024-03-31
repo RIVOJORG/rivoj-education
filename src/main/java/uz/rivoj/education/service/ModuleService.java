@@ -29,7 +29,7 @@ public class ModuleService {
         ModuleEntity module = modelMapper.map(createRequest, ModuleEntity.class);
         module.setSubject(subjectEntity);
         moduleRepository.save(module);
-        return modelMapper.map(module, ModuleResponse.class);
+        return modelMapper.map(createRequest, ModuleResponse.class);
     }
 
     public String delete(UUID moduleId){

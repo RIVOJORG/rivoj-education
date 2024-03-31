@@ -21,20 +21,10 @@ public class CommentService {
         LessonEntity lessonEntity = lessonRepository.findById(createRequest.getLessonId())
                 .orElseThrow(() -> new ClassCastException("Lesson not found with ID: " + createRequest.getLessonId()));
 
-
-        CommentEntity commentEntity = modelMapper.map(createRequest, CommentEntity.class);
-        commentEntity.setLesson(lessonEntity);
-        CommentEntity saved = commentRepository.save(commentEntity);
-        return modelMapper.map(saved, CommentResponse.class);
-
-//        LessonEntity lessonEntity = lessonRepository.findById(createRequest.getLessonId())
-//                .orElseThrow(() -> new ClassCastException("Lesson not found with ID: " + createRequest.getLessonId()));
-//
-//        CommentEntity mapped = modelMapper.map(createRequest, CommentEntity.class);
-//        mapped.setLesson(lessonEntity);
-//
-//         commentRepository.save(mapped);
-//        return modelMapper.map(createRequest, CommentResponse.class);
+        CommentEntity mapped = modelMapper.map(createRequest, CommentEntity.class);
+        mapped.setLesson(lessonEntity);
+        commentRepository.save(mapped);
+        return modelMapper.map(createRequest, CommentResponse.class);
 
     }
 

@@ -26,10 +26,9 @@ public class SubjectService {
         if (subjectRepository.existsByTitle(createRequest.getTitle())){
             throw new DataAlreadyExistsException("Subject already exists with: " + createRequest.getTitle());
         }
-//        if ()
         SubjectEntity subjectEntity = modelMapper.map(createRequest, SubjectEntity.class);
         subjectRepository.save(subjectEntity);
-        return modelMapper.map(subjectEntity, SubjectResponse.class);
+        return modelMapper.map(createRequest, SubjectResponse.class);
 
 
     }
