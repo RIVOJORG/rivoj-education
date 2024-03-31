@@ -7,4 +7,7 @@ import uz.rivoj.education.entity.LessonEntity;
 import java.util.UUID;
 @Repository
 public interface LessonRepository extends JpaRepository<LessonEntity, UUID> {
+    boolean existsByNumber(Integer number);
+
+    boolean existsByTitle(String title);
 }
