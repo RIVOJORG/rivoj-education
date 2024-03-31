@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.ModuleCreateRequest;
 import uz.rivoj.education.dto.response.ModuleResponse;
 import uz.rivoj.education.entity.ModuleEntity;
+import uz.rivoj.education.entity.SubjectEntity;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.ModuleRepository;
 import uz.rivoj.education.repository.SubjectRepository;
@@ -22,9 +23,11 @@ public class ModuleService {
     private final ModelMapper modelMapper;
 
     public ModuleResponse create(ModuleCreateRequest createRequest) {
-        subjectRepository.findById(createRequest.getSubjectId())
+        SubjectEntity subjectEntity = subjectRepository.findById(createRequest.getSubjectId())
                 .orElseThrow(() -> new EntityNotFoundException("Subject not found with this id " + createRequest.getSubjectId()));
+
         ModuleEntity module = modelMapper.map(createRequest, ModuleEntity.class);
+        module.setSubject(subjectEntity);
         moduleRepository.save(module);
         return modelMapper.map(module, ModuleResponse.class);
     }
