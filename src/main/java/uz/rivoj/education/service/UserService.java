@@ -67,7 +67,7 @@ public class UserService {
         return list;
     }
 
-    public UserResponse getUser(UUID id) {
+    public UserResponse getUserById(UUID id) {
         UserEntity userEntity = userRepository.findById(id).orElseThrow(
                 () -> new DataNotFoundException("user not found")
         );
