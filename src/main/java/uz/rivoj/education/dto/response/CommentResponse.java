@@ -1,6 +1,7 @@
 package uz.rivoj.education.dto.response;
 
 import lombok.*;
+import uz.rivoj.education.entity.LessonEntity;
 
 import java.util.UUID;
 
@@ -10,7 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @ToString
-public class SubjectResponse {
-    private String title;
-
+public class CommentResponse {
+    private UUID lessonId;
+    private String description;
 }

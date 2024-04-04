@@ -1,15 +1,14 @@
 package uz.rivoj.education.dto.request;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
+@ToString
 public class UserCreateRequest {
     private String name;
     private String phoneNumber;
