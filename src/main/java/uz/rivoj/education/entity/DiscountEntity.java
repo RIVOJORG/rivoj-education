@@ -10,6 +10,6 @@ import lombok.*;
 @Setter
 @Builder
 public class DiscountEntity extends BaseEntity {
-    private Double percentage;
+    private Double percentage; //foiz
     private Integer coin;
 }
