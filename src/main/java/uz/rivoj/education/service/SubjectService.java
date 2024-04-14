@@ -24,14 +24,10 @@ public class SubjectService {
 
     public SubjectResponse create(SubjectCreateRequest createRequest) {
         if (subjectRepository.existsByTitle(createRequest.getTitle())){
-            throw new DataAlreadyExistsException("Subject already exists with: " + createRequest.getTitle());
-        }
-//        if ()
+            throw new DataAlreadyExistsException("Subject already exists with: " + createRequest.getTitle());}
         SubjectEntity subjectEntity = modelMapper.map(createRequest, SubjectEntity.class);
         subjectRepository.save(subjectEntity);
-        return modelMapper.map(subjectEntity, SubjectResponse.class);
-
-
+        return modelMapper.map(createRequest, SubjectResponse.class);
     }
 
     public String delete(UUID subjectId){
