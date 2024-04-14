@@ -2,6 +2,7 @@ package uz.rivoj.education.dto.response;
 
 
 import lombok.*;
+import uz.rivoj.education.entity.DiscountEntity;
 
 import java.util.List;
 
@@ -23,8 +24,6 @@ public class HomePageResponse {
     private Integer coins;
     private Integer totalScores;
     private List<Integer> scores;
-
-    /** Discount Entity qo'shilgandan keyin Integer o'rniga yozib qo'yish kerak*/
-    private List<Integer> discounts;
+    private List<DiscountEntity> discounts;
 
 }
