@@ -13,7 +13,5 @@ public class AttendanceRequest {
     private UUID studentId;
     private UUID lessonId;
     private String answer;
-    private Integer appropriation;
-    private Integer coin;
     private Boolean status;
 }

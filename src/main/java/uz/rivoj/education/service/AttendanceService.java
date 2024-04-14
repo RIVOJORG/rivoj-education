@@ -9,6 +9,7 @@ import uz.rivoj.education.dto.response.AttendanceResponse;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.AttendanceRepository;
+import uz.rivoj.education.repository.LessonRepository;
 import uz.rivoj.education.repository.UserRepository;
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +20,7 @@ public class AttendanceService {
     private final AttendanceRepository attendanceRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final LessonRepository lessonRepository;
 
     public  AttendanceResponse getAttendance(UUID id) {
         AttendanceEntity attendance = attendanceRepository.findById(id)
@@ -33,13 +35,18 @@ public class AttendanceService {
     public List<AttendanceResponse> getAllUserAttendance(UUID userId) {
         List<AttendanceEntity> studentAttendances = attendanceRepository.findAllByStudentId(userId);
         return modelMapper.map(studentAttendances, new TypeToken<List<AttendanceResponse>>() {}.getType());
-
     }
     public AttendanceResponse create(AttendanceRequest attendance) {
         userRepository.findById(attendance.getStudentId()).orElseThrow(() -> new DataNotFoundException("Student not found! " + attendance.getStudentId()));
         userRepository.findById(attendance.getStudentId()).orElseThrow(() -> new DataNotFoundException("Teacher not found! " + attendance.getTeacherId()));
+        lessonRepository.findById(attendance.getLessonId()).orElseThrow(() -> new DataNotFoundException("Lesson not found! " + attendance.getLessonId()));
         AttendanceEntity attendanceEntity = modelMapper.map(attendance, AttendanceEntity.class);
         return modelMapper.map(attendanceEntity,AttendanceResponse.class);
     }
 
+    public AttendanceResponse getAttendanceByLesson(UUID userId, UUID lessonId) {
+        lessonRepository.findById(lessonId).orElseThrow(() -> new DataNotFoundException("Lesson not found! " + lessonId));
+        userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("Student not found! " + userId));
+//        AttendanceResponse attendanceResponse = attendanceRepository.
+    }
 }

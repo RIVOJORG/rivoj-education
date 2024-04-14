@@ -24,7 +24,6 @@ public class AttendanceController {
     public ResponseEntity<AttendanceResponse> createAttendance(@RequestBody AttendanceRequest attendance){
         return ResponseEntity.status(HttpStatus.CREATED).body(attendanceService.create(attendance));
     }
-
     @DeleteMapping("/delete{id}")
     public ResponseEntity<String> deleteAttendance(@PathVariable UUID id){
         return ResponseEntity.status(200).body(attendanceService.delete(id));
@@ -36,9 +35,12 @@ public class AttendanceController {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<AttendanceResponse> getLessonById(@PathVariable UUID id) {
+    public ResponseEntity<AttendanceResponse> getAttendanceById(@PathVariable UUID id) {
         return ResponseEntity.ok(attendanceService.getAttendance(id));
     }
-
+    @GetMapping("/get-attendance-by-lesson")
+    public ResponseEntity<AttendanceResponse> getAttendanceByLesson(@PathVariable UUID userId,UUID lessonId){
+        return ResponseEntity.ok(attendanceService.getAttendanceByLesson(userId,lessonId));
+    }
 
 }
