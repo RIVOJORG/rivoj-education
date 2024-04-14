@@ -10,7 +10,7 @@ import lombok.*;
 @Builder
 @ToString
 public class UserResponse {
-    private String name;
+    private String name; //
     private String phoneNumber;
 //
 }
