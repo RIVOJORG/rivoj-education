@@ -1,6 +1,5 @@
 package uz.rivoj.education.dto.response;
 
-
 import lombok.*;
 
 @AllArgsConstructor
@@ -9,8 +8,7 @@ import lombok.*;
 @Setter
 @Builder
 @ToString
-public class UserResponse {
-    private String name; //
-    private String phoneNumber;
-//
+public class DiscountResponse {
+    private Double percentage; //foiz
+    private Integer coin;
 }
