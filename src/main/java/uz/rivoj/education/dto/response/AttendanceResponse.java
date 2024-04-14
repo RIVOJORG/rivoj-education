@@ -8,11 +8,13 @@ import java.util.UUID;
 @Setter
 @Builder
 public class AttendanceResponse {
-    private UUID teacherId;
-    private UUID studentId;
     private UUID lessonId;
-    private String answer;
-    private Integer appropriation;
+    private UUID studentId;
+    private UUID teacherId;
+    private String video;
+    private String photo;
+    private String description;
+    private Integer score;
     private Integer coin;
-    private Boolean status;
+    private Boolean isCorrect;
 }
