@@ -12,6 +12,10 @@ import java.util.UUID;
 @Builder
 @ToString
 public class CommentResponse {
+    private UUID studentId;
     private UUID lessonId;
+    private String name;
+    private String surname;
+    private String avatar;
     private String description;
 }
