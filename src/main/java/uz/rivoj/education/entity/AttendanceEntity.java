@@ -21,7 +21,7 @@ public class AttendanceEntity extends BaseEntity {
     @JoinColumn(name = "lesson_id", referencedColumnName = "id")
     private LessonEntity lessonEntity;
     private String answer;
-    private Integer appropriation;
+    private Integer score;
     private String feedBack;
     private Integer coin;
     private Boolean status;
