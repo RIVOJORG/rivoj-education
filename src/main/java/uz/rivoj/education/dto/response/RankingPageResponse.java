@@ -1,7 +1,7 @@
 package uz.rivoj.education.dto.response;
 
-
 import lombok.*;
+import java.util.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -9,8 +9,6 @@ import lombok.*;
 @Setter
 @Builder
 @ToString
-public class UserResponse {
-    private String name; //
-    private String phoneNumber;
-//
+public class RankingPageResponse {
+    private List<BestStudentResponse> bestStudents;
 }
