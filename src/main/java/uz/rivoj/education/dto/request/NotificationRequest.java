@@ -4,14 +4,14 @@ import lombok.*;
 
 import java.util.UUID;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@Setter
+@Getter
 @ToString
-public class SubjectCreateRequest {
+@Builder
+public class NotificationRequest {
+    private UUID studentId;
     private String title;
-
-
+    private String description;
 }

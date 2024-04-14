@@ -10,8 +10,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @ToString
-public class SubjectCreateRequest {
-    private String title;
-
-
+public class CommentCreateRequest {
+    private UUID lessonId;
+    private String description;
 }

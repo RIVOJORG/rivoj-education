@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.LessonCreateRequest;
 import uz.rivoj.education.dto.response.LessonResponse;
 import uz.rivoj.education.entity.LessonEntity;
+import uz.rivoj.education.entity.ModuleEntity;
+import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.LessonRepository;
 import uz.rivoj.education.repository.ModuleRepository;
@@ -24,11 +26,18 @@ public class LessonService {
 
 
     public LessonResponse create(LessonCreateRequest createRequest) {
-        moduleRepository.findById(createRequest.getModuleId())
+        ModuleEntity moduleEntity = moduleRepository.findById(createRequest.getModuleId())
                 .orElseThrow(() -> new EntityNotFoundException("Module not found with this id " + createRequest.getModuleId()));
+        if (lessonRepository.existsByNumber(createRequest.getNumber())){
+            throw new DataAlreadyExistsException("Lesson already exists with number : " + createRequest.getNumber());
+        }
+        if (lessonRepository.existsByTitle(createRequest.getTitle())){
+            throw new DataAlreadyExistsException("Lesson already exists with title : " + createRequest.getTitle());
+        }
         LessonEntity lesson = modelMapper.map(createRequest, LessonEntity.class);
+        lesson.setModule(moduleEntity);
         lessonRepository.save(lesson);
-        return modelMapper.map(lesson, LessonResponse.class);
+        return modelMapper.map(createRequest, LessonResponse.class);
     }
 
     public String delete(UUID lessonId){
