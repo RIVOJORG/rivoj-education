@@ -18,7 +18,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataNotFoundException.class)
     public ResponseEntity<ErrorDTO> dataNotFoundExceptionHandler(DataNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDTO(e.getMessage(), 404));
-
     }
     @ExceptionHandler(NotEnoughFundsException.class)
     public ResponseEntity<ErrorDTO> notEnoughFundsExceptionHandler(NotEnoughFundsException e) {
