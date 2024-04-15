@@ -2,11 +2,14 @@ package uz.rivoj.education.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import uz.rivoj.education.dto.request.MessageCreateRequest;
 import uz.rivoj.education.entity.Message;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.ChatRepository;
 import uz.rivoj.education.repository.MessageRepository;
 import uz.rivoj.education.repository.UserRepository;
+
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -16,13 +19,13 @@ public class MessageService {
     private final UserRepository userRepository;
     private final ChatRepository chatRepository;
 
-    public String sendMessage(UUID sender,UUID chatId, String text) {
+    public String sendMessage(MessageCreateRequest messageCreateRequest) {
         Message message = new Message();
-        message.setSender(userRepository.findById(sender)
-                .orElseThrow(() -> new DataNotFoundException("User not found! " + sender)));
-        message.setChat(chatRepository.findById(chatId)
-                .orElseThrow(() -> new DataNotFoundException("Chat not found! " + chatId)));
-        message.setText(text);
+        message.setSender(userRepository.findById(messageCreateRequest.getSenderId())
+                .orElseThrow(() -> new DataNotFoundException("User not found! " + messageCreateRequest.getSenderId())));
+        message.setChat(chatRepository.findById(messageCreateRequest.getChatId())
+                .orElseThrow(() -> new DataNotFoundException("Chat not found! " + messageCreateRequest.getChatId())));
+        message.setText(messageCreateRequest.getText());
         return messageRepository.save(message).getText();
     }
 
@@ -35,5 +38,9 @@ public class MessageService {
                 .orElseThrow(() -> new DataNotFoundException("Message not found! " + messageId));
         message.setText(text);
         return messageRepository.save(message).getText();
+    }
+
+    public List<Message> getAll(){
+        return messageRepository.findAll();
     }
 }
