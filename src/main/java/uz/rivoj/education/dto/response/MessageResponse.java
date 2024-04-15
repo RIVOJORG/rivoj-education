@@ -2,6 +2,8 @@ package uz.rivoj.education.dto.response;
 
 
 import lombok.*;
+import uz.rivoj.education.entity.Message;
+
 import java.util.List;
 
 @AllArgsConstructor
@@ -10,7 +12,6 @@ import java.util.List;
 @Getter
 @Builder
 @ToString
-public class MessagesResponse {
-    /** Integer o'rniga Message yoziilshi kerak. Massage Entity hali qo'shilmagan*/
-    private List<Integer> messages;
+public class MessageResponse {
+    private List<Message> messages;
 }
