@@ -21,8 +21,8 @@ public class HomePageResponse {
     private Integer currentModule;
     private Integer currentLesson;
     private Boolean isLessonOver;
-    private Integer coins;
-    private Integer totalScores;
+    private Integer coin;
+    private Integer totalScore;
     private List<Integer> scores;
     private List<DiscountResponse> discounts;
 
