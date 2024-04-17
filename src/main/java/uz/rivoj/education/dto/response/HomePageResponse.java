@@ -24,6 +24,6 @@ public class HomePageResponse {
     private Integer coins;
     private Integer totalScores;
     private List<Integer> scores;
-    private List<DiscountEntity> discounts;
+    private List<DiscountResponse> discounts;
 
 }
