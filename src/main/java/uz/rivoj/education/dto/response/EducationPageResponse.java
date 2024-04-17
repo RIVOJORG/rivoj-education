@@ -19,6 +19,6 @@ public class EducationPageResponse {
     private Boolean isLessonOver;
     private Integer coins;
     private Integer totalScores;
-    private List<BestStudentResponse> bestStudentsOfLessonResponse;
+    private List<BestStudentResponse> bestStudentsOfLesson;
 
 }
