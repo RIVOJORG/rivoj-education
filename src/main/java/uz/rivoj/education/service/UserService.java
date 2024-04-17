@@ -7,14 +7,14 @@ import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.LoginRequest;
 import uz.rivoj.education.dto.request.TeacherInfoRequest;
 import uz.rivoj.education.dto.request.UserCreateRequest;
+import uz.rivoj.education.dto.response.HomePageResponse;
 import uz.rivoj.education.dto.response.SubjectResponse;
 import uz.rivoj.education.dto.response.UserResponse;
-import uz.rivoj.education.entity.SubjectEntity;
-import uz.rivoj.education.entity.TeacherInfo;
-import uz.rivoj.education.entity.UserEntity;
-import uz.rivoj.education.entity.UserRole;
+import uz.rivoj.education.entity.*;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.exception.WrongPasswordException;
+import uz.rivoj.education.repository.DiscountRepository;
+import uz.rivoj.education.repository.StudentInfoRepository;
 import uz.rivoj.education.repository.TeacherInfoRepository;
 import uz.rivoj.education.repository.UserRepository;
 
@@ -24,7 +24,9 @@ import java.util.*;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final StudentInfoRepository studentInfoRepository;
     private final TeacherInfoRepository teacherInfoRepository;
+    private final DiscountRepository discountRepository;
     private final ModelMapper modelMapper;
 //    private final PasswordEncoder passwordEncoder;
 
@@ -72,5 +74,31 @@ public class UserService {
                 () -> new DataNotFoundException("user not found")
         );
         return modelMapper.map(userEntity, UserResponse.class);
+    }
+
+
+    /** Hali tugatmadim */
+    public HomePageResponse myProgressByPhoneNumber(String phoneNumber){
+        UserEntity userEntity = userRepository.findUserEntityByPhoneNumber(phoneNumber)
+                .orElseThrow(
+                        () -> new DataNotFoundException("data not found")
+                );
+        StudentInfo studentInfo = studentInfoRepository.findStudentInfoByStudentId(userEntity.getId())
+                .orElseThrow(
+                        () -> new DataNotFoundException("data not found")
+                );
+        List<DiscountEntity> discounts = discountRepository.findDiscountEntitiesByStudentId(userEntity.getId());
+        HomePageResponse homePageResponse = HomePageResponse.builder()
+                .phoneNumber(userEntity.getPhoneNumber())
+                .name(userEntity.getName())
+                .surname(userEntity.getSurname())
+                .avatar(studentInfo.getAvatar())
+                .currentModule(studentInfo.getCurrentModule().getNumber())
+                .currentLesson(studentInfo.getLesson().getNumber())
+                .isLessonOver(studentInfo.getIsLessonOver())
+                .coin(studentInfo.getCoin())
+                .totalScore(studentInfo.getTotalScore())
+                .build();
+        return null;
     }
 }

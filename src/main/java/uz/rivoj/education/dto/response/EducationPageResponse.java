@@ -17,8 +17,8 @@ public class EducationPageResponse {
     private Integer countLessons;
     private Integer currentLesson;
     private Boolean isLessonOver;
-    private Integer coins;
-    private Integer totalScores;
+    private Integer coin;
+    private Integer totalScore;
     private List<BestStudentResponse> bestStudentsOfLesson;
 
 }
