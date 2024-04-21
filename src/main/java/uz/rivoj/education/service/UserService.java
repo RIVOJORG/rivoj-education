@@ -97,8 +97,10 @@ public class UserService {
         );
 
         List<Integer> scores = new ArrayList<>();
-        for (AttendanceEntity attendanceEntity : attendancesOfModule) {
-            scores.add(attendanceEntity.getLessonEntity().getNumber(), attendanceEntity.getScore());
+        for (AttendanceEntity attendance : attendancesOfModule) {
+            if(attendance.getStatus()){
+                scores.add(attendance.getLessonEntity().getNumber(), attendance.getScore());
+            }
         }
 
         List<DiscountResponse> discounts = discountRepository.findDiscountEntitiesByStudentId(userEntity.getId())
