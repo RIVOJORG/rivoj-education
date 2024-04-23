@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.rivoj.education.dto.request.LessonCreateRequest;
 import uz.rivoj.education.dto.response.LessonResponse;
+import uz.rivoj.education.dto.update.LessonUpdateDTO;
 import uz.rivoj.education.entity.LessonEntity;
 import uz.rivoj.education.service.LessonService;
 
@@ -36,5 +37,12 @@ public class LessonController {
     @GetMapping("get-lesson/{id}")
     public LessonEntity getLessonById(@PathVariable UUID id) {
         return lessonService.getLesson(id);
+    }
+
+    @PutMapping("/update-lesson{lessonId}")
+    public ResponseEntity<LessonEntity> updateLesson(@PathVariable UUID lessonId,
+                                                     @RequestBody LessonUpdateDTO updateDTO) {
+        LessonEntity updatedLesson = lessonService.updateLesson(lessonId, updateDTO);
+        return ResponseEntity.ok(updatedLesson);
     }
 }
