@@ -47,6 +47,7 @@ public class AttendanceService {
     public AttendanceResponse getAttendanceByLesson(UUID userId, UUID lessonId) {
         lessonRepository.findById(lessonId).orElseThrow(() -> new DataNotFoundException("Lesson not found! " + lessonId));
         userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("Student not found! " + userId));
+        return null;
 //        AttendanceResponse attendanceResponse = attendanceRepository.
     }
 }
