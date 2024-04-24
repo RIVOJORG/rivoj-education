@@ -33,7 +33,7 @@ public class MessageService {
         messageRepository.deleteById(messageId);
         return "Deleted";
     }
-    public String editMessage(UUID messageId, String text) {
+    public String editMessage(UUID messageId, String text) { // update method
         Message message = messageRepository.findById(messageId)
                 .orElseThrow(() -> new DataNotFoundException("Message not found! " + messageId));
         message.setText(text);
