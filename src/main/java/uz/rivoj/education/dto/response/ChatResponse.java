@@ -13,7 +13,7 @@ import java.util.UUID;
 @ToString
 public class ChatResponse {
     private UUID chat_id;
-    private String teacher_avatar;
+    private String student_avatar;
     private String name;
     private String surname;
     private String last_message;

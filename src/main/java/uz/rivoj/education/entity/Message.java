@@ -5,6 +5,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity(name = "message")
