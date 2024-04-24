@@ -24,7 +24,7 @@ public class CommentService {
 
     public CommentResponse create(CommentCreateRequest createRequest) {
         LessonEntity lessonEntity = lessonRepository.findById(createRequest.getLessonId())
-                .orElseThrow(() -> new ClassCastException("Lesson not found with ID: " + createRequest.getLessonId()));
+                .orElseThrow(() -> new ClassCastException("Comment not found with ID: " + createRequest.getLessonId()));
 
         CommentEntity mapped = modelMapper.map(createRequest, CommentEntity.class);
         mapped.setLesson(lessonEntity);

@@ -60,21 +60,16 @@ public class LessonService {
         LessonEntity lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new DataNotFoundException("Lesson not found with this id: " + lessonId));
 
-
         if (updateDTO.getModuleId() != null) {
             ModuleEntity moduleEntity = moduleRepository.findById(updateDTO.getModuleId())
                     .orElseThrow(() -> new DataNotFoundException("Module not found with this id: " + updateDTO.getModuleId()));
-            lesson.setModule(moduleEntity);
-        }
+            lesson.setModule(moduleEntity);}
         if (updateDTO.getNumber() != null) {
-            lesson.setNumber(updateDTO.getNumber());
-        }
+            lesson.setNumber(updateDTO.getNumber());}
         if (updateDTO.getTitle() != null) {
-            lesson.setTitle(updateDTO.getTitle());
-        }
+            lesson.setTitle(updateDTO.getTitle());}
         if (updateDTO.getContent() != null) {
-            lesson.setContent(updateDTO.getContent());
-        }
+            lesson.setContent(updateDTO.getContent());}
         return lessonRepository.save(lesson);
     }
 }
