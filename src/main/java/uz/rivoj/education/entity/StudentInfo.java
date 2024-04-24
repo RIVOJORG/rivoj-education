@@ -32,7 +32,7 @@ public class StudentInfo extends BaseEntity{
     @JoinColumn(name = "lesson_id", referencedColumnName = "id")
     private LessonEntity lesson;
 
-    private Boolean isLessonOver;
+    private Boolean isLessonOver; // hozirgi lessonni tugatganmi yoki yo'qmiligini bildiradi
 
     private Integer coin;
 
