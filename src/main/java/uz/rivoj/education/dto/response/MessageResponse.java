@@ -5,6 +5,7 @@ import lombok.*;
 import uz.rivoj.education.entity.Message;
 
 import java.util.List;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,5 +14,7 @@ import java.util.List;
 @Builder
 @ToString
 public class MessageResponse {
-    private List<Message> messages;
+    private UUID chatId;
+    private UUID senderId;
+    private String text;
 }
