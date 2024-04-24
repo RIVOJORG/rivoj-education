@@ -11,4 +11,5 @@ import lombok.*;
 @Builder
 public class SubjectEntity extends BaseEntity{
     private String title;
+    private String subject;
 }
