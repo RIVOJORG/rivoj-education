@@ -14,5 +14,6 @@ public class LessonUpdateDTO {
     private Integer number;
     private String title;
     private String content;
+    private String cover;
     private UUID moduleId;
 }
