@@ -14,5 +14,6 @@ public class LessonResponse {
     private Integer number;
     private String title;
     private String content;
+    private String cover; // content abloshkasi
     private UUID moduleId;
 }
