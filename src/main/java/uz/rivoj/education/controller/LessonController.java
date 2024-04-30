@@ -45,4 +45,7 @@ public class LessonController {
         LessonEntity updatedLesson = lessonService.updateLesson(lessonId, updateDTO);
         return ResponseEntity.ok(updatedLesson);
     }
+
+//    @GetMapping("/get-lesson-by-module")
+
 }

@@ -3,10 +3,13 @@ package uz.rivoj.education.service;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.AttendanceRequest;
 import uz.rivoj.education.dto.response.AttendanceResponse;
 import uz.rivoj.education.entity.*;
+import uz.rivoj.education.entity.enums.AttendanceStatus;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.AttendanceRepository;
 import uz.rivoj.education.repository.LessonRepository;
@@ -49,5 +52,10 @@ public class AttendanceService {
         userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("Student not found! " + userId));
         return null;
 //        AttendanceResponse attendanceResponse = attendanceRepository.
+    }
+    public List<AttendanceResponse> getAllAttendanceByStatus(int page, int size, AttendanceStatus status) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<AttendanceEntity> attendanceEntityList = attendanceRepository.findAllByStatus(pageable, status).getContent();
+        return modelMapper.map(attendanceEntityList, new TypeToken<List<AttendanceResponse>>(){}.getType());
     }
 }

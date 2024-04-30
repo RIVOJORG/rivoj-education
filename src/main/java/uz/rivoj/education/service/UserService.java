@@ -12,6 +12,7 @@ import uz.rivoj.education.dto.response.HomePageResponse;
 import uz.rivoj.education.dto.response.SubjectResponse;
 import uz.rivoj.education.dto.response.UserResponse;
 import uz.rivoj.education.entity.*;
+import uz.rivoj.education.entity.enums.AttendanceStatus;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.exception.WrongPasswordException;
 import uz.rivoj.education.repository.*;
@@ -98,7 +99,7 @@ public class UserService {
 
         List<Integer> scores = new ArrayList<>();
         for (AttendanceEntity attendance : attendancesOfModule) {
-            if(attendance.getStatus()){
+            if(attendance.getStatus() == AttendanceStatus.CHECKED){
                 scores.add(attendance.getLessonEntity().getNumber(), attendance.getScore());
             }
         }
