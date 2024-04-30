@@ -1,8 +1,12 @@
 package uz.rivoj.education.service;
 
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.MessageCreateRequest;
+import uz.rivoj.education.dto.response.AttendanceResponse;
+import uz.rivoj.education.dto.response.MessageResponse;
 import uz.rivoj.education.entity.Message;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.ChatRepository;
@@ -18,6 +22,7 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
     private final ChatRepository chatRepository;
+    private final ModelMapper modelMapper;
 
     public String sendMessage(MessageCreateRequest messageCreateRequest) {
         Message message = new Message();
@@ -42,5 +47,9 @@ public class MessageService {
 
     public List<Message> getAll(){
         return messageRepository.findAll();
+    }
+    public List<MessageResponse> getMessagesByChatId(UUID chatId) {
+        List<Message> byChatId = messageRepository.findByChatId(chatId);
+        return modelMapper.map(byChatId, new TypeToken<List<MessageResponse>>(){}.getType());
     }
 }

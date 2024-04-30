@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.rivoj.education.dto.request.MessageCreateRequest;
+import uz.rivoj.education.dto.response.MessageResponse;
 import uz.rivoj.education.entity.Message;
 import uz.rivoj.education.service.MessageService;
 
@@ -33,6 +34,11 @@ public class MessageController {
     @GetMapping("/get-all")
     public List<Message> getAll(){
         return messageService.getAll();
+    }
+
+    @GetMapping("/get-message-by-chatId")
+    private List<MessageResponse> getMessagesByChatId(UUID chatId){
+        return messageService.getMessagesByChatId(chatId);
     }
 
 }
