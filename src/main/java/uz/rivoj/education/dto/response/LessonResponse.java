@@ -15,5 +15,5 @@ public class LessonResponse {
     private String title;
     private String content;
     private String cover; // content abloshkasi
-    private UUID moduleId;
+    private UUID moduleId; // modul numberga o'zgartirish kerakmi ?
 }

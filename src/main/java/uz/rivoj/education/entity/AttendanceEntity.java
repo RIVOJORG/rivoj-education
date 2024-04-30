@@ -3,6 +3,7 @@ package uz.rivoj.education.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import lombok.*;
+import uz.rivoj.education.entity.enums.AttendanceStatus;
 
 @Entity(name = "attendance")
 @AllArgsConstructor
@@ -24,5 +25,5 @@ public class AttendanceEntity extends BaseEntity {
     private Integer score;
     private String feedBack;
     private Integer coin;
-    private Boolean status;
+    private AttendanceStatus status;
 }

@@ -5,10 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.rivoj.education.dto.request.AttendanceRequest;
-import uz.rivoj.education.dto.request.LessonCreateRequest;
 import uz.rivoj.education.dto.response.AttendanceResponse;
-import uz.rivoj.education.dto.response.LessonResponse;
-import uz.rivoj.education.entity.LessonEntity;
+import uz.rivoj.education.entity.enums.AttendanceStatus;
 import uz.rivoj.education.service.AttendanceService;
 
 import java.util.List;
@@ -41,6 +39,14 @@ public class AttendanceController {
     @GetMapping("/get-attendance-by-lesson")
     public ResponseEntity<AttendanceResponse> getAttendanceByLesson(@PathVariable UUID userId,UUID lessonId){
         return ResponseEntity.ok(attendanceService.getAttendanceByLesson(userId,lessonId));
+    }
+
+    @GetMapping("/get-attendance-by-status") // for mentor and admin
+    public List<AttendanceResponse> getAllAttendanceByStatus(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam AttendanceStatus status){
+        return attendanceService.getAllAttendanceByStatus(page, size, status);
     }
 
 }
