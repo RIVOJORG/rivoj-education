@@ -1,12 +1,16 @@
 package uz.rivoj.education.service;
 
 import lombok.RequiredArgsConstructor;
+
+import java.util.ArrayList;
 import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.NotificationRequest;
 import uz.rivoj.education.dto.response.NotificationResponse;
+import uz.rivoj.education.dto.response.UserResponse;
 import uz.rivoj.education.entity.NotificationEntity;
+import uz.rivoj.education.entity.UserEntity;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.NotificationRepository;
 import java.util.UUID;
@@ -40,5 +44,13 @@ public class NotificationService {
 
     public List<NotificationEntity> getAll(){
         return notificationRepository.findAll();
+    }
+
+    public List<NotificationResponse> getMyNotifications(UUID id){
+        List<NotificationResponse> notificationsById = new ArrayList<>();
+        for (NotificationEntity e : notificationRepository.findAllByStudentId(id)){
+            notificationsById.add(modelMapper.map(e, NotificationResponse.class));
+        }
+        return notificationsById;
     }
 }

@@ -16,8 +16,8 @@ import java.time.LocalDateTime;
 public class NotificationEntity extends BaseEntity{
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "student_id", referencedColumnName = "id")
-    private UserEntity studentId;
+    @JoinColumn(name = "student", referencedColumnName = "id")
+    private UserEntity student;
 
     private String title;
     private String description;
