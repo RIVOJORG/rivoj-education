@@ -6,8 +6,11 @@ import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.MessageCreateRequest;
 import uz.rivoj.education.dto.response.AttendanceResponse;
+import uz.rivoj.education.dto.response.ChatResponse;
 import uz.rivoj.education.dto.response.MessageResponse;
+import uz.rivoj.education.entity.ChatEntity;
 import uz.rivoj.education.entity.Message;
+import uz.rivoj.education.entity.UserEntity;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.ChatRepository;
 import uz.rivoj.education.repository.MessageRepository;
@@ -51,5 +54,13 @@ public class MessageService {
     public List<MessageResponse> getMessagesByChatId(UUID chatId) {
         List<Message> byChatId = messageRepository.findByChatId(chatId);
         return modelMapper.map(byChatId, new TypeToken<List<MessageResponse>>(){}.getType());
+    }
+
+    public List<MessageResponse> getMessages(UUID chatId) {
+        ChatEntity chat = chatRepository.findById(chatId)
+                .orElseThrow(() -> new DataNotFoundException("Chat not found with this id: " + chatId));
+
+        List<Message> messageList = messageRepository.findByChatId(chat.getId());
+         return modelMapper.map(messageList, new TypeToken<List<MessageResponse>>(){}.getType());
     }
 }
