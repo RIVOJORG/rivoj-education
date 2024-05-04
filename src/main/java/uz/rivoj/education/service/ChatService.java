@@ -2,8 +2,10 @@ package uz.rivoj.education.service;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.response.ChatResponse;
+import uz.rivoj.education.dto.response.LessonResponse;
 import uz.rivoj.education.entity.ChatEntity;
 import uz.rivoj.education.entity.UserEntity;
 import uz.rivoj.education.exception.DataNotFoundException;
@@ -46,4 +48,11 @@ public class ChatService {
                 .orElseThrow(() -> new DataNotFoundException("Chat not found with this id: " + chatId));
     }
 
+    public List<ChatResponse> getMyChats(UUID memberId) {
+        UserEntity user = userRepository.findById(memberId)
+                .orElseThrow(() -> new DataNotFoundException("User not found with this id: " + memberId));
+
+        List<ChatEntity> chatEntityList = chatRepository.findByMembersContaining(user);
+        return modelMapper.map(chatEntityList, new TypeToken<List<ChatResponse>>(){}.getType());
+    }
 }

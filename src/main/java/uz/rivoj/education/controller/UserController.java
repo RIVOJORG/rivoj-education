@@ -17,10 +17,7 @@ import java.util.UUID;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping("/create-teacher")
-    public ResponseEntity<TeacherInfo> createTeacher(@RequestBody TeacherInfoRequest teacherInfo){
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createTeacher(teacherInfo));
-    }
+
 
     @GetMapping("/get-all")
     public List<UserResponse> getAll(){
