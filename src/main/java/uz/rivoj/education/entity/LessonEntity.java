@@ -18,4 +18,5 @@ public class LessonEntity extends BaseEntity {
     private String title;
     private String content;
     private String cover; // content abloshkasi
+    private String description;
 }

@@ -11,9 +11,11 @@ import java.util.UUID;
 @Builder
 @ToString
 public class LessonResponse {
-    private Integer number;
+    private UUID id;
+    private Integer lessonNumber;
     private String title;
     private String content;
     private String cover; // content abloshkasi
-    private UUID moduleId; // modul numberga o'zgartirish kerakmi ?
+    private Integer moduleNumber; // id edi numberga o'zagartirildi
+    private String description;
 }
