@@ -1,6 +1,9 @@
 package uz.rivoj.education.repository;
 
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import uz.rivoj.education.entity.UserEntity;
@@ -16,5 +19,6 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     Optional<UserEntity> findUserEntityByPhoneNumber(String phoneNumber);
 
 
+    Page<UserEntity> findAllByRole(UserRole userRole, Pageable pageable);
 }
 
