@@ -16,4 +16,5 @@ public class LessonCreateRequest {
     private String content;
     private String cover; // content abloshkasi
     private UUID moduleId;
+    private String description;
 }
