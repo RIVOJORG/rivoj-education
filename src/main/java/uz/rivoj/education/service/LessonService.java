@@ -3,6 +3,9 @@ package uz.rivoj.education.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.LessonCreateRequest;
 import uz.rivoj.education.dto.response.LessonResponse;
@@ -13,7 +16,6 @@ import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.LessonRepository;
 import uz.rivoj.education.repository.ModuleRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -36,7 +38,9 @@ public class LessonService {
         LessonEntity lesson = modelMapper.map(createRequest, LessonEntity.class);
         lesson.setModule(moduleEntity);
         lessonRepository.save(lesson);
-        return modelMapper.map(createRequest, LessonResponse.class);
+        LessonResponse lessonResponse = modelMapper.map(createRequest, LessonResponse.class);
+        lessonResponse.setId(lesson.getId());
+        return lessonResponse;
     }
 
     public String delete(UUID lessonId){
@@ -56,7 +60,7 @@ public class LessonService {
         return list;
     }
 
-    public LessonEntity updateLesson(UUID lessonId, LessonUpdateDTO updateDTO) {
+    public String updateLesson(UUID lessonId, LessonUpdateDTO updateDTO) {
         LessonEntity lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new DataNotFoundException("Lesson not found with this id: " + lessonId));
 
@@ -70,6 +74,14 @@ public class LessonService {
             lesson.setTitle(updateDTO.getTitle());}
         if (updateDTO.getContent() != null) {
             lesson.setContent(updateDTO.getContent());}
-        return lessonRepository.save(lesson);
+         lessonRepository.save(lesson);
+        return "Successfully updated";
+    }
+
+    public List<LessonResponse> getLessonsByModule(int page, int size, UUID moduleId) {
+        Pageable pageable = PageRequest.of(page, size);
+        ModuleEntity moduleEntity = moduleRepository.findById(moduleId).orElseThrow(() -> new DataNotFoundException("Module not found with this id: " + moduleId));
+        List<LessonEntity> lessonEntityList = lessonRepository.findLessonsByModule(pageable, moduleEntity).getContent();
+        return modelMapper.map(lessonEntityList, new TypeToken<List<LessonResponse>>(){}.getType());
     }
 }

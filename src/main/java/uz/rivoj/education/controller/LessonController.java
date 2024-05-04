@@ -40,12 +40,9 @@ public class LessonController {
     }
 
     @PutMapping("/update-lesson{lessonId}")
-    public ResponseEntity<LessonEntity> updateLesson(@PathVariable UUID lessonId,
+    public ResponseEntity<String> updateLesson(@PathVariable UUID lessonId,
                                                      @RequestBody LessonUpdateDTO updateDTO) {
-        LessonEntity updatedLesson = lessonService.updateLesson(lessonId, updateDTO);
-        return ResponseEntity.ok(updatedLesson);
+        return ResponseEntity.status(200).body(lessonService.updateLesson(lessonId, updateDTO));
+
     }
-
-//    @GetMapping("/get-lesson-by-module")
-
 }
