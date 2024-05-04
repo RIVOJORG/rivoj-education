@@ -8,7 +8,6 @@ import uz.rivoj.education.dto.request.AttendanceRequest;
 import uz.rivoj.education.dto.response.AttendanceResponse;
 import uz.rivoj.education.entity.enums.AttendanceStatus;
 import uz.rivoj.education.service.AttendanceService;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -17,7 +16,6 @@ import java.util.UUID;
 @RequestMapping("/api/v1/attendance")
 public class AttendanceController {
     private final AttendanceService attendanceService;
-
     @PostMapping("/create")
     public ResponseEntity<AttendanceResponse> createAttendance(@RequestBody AttendanceRequest attendance){
         return ResponseEntity.status(HttpStatus.CREATED).body(attendanceService.create(attendance));
@@ -48,5 +46,7 @@ public class AttendanceController {
             @RequestParam AttendanceStatus status){
         return attendanceService.getAllAttendanceByStatus(page, size, status);
     }
+
+
 
 }
