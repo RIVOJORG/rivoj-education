@@ -46,7 +46,6 @@ public class AttendanceService {
         return modelMapper.map(studentAttendances, new TypeToken<List<AttendanceResponse>>() {
         }.getType());
     }
-
     public AttendanceResponse create(AttendanceRequest attendance) {
         userRepository.findById(attendance.getStudentId()).orElseThrow(() -> new DataNotFoundException("Student not found! " + attendance.getStudentId()));
         userRepository.findById(attendance.getStudentId()).orElseThrow(() -> new DataNotFoundException("Teacher not found! " + attendance.getTeacherId()));
@@ -59,9 +58,7 @@ public class AttendanceService {
         LessonEntity lessonEntity = lessonRepository.findById(lessonId).orElseThrow(() -> new DataNotFoundException("Lesson not found! " + lessonId));
         List<AttendanceEntity> attendanceByLessonEntity = attendanceRepository.findAttendanceByLessonEntity(lessonEntity);
         return modelMapper.map(attendanceByLessonEntity, new TypeToken<List<AttendanceResponse>>() {
-        }.getType());
-
-    }
+        }.getType());  }
 
     public List<AttendanceResponse> getAllAttendanceByStatus(int page, int size, AttendanceStatus status) {
         Pageable pageable = PageRequest.of(page, size);
@@ -97,6 +94,7 @@ public class AttendanceService {
         attendanceRepository.save(attendanceEntity);
         return "Attendance successfully checked";
     }
+
+
+
 }
-
-
