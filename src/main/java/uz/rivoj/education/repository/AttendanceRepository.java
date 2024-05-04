@@ -2,11 +2,11 @@ package uz.rivoj.education.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import uz.rivoj.education.dto.response.AttendanceResponse;
 import uz.rivoj.education.entity.AttendanceEntity;
+import uz.rivoj.education.entity.LessonEntity;
 import uz.rivoj.education.entity.ModuleEntity;
 import uz.rivoj.education.entity.enums.AttendanceStatus;
 
@@ -25,4 +25,6 @@ public interface AttendanceRepository extends JpaRepository<AttendanceEntity, UU
     Optional<AttendanceResponse> findByStudentAndLessonId();
 
     Page<AttendanceEntity> findAllByStatus(Pageable pageable, AttendanceStatus status);
+
+    List<AttendanceEntity> findAttendanceByLessonEntity(LessonEntity lessonEntity);
 }

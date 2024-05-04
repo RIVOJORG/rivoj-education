@@ -36,9 +36,9 @@ public class AttendanceController {
     public ResponseEntity<AttendanceResponse> getAttendanceById(@PathVariable UUID id) {
         return ResponseEntity.ok(attendanceService.getAttendance(id));
     }
-    @GetMapping("/get-attendance-by-lesson")
-    public ResponseEntity<AttendanceResponse> getAttendanceByLesson(@PathVariable UUID userId,UUID lessonId){
-        return ResponseEntity.ok(attendanceService.getAttendanceByLesson(userId,lessonId));
+    @GetMapping("/get-attendances-by-lesson")
+    public ResponseEntity<List<AttendanceResponse>> getAttendancesByLesson(@PathVariable UUID lessonId){
+        return ResponseEntity.ok(attendanceService.getAttendancesByLesson(lessonId));
     }
 
     @GetMapping("/get-attendance-by-status") // for mentor and admin
