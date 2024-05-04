@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.AttendanceRequest;
 import uz.rivoj.education.dto.response.AttendanceResponse;
+import uz.rivoj.education.dto.response.MessageResponse;
 import uz.rivoj.education.dto.update.CheckAttendanceDTO;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.AttendanceStatus;
@@ -48,11 +49,11 @@ public class AttendanceService {
         return modelMapper.map(attendanceEntity,AttendanceResponse.class);
     }
 
-    public AttendanceResponse getAttendanceByLesson(UUID userId, UUID lessonId) {
-        lessonRepository.findById(lessonId).orElseThrow(() -> new DataNotFoundException("Lesson not found! " + lessonId));
-        userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("Student not found! " + userId));
-        return null;
-//        AttendanceResponse attendanceResponse = attendanceRepository.
+    public List<AttendanceResponse> getAttendancesByLesson(UUID lessonId) {
+        LessonEntity lessonEntity = lessonRepository.findById(lessonId).orElseThrow(() -> new DataNotFoundException("Lesson not found! " + lessonId));
+        List<AttendanceEntity> attendanceByLessonEntity = attendanceRepository.findAttendanceByLessonEntity(lessonEntity);
+        return modelMapper.map(attendanceByLessonEntity, new TypeToken<List<AttendanceResponse>>(){}.getType());
+
     }
     public List<AttendanceResponse> getAllAttendanceByStatus(int page, int size, AttendanceStatus status) {
         Pageable pageable = PageRequest.of(page, size);
