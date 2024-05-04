@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.AttendanceRequest;
 import uz.rivoj.education.dto.response.AttendanceResponse;
+import uz.rivoj.education.dto.update.CheckAttendanceDTO;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.AttendanceStatus;
 import uz.rivoj.education.exception.DataNotFoundException;
@@ -57,5 +58,14 @@ public class AttendanceService {
         Pageable pageable = PageRequest.of(page, size);
         List<AttendanceEntity> attendanceEntityList = attendanceRepository.findAllByStatus(pageable, status).getContent();
         return modelMapper.map(attendanceEntityList, new TypeToken<List<AttendanceResponse>>(){}.getType());
+    }
+
+    public String checkAttendance(CheckAttendanceDTO checkAttendanceDTO) {
+        AttendanceEntity attendanceEntity = attendanceRepository.findById(checkAttendanceDTO.getAttendanceId())
+                .orElseThrow(() -> new DataNotFoundException("Attendance not found with this id: " + checkAttendanceDTO.getAttendanceId()));
+        attendanceEntity.setScore(checkAttendanceDTO.getScore());
+        attendanceEntity.setStatus(AttendanceStatus.CHECKED);
+         attendanceRepository.save(attendanceEntity);
+         return "Attendance successfully checked";
     }
 }
