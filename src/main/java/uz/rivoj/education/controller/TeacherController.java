@@ -5,15 +5,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.rivoj.education.dto.response.AttendanceResponse;
+import uz.rivoj.education.dto.response.ChatResponse;
 import uz.rivoj.education.dto.response.LessonResponse;
 import uz.rivoj.education.dto.response.StudentResponse;
 import uz.rivoj.education.dto.update.CheckAttendanceDTO;
 import uz.rivoj.education.entity.enums.AttendanceStatus;
 import uz.rivoj.education.service.AttendanceService;
+import uz.rivoj.education.service.ChatService;
 import uz.rivoj.education.service.LessonService;
 import uz.rivoj.education.service.StudentService;
-import uz.rivoj.education.service.TeacherService;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -24,7 +24,7 @@ public class TeacherController {
     private final AttendanceService attendanceService;
     private final StudentService studentService;
     private final LessonService lessonService;
-
+    private final ChatService chatService;
 
     //    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     @GetMapping("/get-all-student")
@@ -52,6 +52,7 @@ public class TeacherController {
         return ResponseEntity.ok(attendanceService.getAttendancesByLesson(lessonId));
     }
 
+//    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     @GetMapping("/get-lessons-by-module") // for mentor and admin
     public List<LessonResponse> getLessonsByModule(
             @RequestParam(defaultValue = "0") int page,
@@ -60,5 +61,8 @@ public class TeacherController {
         return lessonService.getLessonsByModule(page, size, moduleId);
     }
 
-
+    @GetMapping("/get-my-chats") // hammada bo'ladi bu API student, admin ham o'zini chatlarini olishi mumkun
+    public List<ChatResponse> getMyChats(@PathVariable UUID memberId){
+        return chatService.getMyChats(memberId);
+    }
 }
