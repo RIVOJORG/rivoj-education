@@ -34,7 +34,7 @@ public class AttendanceController {
     public ResponseEntity<AttendanceResponse> getAttendanceById(@PathVariable UUID id) {
         return ResponseEntity.ok(attendanceService.getAttendance(id));
     }
-    @GetMapping("/get-attendances-by-lesson")
+    @GetMapping("/get-attendances-by-lesson{lessonId}")
     public ResponseEntity<List<AttendanceResponse>> getAttendancesByLesson(@PathVariable UUID lessonId){
         return ResponseEntity.ok(attendanceService.getAttendancesByLesson(lessonId));
     }
