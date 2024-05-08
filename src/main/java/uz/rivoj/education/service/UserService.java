@@ -24,11 +24,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final StudentInfoRepository studentInfoRepository;
     private final TeacherInfoRepository teacherInfoRepository;
-    private final ModuleRepository moduleRepository;
-    private final DiscountRepository discountRepository;
-    private final AttendanceRepository attendanceRepository;
     private final ModelMapper modelMapper;
 //    private final PasswordEncoder passwordEncoder;
 
@@ -78,49 +74,4 @@ public class UserService {
         return modelMapper.map(userEntity, UserResponse.class);
     }
 
-
-    /** Hali tugatmadim */
-    public HomePageResponse myProgressByPhoneNumber(String phoneNumber){
-
-        UserEntity userEntity = userRepository.findUserEntityByPhoneNumber(phoneNumber)
-                .orElseThrow(
-                        () -> new DataNotFoundException("data not found")
-                );
-
-        StudentInfo studentInfo = studentInfoRepository.findStudentInfoByStudentId(userEntity.getId())
-                .orElseThrow(
-                        () -> new DataNotFoundException("data not found")
-                );
-
-        List<AttendanceEntity> attendancesOfModule = attendanceRepository.findAttendanceEntitiesByStudentIdAndLessonEntity_Module(
-                userEntity.getId(),
-                studentInfo.getCurrentModule()
-        );
-
-        List<Integer> scores = new ArrayList<>();
-        for (AttendanceEntity attendance : attendancesOfModule) {
-            if(attendance.getStatus() == AttendanceStatus.CHECKED){
-                scores.add(attendance.getLessonEntity().getNumber(), attendance.getScore());
-            }
-        }
-
-        List<DiscountResponse> discounts = discountRepository.findDiscountEntitiesByStudentId(userEntity.getId())
-                .stream().map(discount -> modelMapper.map(discount, DiscountResponse.class))
-                .collect(Collectors.toList());
-
-        HomePageResponse homePageResponse = HomePageResponse.builder()
-                .phoneNumber(userEntity.getPhoneNumber())
-                .name(userEntity.getName())
-                .surname(userEntity.getSurname())
-                .avatar(studentInfo.getAvatar())
-                .currentModule(studentInfo.getCurrentModule().getNumber())
-                .currentLesson(studentInfo.getLesson().getNumber())
-                .isLessonOver(studentInfo.getIsLessonOver())
-                .coin(studentInfo.getCoin())
-                .totalScore(studentInfo.getTotalScore())
-                .scores(scores)
-                .discounts(discounts)
-                .build();
-        return null;
-    }
 }
