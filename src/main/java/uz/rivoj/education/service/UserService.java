@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository userRepository;
     private final TeacherInfoRepository teacherInfoRepository;
+    private final SubjectRepository subjectRepository;
     private final ModelMapper modelMapper;
 //    private final PasswordEncoder passwordEncoder;
 
@@ -47,16 +48,6 @@ public class UserService {
             return modelMapper.map(userEntity, UserResponse.class);
         }
         throw new WrongPasswordException("password didn't match");
-    }
-
-    public TeacherInfo createTeacher(TeacherInfoRequest teacherInfo) {
-        TeacherInfo teacher = modelMapper.map(teacherInfo, TeacherInfo.class);
-        UserEntity userEntity = userRepository.findById(teacher.getId()).orElseThrow(
-                () -> new DataNotFoundException("user not found")
-        );
-        userEntity.setRole(UserRole.TEACHER);
-        userRepository.save(userEntity);
-        return teacherInfoRepository.save(teacher);
     }
 
     public List<UserResponse> getAll() {
