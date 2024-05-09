@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uz.rivoj.education.dto.request.TeacherInfoRequest;
 import uz.rivoj.education.dto.response.UserResponse;
 import uz.rivoj.education.entity.TeacherInfo;
 import uz.rivoj.education.service.UserService;

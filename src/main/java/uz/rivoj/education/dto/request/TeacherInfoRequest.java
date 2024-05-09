@@ -12,6 +12,10 @@ import java.util.UUID;
 @Builder
 @ToString
 public class TeacherInfoRequest {
+    private String name;
+    private String surname;
+    private String phoneNumber;
+    private String password;
     private UUID teacher;
     private String subject;
     private String about;
