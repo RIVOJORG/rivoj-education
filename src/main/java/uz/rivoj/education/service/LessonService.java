@@ -84,4 +84,16 @@ public class LessonService {
         List<LessonEntity> lessonEntityList = lessonRepository.findLessonsByModule(pageable, moduleEntity).getContent();
         return modelMapper.map(lessonEntityList, new TypeToken<List<LessonResponse>>(){}.getType());
     }
+
+    public LessonEntity findFirstLessonOfNextModule(ModuleEntity module) {
+        Integer nextModuleNumber = module.getNumber() + 1;
+        ModuleEntity nextModule = moduleRepository.findBySubjectAndNumber(module.getSubject(), nextModuleNumber);
+
+        if (nextModule != null) {
+            return lessonRepository.findFirstByModuleOrderByNumberAsc(nextModule);
+        }
+
+        return null;
+    }
+
 }

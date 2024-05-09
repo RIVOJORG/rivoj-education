@@ -9,4 +9,7 @@ import java.util.UUID;
 @Repository
 public interface SubjectRepository extends JpaRepository<SubjectEntity, UUID> {
     boolean existsByTitle(String title);
+
+    SubjectEntity findByTitle(String title);
+
 }
