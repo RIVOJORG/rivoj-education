@@ -51,4 +51,9 @@ public class ModuleService {
         }
         return list;
     }
+
+    public ModuleEntity findFirstModuleOfSubject(SubjectEntity subject) {
+        return moduleRepository.findFirstBySubjectOrderByNumberAsc(subject);
+    }
+
 }
