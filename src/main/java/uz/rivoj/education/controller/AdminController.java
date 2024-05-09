@@ -11,6 +11,7 @@ import uz.rivoj.education.dto.response.LessonResponse;
 import uz.rivoj.education.entity.TeacherInfo;
 import uz.rivoj.education.service.LessonService;
 import uz.rivoj.education.service.StudentService;
+import uz.rivoj.education.service.TeacherService;
 import uz.rivoj.education.service.UserService;
 
 import java.util.List;
@@ -23,12 +24,12 @@ public class AdminController {
     private final StudentService studentService;
     private final LessonService lessonService;
     private final UserService userService;
+    private final TeacherService teacherService;
 
     @PostMapping("/create-teacher")
-    public ResponseEntity<TeacherInfo> createTeacher(@RequestBody TeacherInfoRequest teacherInfo){
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createTeacher(teacherInfo));
+    public ResponseEntity<String> createTeacher(@RequestBody TeacherInfoRequest teacherInfo){
+        return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.createTeacher(teacherInfo));
     }
-
 
 
     //    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
@@ -50,8 +51,8 @@ public class AdminController {
     }
 
     @PostMapping("/add-student")
-    public String addStudent(StudentCreateRequest studentCreateRequest){
-        return studentService.addStudent(studentCreateRequest);
+    public ResponseEntity<String> addStudent(StudentCreateRequest studentCreateRequest){
+        return ResponseEntity.status(200).body(studentService.addStudent(studentCreateRequest));
     }
 
 }
