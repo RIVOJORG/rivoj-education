@@ -17,4 +17,5 @@ public interface LessonRepository extends JpaRepository<LessonEntity, UUID> {
 
     Page<LessonEntity> findLessonsByModule(Pageable pageable, ModuleEntity moduleEntity);
 
+    LessonEntity findFirstByModuleOrderByNumberAsc(ModuleEntity nextModule);
 }
