@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import uz.rivoj.education.dto.request.StudentCreateRequest;
 import uz.rivoj.education.dto.request.TeacherInfoRequest;
 import uz.rivoj.education.dto.response.StudentResponse;
 import uz.rivoj.education.dto.response.LessonResponse;
@@ -46,6 +47,11 @@ public class AdminController {
             @RequestParam(defaultValue = "10") int size,
             @PathVariable UUID moduleId){
         return lessonService.getLessonsByModule(page, size, moduleId);
+    }
+
+    @PostMapping("/add-student")
+    public String addStudent(StudentCreateRequest studentCreateRequest){
+        return studentService.addStudent(studentCreateRequest);
     }
 
 }
