@@ -42,9 +42,7 @@ public class DiscountService {
 
     public String delete(UUID discountId){
         DiscountEntity discountEntity = discountRepository.findById(discountId).orElseThrow(
-                () -> new DataNotFoundException("discount not found")
-        );
-
+                () -> new DataNotFoundException("discount not found"));
         discountRepository.delete(discountEntity);
         return "notification deleted";
     }
