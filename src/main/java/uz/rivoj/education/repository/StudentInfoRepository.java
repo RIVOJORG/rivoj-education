@@ -10,4 +10,6 @@ import java.util.UUID;
 
 public interface StudentInfoRepository extends JpaRepository<StudentInfo, UUID> {
     Optional<StudentInfo> findStudentInfoByStudentId(UUID id);
+
+
 }
