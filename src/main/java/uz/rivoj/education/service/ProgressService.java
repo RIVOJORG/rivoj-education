@@ -3,9 +3,14 @@ package uz.rivoj.education.service;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import uz.rivoj.education.dto.response.BestStudentResponse;
 import uz.rivoj.education.dto.response.DiscountResponse;
 import uz.rivoj.education.dto.response.HomePageResponse;
+import uz.rivoj.education.dto.response.RankingPageResponse;
 import uz.rivoj.education.entity.AttendanceEntity;
 import uz.rivoj.education.entity.StudentInfo;
 import uz.rivoj.education.entity.UserEntity;
@@ -15,6 +20,7 @@ import uz.rivoj.education.repository.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,4 +74,31 @@ public class ProgressService {
                 .discounts(discounts)
                 .build();
     }
+
+    public RankingPageResponse getRanking() {
+        //Sort sortByTotalScoreDesc = Sort.by(Sort.Direction.DESC, "totalScore");
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "totalScore"));
+        Page<StudentInfo> page = studentInfoRepository.findAll(pageRequest);
+        List<StudentInfo> sortedStudents = page.getContent();
+
+        List<BestStudentResponse> bestStudentResponseList = new ArrayList<>();
+
+        for (StudentInfo studentInfo : sortedStudents) {
+            Optional<StudentInfo> studentInfoByStudentId = studentInfoRepository.findStudentInfoByStudentId(studentInfo.getId());
+            UserEntity user = studentInfoByStudentId.get().getStudent();
+            BestStudentResponse bestStudent = BestStudentResponse.builder()
+                    .avatar(studentInfo.getAvatar())
+                    .name(user.getName())
+                    .percentage(studentInfo.getTotalScore())
+                    .surname(user.getSurname())
+                    .build();
+            bestStudentResponseList.add(bestStudent);
+        }
+        return RankingPageResponse.builder()
+                .bestStudents(bestStudentResponseList)
+                .build();
+    }
+
+
+
 }
