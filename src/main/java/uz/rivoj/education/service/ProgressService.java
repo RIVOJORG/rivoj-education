@@ -85,14 +85,16 @@ public class ProgressService {
 
         for (StudentInfo studentInfo : sortedStudents) {
             Optional<StudentInfo> studentInfoByStudentId = studentInfoRepository.findStudentInfoByStudentId(studentInfo.getId());
-            UserEntity user = studentInfoByStudentId.get().getStudent();
-            BestStudentResponse bestStudent = BestStudentResponse.builder()
-                    .avatar(studentInfo.getAvatar())
-                    .name(user.getName())
-                    .percentage(studentInfo.getTotalScore())
-                    .surname(user.getSurname())
-                    .build();
-            bestStudentResponseList.add(bestStudent);
+            if (studentInfoByStudentId.isPresent()) {
+                UserEntity user = studentInfoByStudentId.get().getStudent();
+                BestStudentResponse bestStudent = BestStudentResponse.builder()
+                        .avatar(studentInfo.getAvatar())
+                        .name(user.getName())
+                        .percentage(studentInfo.getTotalScore())
+                        .surname(user.getSurname())
+                        .build();
+                bestStudentResponseList.add(bestStudent);
+            }
         }
         return RankingPageResponse.builder()
                 .bestStudents(bestStudentResponseList)
@@ -132,6 +134,7 @@ public class ProgressService {
 
     public EducationPageResponse getEducationPage(UUID studentId) {
         Optional<StudentInfo> studentInfoOptional = studentInfoRepository.findStudentInfoByStudentId(studentId);
+
         if (studentInfoOptional.isPresent()) {
             StudentInfo studentInfo = studentInfoOptional.get();
 
@@ -139,7 +142,9 @@ public class ProgressService {
             List<Integer> countLessonsList = new ArrayList<>();
 
             for (int i = 1; i <= totalCountModules; i++) {
-                int countLessons = lessonRepository.countByModuleAndStudentId(i, studentId);
+                List<LessonEntity> lessonsForModule = lessonRepository.findByModuleNumber(i);
+
+                int countLessons = countCompletedLessons(lessonsForModule, studentInfo);
                 countLessonsList.add(countLessons);
             }
 
@@ -148,12 +153,22 @@ public class ProgressService {
                     .coin(studentInfo.getCoin())
                     .countModules(totalCountModules)
                     .countLessons(countLessonsList)
-                    .currentLesson(studentInfo.getLesson().getNumber()) // Set currentLesson with the current lesson number
+                    .currentLesson(studentInfo.getLesson().getNumber())
                     .isLessonOver(studentInfo.getIsLessonOver())
                     .totalScore(studentInfo.getTotalScore())
                     .build();
         } else {
             throw new DataNotFoundException("student not found with this id: " + studentId);
         }
+    }
+
+    private int countCompletedLessons(List<LessonEntity> lessonsForModule, StudentInfo studentInfo) {
+        int count = 0;
+        for (LessonEntity lesson : lessonsForModule) {
+            if (lesson.getNumber() <= studentInfo.getLesson().getNumber()) {
+                count++;
+            }
+        }
+        return count;
     }
 }
