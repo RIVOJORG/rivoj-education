@@ -51,5 +51,6 @@ public class ProgressController {
     @GetMapping("/swqds")
     public String d11ede(){
         return "dsdwqs";}
+
 }
 
