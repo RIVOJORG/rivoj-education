@@ -2,12 +2,12 @@ package uz.rivoj.education.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import uz.rivoj.education.entity.LessonEntity;
 import uz.rivoj.education.entity.ModuleEntity;
 
+import java.util.List;
 import java.util.UUID;
 @Repository
 public interface LessonRepository extends JpaRepository<LessonEntity, UUID> {
@@ -19,5 +19,9 @@ public interface LessonRepository extends JpaRepository<LessonEntity, UUID> {
 
     LessonEntity findFirstByModuleOrderByNumberAsc(ModuleEntity nextModule);
 
-    Integer countByModuleAndStudentId(int i, UUID studentId);
+    List<LessonEntity> findByModuleNumber(int moduleNumber);
+
+//    Integer countByModuleAndStudent(int i, UUID studentId);
+//    Integer countByModuleAndStudent(ModuleEntity module, StudentInfo student);
+
 }
