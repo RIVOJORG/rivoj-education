@@ -28,8 +28,8 @@ public class ProgressController {
     }
 
     @GetMapping("/get-ranking-page")
-    public RankingPageResponse getRanking(){
-        return progressService.getRanking();
+    public RankingPageResponse getRankingPage(){
+        return progressService.getRankingPage();
     }
 
     @PostMapping("/create-discount{studentId}") // chegirma olish
@@ -48,8 +48,8 @@ public class ProgressController {
     }
 
     @GetMapping("/get-education{studentId}")
-    public EducationPageResponse getEducation(@PathVariable UUID studentId){
-        return progressService.getEducation(studentId);
+    public EducationPageResponse getEducationPage(@PathVariable UUID studentId){
+        return progressService.getEducationPage(studentId);
     }
 }
 
