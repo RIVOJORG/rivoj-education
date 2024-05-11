@@ -30,8 +30,9 @@ public class ProgressService {
     private final CommentRepository commentRepository;
     private final TeacherInfoRepository teacherInfoRepository;
     private final LessonRepository lessonRepository;
+    private final ModuleRepository moduleRepository;
 
-    public HomePageResponse getProgressByPhoneNumber(String phoneNumber){
+    public HomePageResponse getProgressByPhoneNumber(String phoneNumber) {
 
         UserEntity userEntity = userRepository.findUserEntityByPhoneNumber(phoneNumber)
                 .orElseThrow(
@@ -50,7 +51,7 @@ public class ProgressService {
 
         List<Integer> scores = new ArrayList<>();
         for (AttendanceEntity attendance : attendancesOfModule) {
-            if(attendance.getStatus() == AttendanceStatus.CHECKED){
+            if (attendance.getStatus() == AttendanceStatus.CHECKED) {
                 scores.add(attendance.getLessonEntity().getNumber(), attendance.getScore());
             }
         }
@@ -108,7 +109,7 @@ public class ProgressService {
         TeacherInfo teacherInfo = teacherInfoRepository
                 .findTeacherInfoBySubjectId(lesson.getModule().getSubject().getId())
                 .orElseThrow(
-                    () -> new DataNotFoundException("teacher info not found")
+                        () -> new DataNotFoundException("teacher info not found")
                 );
         TeacherResponse teacherResponse = new TeacherResponse();
 
@@ -127,5 +128,32 @@ public class ProgressService {
                 .teacher(teacherResponse)
                 .comments(comments)
                 .attendances(attendances).build();
+    }
+
+    public EducationPageResponse getEducation(UUID studentId) {
+        Optional<StudentInfo> studentInfoOptional = studentInfoRepository.findStudentInfoByStudentId(studentId);
+        if (studentInfoOptional.isPresent()) {
+            StudentInfo studentInfo = studentInfoOptional.get();
+
+            int totalCountModules = moduleRepository.countBySubject(studentInfo.getSubject());
+            List<Integer> countLessonsList = new ArrayList<>();
+
+            for (int i = 1; i <= totalCountModules; i++) {
+                int countLessons = lessonRepository.countByModuleAndStudentId(i, studentId);
+                countLessonsList.add(countLessons);
+            }
+
+            return EducationPageResponse.builder()
+                    .bestStudentsOfLesson(getRanking().getBestStudents())
+                    .coin(studentInfo.getCoin())
+                    .countModules(totalCountModules)
+                    .countLessons(countLessonsList)
+                    .currentLesson(studentInfo.getLesson().getNumber()) // Set currentLesson with the current lesson number
+                    .isLessonOver(studentInfo.getIsLessonOver())
+                    .totalScore(studentInfo.getTotalScore())
+                    .build();
+        } else {
+            throw new DataNotFoundException("student not found with this id: " + studentId);
+        }
     }
 }
