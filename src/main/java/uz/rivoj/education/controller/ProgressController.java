@@ -4,10 +4,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import uz.rivoj.education.dto.request.DiscountRequest;
-import uz.rivoj.education.dto.response.DiscountResponse;
-import uz.rivoj.education.dto.response.HomePageResponse;
-import uz.rivoj.education.dto.response.LessonPageResponse;
-import uz.rivoj.education.dto.response.RankingPageResponse;
+import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.service.DiscountService;
 import uz.rivoj.education.service.ProgressService;
 
@@ -50,6 +47,9 @@ public class ProgressController {
         return discountService.delete(discountId);
     }
 
-
+    @GetMapping("/get-education{studentId}")
+    public EducationPageResponse getEducation(@PathVariable UUID studentId){
+        return progressService.getEducation(studentId);
+    }
 }
 
