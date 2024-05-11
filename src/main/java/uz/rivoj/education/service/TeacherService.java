@@ -49,6 +49,5 @@ public class TeacherService {
         return "successfully added";
     }
 
-    ///dwldwdwdwlkdlwldl wdpqwo0e
-    //ewqeq
+
 }
