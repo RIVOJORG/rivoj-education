@@ -10,8 +10,9 @@ import java.util.List;
 @Builder
 @ToString
 public class LessonPageResponse {
-    private String video;
+    private String source;
     private String cover;
     private TeacherResponse teacher;
     private List<CommentResponse> comments;
+    private List<AttendanceResponse> attendances;
 }

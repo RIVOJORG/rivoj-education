@@ -16,7 +16,7 @@ public class LessonEntity extends BaseEntity {
     private ModuleEntity module;
     private Integer number;
     private String title;
-    private String content;
+    private String source;
     private String cover; // content abloshkasi
     private String description;
 }

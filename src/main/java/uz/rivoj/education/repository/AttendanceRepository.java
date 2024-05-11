@@ -21,8 +21,9 @@ public interface AttendanceRepository extends JpaRepository<AttendanceEntity, UU
             UUID student_id,
             ModuleEntity module
     );
+
+    List<AttendanceEntity> findAttendanceEntitiesByStudentIdAndLessonEntity(UUID studentId, LessonEntity lesson);
     List<AttendanceEntity> findAllByStudentId(UUID userId);
-    Optional<AttendanceResponse> findByStudentAndLessonId();
 
     Page<AttendanceEntity> findAllByStatus(Pageable pageable, AttendanceStatus status);
 

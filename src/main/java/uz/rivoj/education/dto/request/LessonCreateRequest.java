@@ -13,7 +13,7 @@ import java.util.UUID;
 public class LessonCreateRequest {
     private Integer number;
     private String title;
-    private String content;
+    private String source;
     private String cover; // content abloshkasi
     private UUID moduleId;
     private String description;
