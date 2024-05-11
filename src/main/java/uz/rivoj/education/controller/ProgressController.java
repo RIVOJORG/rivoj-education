@@ -6,7 +6,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uz.rivoj.education.dto.response.HomePageResponse;
+import uz.rivoj.education.dto.response.LessonPageResponse;
 import uz.rivoj.education.service.ProgressService;
+
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,5 +20,12 @@ public class ProgressController {
     public HomePageResponse getProgressByPhoneNumber(@PathVariable String phoneNumber) {
         return progressService.getProgressByPhoneNumber(phoneNumber);
     }
+
+    @GetMapping("get-lesson/{studentId}{lessonId}")
+    public LessonPageResponse getLessonPageResponseByLessonId(@PathVariable UUID studentId, @PathVariable UUID lessonId) {
+        return progressService.getLessonPageResponseByLessonId(studentId, lessonId);
+    }
+
+
 }
 
