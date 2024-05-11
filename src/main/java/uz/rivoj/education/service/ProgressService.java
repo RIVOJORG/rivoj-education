@@ -75,7 +75,7 @@ public class ProgressService {
                 .build();
     }
 
-    public RankingPageResponse getRanking() {
+    public RankingPageResponse getRankingPage() {
         //Sort sortByTotalScoreDesc = Sort.by(Sort.Direction.DESC, "totalScore");
         PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "totalScore"));
         Page<StudentInfo> page = studentInfoRepository.findAll(pageRequest);
@@ -130,7 +130,7 @@ public class ProgressService {
                 .attendances(attendances).build();
     }
 
-    public EducationPageResponse getEducation(UUID studentId) {
+    public EducationPageResponse getEducationPage(UUID studentId) {
         Optional<StudentInfo> studentInfoOptional = studentInfoRepository.findStudentInfoByStudentId(studentId);
         if (studentInfoOptional.isPresent()) {
             StudentInfo studentInfo = studentInfoOptional.get();
@@ -144,7 +144,7 @@ public class ProgressService {
             }
 
             return EducationPageResponse.builder()
-                    .bestStudentsOfLesson(getRanking().getBestStudents())
+                    .bestStudentsOfLesson(getRankingPage().getBestStudents())
                     .coin(studentInfo.getCoin())
                     .countModules(totalCountModules)
                     .countLessons(countLessonsList)
