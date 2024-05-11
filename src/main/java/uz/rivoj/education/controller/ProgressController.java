@@ -44,5 +44,8 @@ public class ProgressController {
     public String deleteDiscount(@PathVariable UUID discountId){
         return discountService.delete(discountId);
     }
+    @GetMapping("/sds")
+    public String dede(){
+        return "dsds";}
 }
 
