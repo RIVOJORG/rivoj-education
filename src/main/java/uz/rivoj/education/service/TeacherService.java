@@ -48,4 +48,7 @@ public class TeacherService {
         teacherInfoRepository.save(teacher);
         return "successfully added";
     }
+
+    ///dwldwdwdwlkdlwldl wdpqwo0e
+    //ewqeq
 }
