@@ -1,22 +1,23 @@
 package uz.rivoj.education.dto.request;
 
-
 import lombok.*;
+import uz.rivoj.education.entity.SubjectEntity;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-@Builder
 @ToString
-public class TeacherInfoRequest {
+@Builder
+public class StudentCreateRequest {
     private String name;
     private String surname;
     private String phoneNumber;
     private String password;
-    private UUID teacher;
+    private LocalDate birthday;
     private String subject;
-    private String about;
 }

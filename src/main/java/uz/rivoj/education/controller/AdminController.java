@@ -4,12 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import uz.rivoj.education.dto.request.StudentCreateRequest;
 import uz.rivoj.education.dto.request.TeacherInfoRequest;
 import uz.rivoj.education.dto.response.StudentResponse;
 import uz.rivoj.education.dto.response.LessonResponse;
 import uz.rivoj.education.entity.TeacherInfo;
 import uz.rivoj.education.service.LessonService;
 import uz.rivoj.education.service.StudentService;
+import uz.rivoj.education.service.TeacherService;
 import uz.rivoj.education.service.UserService;
 
 import java.util.List;
@@ -22,12 +24,12 @@ public class AdminController {
     private final StudentService studentService;
     private final LessonService lessonService;
     private final UserService userService;
+    private final TeacherService teacherService;
 
     @PostMapping("/create-teacher")
-    public ResponseEntity<TeacherInfo> createTeacher(@RequestBody TeacherInfoRequest teacherInfo){
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createTeacher(teacherInfo));
+    public ResponseEntity<String> createTeacher(@RequestBody TeacherInfoRequest teacherInfo){
+        return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.createTeacher(teacherInfo));
     }
-
 
 
     //    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
@@ -46,6 +48,11 @@ public class AdminController {
             @RequestParam(defaultValue = "10") int size,
             @PathVariable UUID moduleId){
         return lessonService.getLessonsByModule(page, size, moduleId);
+    }
+
+    @PostMapping("/add-student")
+    public ResponseEntity<String> addStudent(StudentCreateRequest studentCreateRequest){
+        return ResponseEntity.status(200).body(studentService.addStudent(studentCreateRequest));
     }
 
 }
