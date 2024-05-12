@@ -51,5 +51,10 @@ public class ProgressController {
     public EducationPageResponse getEducationPage(@PathVariable UUID studentId){
         return progressService.getEducationPage(studentId);
     }
+
+    @GetMapping("/test")
+    public String test(){
+        return "test";
+    }
 }
 
