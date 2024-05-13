@@ -13,7 +13,7 @@ import java.util.UUID;
 public class LessonUpdateDTO {
     private Integer number;
     private String title;
-    private String content;
+    private String source;
     private String cover;
     private UUID moduleId;
 }

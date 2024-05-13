@@ -17,5 +17,6 @@ public class TeacherInfo extends BaseEntity{
     private UserEntity teacher;
     @OneToOne
     private SubjectEntity subject;
+    private String avatar;
     private String about;
 }
