@@ -80,16 +80,7 @@ public class AttendanceService {
         } else {
             attendanceEntity.setStatus(CHECKED);
             attendanceEntity.setScore(score);
-
-            if (score >= 100) {
-                attendanceEntity.setCoin(attendanceEntity.getCoin() + 10);
-            } else if (score >= 90) {
-                attendanceEntity.setCoin(attendanceEntity.getCoin() + 9);
-            } else if (score >= 80) {
-                attendanceEntity.setCoin(attendanceEntity.getCoin() + 8);
-            } else {
-                attendanceEntity.setCoin(attendanceEntity.getCoin() + 7);
-            }
+            attendanceEntity.setCoin(attendanceEntity.getCoin() + ((score + 5) / 10));
         }
         attendanceRepository.save(attendanceEntity);
         return "Attendance successfully checked";
