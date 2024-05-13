@@ -72,8 +72,8 @@ public class LessonService {
             lesson.setNumber(updateDTO.getNumber());}
         if (updateDTO.getTitle() != null) {
             lesson.setTitle(updateDTO.getTitle());}
-        if (updateDTO.getContent() != null) {
-            lesson.setContent(updateDTO.getContent());}
+        if (updateDTO.getSource() != null) {
+            lesson.setSource(updateDTO.getSource());}
          lessonRepository.save(lesson);
         return "Successfully updated";
     }

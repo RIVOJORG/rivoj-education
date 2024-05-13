@@ -113,7 +113,14 @@ public class ProgressService {
                 .orElseThrow(
                         () -> new DataNotFoundException("teacher info not found")
                 );
-        TeacherResponse teacherResponse = new TeacherResponse();
+
+        TeacherResponse teacherResponse = TeacherResponse.builder()
+                .name(teacherInfo.getTeacher().getName())
+                .surname(teacherInfo.getTeacher().getSurname())
+                .avatar(teacherInfo.getAvatar())
+                .subject(modelMapper.map(teacherInfo.getSubject(), SubjectResponse.class))
+                .about(teacherInfo.getAbout())
+                .build();
 
         List<CommentResponse> comments = commentRepository.findCommentEntitiesByLesson_Id(lessonId)
                 .stream().map(comment -> modelMapper.map(comment, CommentResponse.class))
