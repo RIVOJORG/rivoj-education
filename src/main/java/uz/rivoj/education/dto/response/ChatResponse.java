@@ -12,9 +12,9 @@ import java.util.UUID;
 @Builder
 @ToString
 public class ChatResponse {
-    private UUID chat_id;
-    private String student_avatar;
+    private UUID chatId;
+    private String studentAvatar;
     private String name;
     private String surname;
-    private String last_message;
+    private String lastMessage;
 }
