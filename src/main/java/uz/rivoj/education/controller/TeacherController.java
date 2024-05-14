@@ -43,13 +43,13 @@ public class TeacherController {
         return ResponseEntity.status(200).body(attendanceService.checkAttendance(checkAttendanceDTO));
     }
 
-    @GetMapping("/get-attendances-by-lesson")
+    @GetMapping("/get-attendances-by-lesson{lessonId}")
     public ResponseEntity<List<AttendanceResponse>> getAttendancesByLesson(@PathVariable UUID lessonId){
         return ResponseEntity.ok(attendanceService.getAttendancesByLesson(lessonId));
     }
 
 //    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
-    @GetMapping("/get-lessons-by-module") // for mentor and admin
+    @GetMapping("/get-lessons-by-module{moduleId}") // for mentor and admin
     public List<LessonResponse> getLessonsByModule(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -57,12 +57,12 @@ public class TeacherController {
         return lessonService.getLessonsByModule(page, size, moduleId);
     }
 
-    @GetMapping("/get-my-chats") // hammada bo'ladi bu API student, admin ham o'zini chatlarini olishi mumkun
+    @GetMapping("/get-my-chats{memberId}") // hammada bo'ladi bu API student, admin ham o'zini chatlarini olishi mumkun
     public List<ChatResponse> getMyChats(@PathVariable UUID memberId){
         return chatService.getMyChats(memberId);
     }
 
-    @GetMapping("/get-messages") // hammada bo'ladi bu API student, admin ham o'zini message larini olishi mumkun
+    @GetMapping("/get-messages{chatId}") // hammada bo'ladi bu API student, admin ham o'zini message larini olishi mumkun
     public List<MessageResponse> getMessages(@PathVariable UUID chatId){
         return messageService.getMessages(chatId);
     }

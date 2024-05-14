@@ -42,7 +42,7 @@ public class AdminController {
 
 
     //    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
-    @GetMapping("/get-lessons-by-module") // for mentor and admin
+    @GetMapping("/get-lessons-by-module{moduleId}") // for mentor and admin
     public List<LessonResponse> getLessonsByModule(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
