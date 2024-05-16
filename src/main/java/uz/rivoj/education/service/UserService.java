@@ -5,20 +5,15 @@ import org.modelmapper.ModelMapper;
 //import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.LoginRequest;
-import uz.rivoj.education.dto.request.TeacherInfoRequest;
 import uz.rivoj.education.dto.request.UserCreateRequest;
-import uz.rivoj.education.dto.response.DiscountResponse;
-import uz.rivoj.education.dto.response.HomePageResponse;
-import uz.rivoj.education.dto.response.SubjectResponse;
 import uz.rivoj.education.dto.response.UserResponse;
 import uz.rivoj.education.entity.*;
-import uz.rivoj.education.entity.enums.AttendanceStatus;
+import uz.rivoj.education.entity.enums.UserStatus;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.exception.WrongPasswordException;
 import uz.rivoj.education.repository.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -65,4 +60,25 @@ public class UserService {
         return modelMapper.map(userEntity, UserResponse.class);
     }
 
+    public UserEntity getUserByPhoneNumber(String phoneNumber){
+        Optional<UserEntity> userOptional = userRepository.findByPhoneNumber(phoneNumber);
+        if (userOptional.isEmpty()) {
+            throw new DataNotFoundException("User not found with this phone number: " + phoneNumber);
+        }
+        return userOptional.get();
+    }
+
+    public String changePhoneNumber(String oldPhoneNumber, String newPhoneNumber) {
+        UserEntity user = getUserByPhoneNumber(oldPhoneNumber);
+        user.setPhoneNumber(newPhoneNumber);
+        userRepository.save(user);
+        return "Phone number successfully updated for user: " + user.getName();
+    }
+
+    public String blockUnblockUser(String phoneNumber, UserStatus status) {
+        UserEntity user = getUserByPhoneNumber(phoneNumber);
+        user.setUserStatus(status);
+        userRepository.save(user);
+        return "Successfully " + status.toString() + "E";
+    }
 }

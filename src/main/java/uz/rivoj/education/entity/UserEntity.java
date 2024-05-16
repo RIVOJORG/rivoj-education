@@ -3,6 +3,8 @@ package uz.rivoj.education.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import uz.rivoj.education.entity.enums.UserStatus;
+import uz.rivoj.education.service.UserService;
 //import org.springframework.security.core.GrantedAuthority;
 //import org.springframework.security.core.authority.SimpleGrantedAuthority;
 //import org.springframework.security.core.userdetails.UserDetails;
@@ -24,6 +26,8 @@ public class UserEntity extends BaseEntity {
     private String password;
     @Enumerated(EnumType.STRING)
     private UserRole role;
+    @Enumerated(EnumType.STRING)
+    private UserStatus userStatus;
 
 //    @Override
 //    public Collection<? extends GrantedAuthority> getAuthorities() {

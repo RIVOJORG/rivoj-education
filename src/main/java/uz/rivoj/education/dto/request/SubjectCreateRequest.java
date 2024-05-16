@@ -12,6 +12,7 @@ import java.util.UUID;
 @ToString
 public class SubjectCreateRequest {
     private String title;
+    private Integer moduleCount;
 
 
 }
