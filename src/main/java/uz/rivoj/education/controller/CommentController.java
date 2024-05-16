@@ -23,7 +23,7 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.create(createRequest));
     }
 
-    @DeleteMapping("/delete-comment{commentId}")
+    @DeleteMapping("/delete-comment{commentId}") // for admin
     public ResponseEntity<String> deleteComment(@PathVariable UUID commentId){
         return ResponseEntity.status(200).body(commentService.delete(commentId));
     }

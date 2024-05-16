@@ -25,5 +25,6 @@ public class AttendanceEntity extends BaseEntity {
     private Integer score;
     private String feedBack;
     private Integer coin;
+    @Enumerated(EnumType.STRING)
     private AttendanceStatus status;
 }

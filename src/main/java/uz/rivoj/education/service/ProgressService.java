@@ -3,6 +3,7 @@ package uz.rivoj.education.service;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +33,7 @@ public class ProgressService {
     private final TeacherInfoRepository teacherInfoRepository;
     private final LessonRepository lessonRepository;
     private final ModuleRepository moduleRepository;
+    private final UserService userService;
 
     public HomePageResponse getProgressByPhoneNumber(String phoneNumber) {
 
@@ -178,4 +181,40 @@ public class ProgressService {
         }
         return count;
     }
+
+    public GetStudentFullInfoResponse getStudentFullInfoResponse(String phoneNumber) {
+        UserEntity user = userService.getUserByPhoneNumber(phoneNumber);
+        Optional<StudentInfo> studentInfoOptional = studentInfoRepository.findStudentInfoByStudentId(user.getId());
+        StudentInfo studentInfo = studentInfoOptional.get();
+
+        GetStudentFullInfoResponse student = GetStudentFullInfoResponse.builder()
+
+                .avatar(studentInfo.getAvatar())
+                .birthday(studentInfo.getBirthday())
+                .coin(studentInfo.getCoin())
+                .currentLesson(studentInfo.getLesson().getNumber())
+                .currentModule(studentInfo.getCurrentModule().getNumber())
+                .isLessonOver(false)
+                .name(user.getName())
+                .surname(user.getSurname())
+                .password(user.getPassword())
+                .phoneNumber(user.getPhoneNumber())
+                .score(studentInfo.getTotalScore())
+                .subject(studentInfo.getSubject().getTitle())
+                .build();
+        student.setDiscountList(modelMapper.map(discountRepository.findDiscountEntitiesByStudentId(user.getId()), new TypeToken<List<DiscountResponse>>(){}.getType()));
+
+        List<SpecialAttendanceResponse> attendanceResponseList = new ArrayList<>();
+        for (AttendanceEntity attendanceEntity : attendanceRepository.findAllByStudentId(studentInfo.getId())) {
+            SpecialAttendanceResponse attendanceResponse = SpecialAttendanceResponse.builder()
+                    .moduleNumber(attendanceEntity.getStudent().getCurrentModule().getNumber())
+                    .lessonNumber(attendanceEntity.getLessonEntity().getNumber())
+                    .score(attendanceEntity.getScore())
+                    .build();
+            attendanceResponseList.add(attendanceResponse);
+        }
+        student.setAttendanceList(attendanceResponseList);
+        return student;
+    }
+
 }
