@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+# container name, chosen by me
+  app:
+    build: ./
+    ports:
+      - "8080:8080"
+    environment:
+      DB_IP: db
+      DB_NAME: postgres
+      DB_PASSWORD: 1234
+    depends_on:
+      - db
+  db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: 1234
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+volumes:
+  pg_data:
+
+
+
+
+
