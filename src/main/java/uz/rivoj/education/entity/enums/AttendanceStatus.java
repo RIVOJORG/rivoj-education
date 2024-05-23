@@ -1,5 +1,7 @@
 package uz.rivoj.education.entity.enums;
 
 public enum AttendanceStatus {
-    CHECKED, UNCHECKED, NOT_ENOUGH
+    CHECKED,
+    UNCHECKED,
+    NOT_ENOUGH
 }
