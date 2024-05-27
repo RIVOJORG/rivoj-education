@@ -1,27 +1,25 @@
 version: "3.8"
 
 services:
-# container name, chosen by me
   app:
     build: ./
     ports:
       - "8080:8080"
     environment:
       DB_IP: db
-      DB_NAME: rivoj_storage
+      DB_NAME: postgres
       DB_PASSWORD: 1
     depends_on:
       - db
   db:
     image: postgres
+    ports:
+      - "5433:5432"
     environment:
       POSTGRES_PASSWORD: 1
+      POSTGRES_USERNAME: postgres
+      POSTGRES_DB: rivoj_storage
     volumes:
       - pg_data:/var/lib/postgresql/data
 volumes:
   pg_data:
-
-
-
-
-
