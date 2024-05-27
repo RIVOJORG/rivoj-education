@@ -2,7 +2,8 @@ version: "3.8"
 
 services:
   app:
-    build: src/main/java
+    build:
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     environment:
