@@ -19,7 +19,7 @@ services:
     environment:
       POSTGRES_PASSWORD: 1
       POSTGRES_USERNAME: postgres
-      POSTGRES_DB: rivojStorage
+      POSTGRES_DB: rivojstorage
     volumes:
       - pg_data:/var/lib/postgresql/data
 volumes:
