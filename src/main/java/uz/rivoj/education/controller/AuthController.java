@@ -26,10 +26,5 @@ public class AuthController {
     }
     // bu method bo'lmasligi kerak menimcha Nodirbek. Bizda SignUp yoq'ku. Admin controllerda yozib qoydim addStudentni
 
-    @PostMapping("/sign-in")
-    public UserResponse signIn(
-            @RequestBody LoginRequest login
-    ) {
-        return userService.login(login);
-    }
+
 }

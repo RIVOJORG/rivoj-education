@@ -16,10 +16,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MessageController {
     private final MessageService messageService;
-    @PostMapping("/send-message")
-    public ResponseEntity<String> sendMessage(MessageCreateRequest messageCreateRequest){
-        return ResponseEntity.ok(messageService.sendMessage(messageCreateRequest));
-    }
+
 
     @DeleteMapping("/delete-message")
     public ResponseEntity<String > deleteMessage(UUID messageId){
@@ -36,9 +33,6 @@ public class MessageController {
         return messageService.getAll();
     }
 
-    @GetMapping("/get-message-by-chatId")
-    private List<MessageResponse> getMessagesByChatId(UUID chatId){
-        return messageService.getMessagesByChatId(chatId);
-    }
+
 
 }
