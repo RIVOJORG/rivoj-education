@@ -30,7 +30,7 @@ public class TeacherController {
     private final CommentService commentService;
     private final ModuleService moduleService;
 
-    //   @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
+    //  @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     @GetMapping("/get-all-student")
     public ResponseEntity<List<StudentResponse>> getAllStudent(
             @RequestParam(defaultValue = "0") int page,
