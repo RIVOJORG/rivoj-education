@@ -24,21 +24,21 @@ public class UserService {
     private final ModelMapper modelMapper;
 //    private final PasswordEncoder passwordEncoder;
 
-    public UserResponse add(UserCreateRequest userDto) {
-        UserEntity userEntity = modelMapper.map(userDto, UserEntity.class);
-        userEntity.setRole(UserRole.STUDENT);
+    public UserResponse add(UserCreateRequest userDto, UserRole userRole) {
+        UserEntity user = userRepository.findByPhoneNumber(userDto.getPhoneNumber()).orElseThrow(
+                () -> new DataNotFoundException("User not found"));
+        user.setPassword(userDto.getPassword());
+        user.setPhoneNumber(userDto.getPhoneNumber());
+        user.setName(userDto.getName());
+        user.setRole(userRole);
 //        userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
-        return modelMapper.map(userRepository.save(userEntity), UserResponse.class);
+        return modelMapper.map(userRepository.save(user), UserResponse.class);
     }
 
     public UserResponse login(LoginRequest login) {
         UserEntity userEntity = userRepository.findUserEntityByPhoneNumber(login.getPhoneNumber())
                 .orElseThrow(
-                        () -> new DataNotFoundException("user not found")
-                );
-
-        System.out.println("login.getPassword() = " + login.getPassword());
-        System.out.println("userEntity.getPassword() = " + userEntity.getPassword());
+                        () -> new DataNotFoundException("user not found"));
         if(Objects.equals(login.getPassword(), userEntity.getPassword())) {
             return modelMapper.map(userEntity, UserResponse.class);
         }
@@ -79,6 +79,14 @@ public class UserService {
         UserEntity user = getUserByPhoneNumber(phoneNumber);
         user.setUserStatus(status);
         userRepository.save(user);
-        return "Successfully " + status.toString() + "E";
+        return "Successfully " + status.toString() + "ED";
+    }
+
+    public String updateUser(String userPhoneNumber, UserRole userRole) {
+        UserEntity user = userRepository.findByPhoneNumber(userPhoneNumber).orElseThrow(
+                () -> new DataNotFoundException("User not found"));
+        user.setRole(userRole);
+        userRepository.save(user);
+        return "Successfully updated";
     }
 }

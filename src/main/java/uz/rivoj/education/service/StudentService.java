@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.StudentCreateRequest;
 import uz.rivoj.education.dto.response.StudentResponse;
 import uz.rivoj.education.entity.*;
+import uz.rivoj.education.entity.enums.UserStatus;
 import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.*;
@@ -45,6 +46,7 @@ public class StudentService {
                 .password(studentCreateRequest.getPassword())
                 .phoneNumber(studentCreateRequest.getPhoneNumber())
                 .role(UserRole.STUDENT)
+                .userStatus(UserStatus.UNBLOCK)
                 .surname(studentCreateRequest.getSurname())
                 .build();
         userRepository.save(userEntity);

@@ -47,7 +47,9 @@ public class ModuleService {
     public List<ModuleResponse> getAll() {
         List<ModuleResponse> list = new ArrayList<>();
         for (ModuleEntity module : moduleRepository.findAll()) {
-            list.add(modelMapper.map(module, ModuleResponse.class));
+            ModuleResponse moduleResponse = modelMapper.map(module, ModuleResponse.class);
+            moduleResponse.setSubjectId(module.getSubject().getId());
+            list.add(moduleResponse);
         }
         return list;
     }

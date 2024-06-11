@@ -1,5 +1,6 @@
 package uz.rivoj.education.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,10 +33,23 @@ public class AdminController {
     private final NotificationService notificationService;
     private final SubjectService subjectService;
 
+    @PostMapping("/add-user") // for Admin
+    public UserResponse addUser(
+            @Valid
+            @RequestBody UserCreateRequest userDto,
+            @RequestParam UserRole userRole) {
+        return userService.add(userDto, userRole);
+    }
+
     // TEACHER
     @PostMapping("/create-teacher")
     public ResponseEntity<String> createTeacher(@RequestBody TeacherInfoRequest teacherInfo){
         return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.createTeacher(teacherInfo));
+    }
+
+    @PutMapping("/update-role{userPhoneNumber}")
+    public ResponseEntity<String> updateRole(@PathVariable String userPhoneNumber, @RequestParam UserRole userRole){
+        return ResponseEntity.status(200).body(userService.updateUser(userPhoneNumber, userRole));
     }
 
     // STUDENT
@@ -57,7 +71,6 @@ public class AdminController {
     @GetMapping("/get-student-full-info{phoneNumber}")
     public ResponseEntity<GetStudentFullInfoResponse> getStudentFullInfoResponse(@PathVariable String phoneNumber){
         return ResponseEntity.status(200).body(progressService.getStudentFullInfoResponse(phoneNumber));
-
     }
     @PutMapping("/change-phoneNumber/{oldPhoneNumber}/{newPhoneNumber}")
     public ResponseEntity<String> changePhoneNumber(
@@ -92,18 +105,10 @@ public class AdminController {
     }
 
     // CHAT
-    @GetMapping("/get-my-chats{memberId}") // hammada bo'ladi bu API student, admin ham o'zini chatlarini olishi mumkun
-    public List<ChatResponse> getMyChats(@PathVariable UUID memberId){
-        return chatService.getMyChats(memberId);
-    }
+
     @DeleteMapping("/delete-chat")
     public ResponseEntity<String> deleteChat(UUID chatId){
         return ResponseEntity.ok(chatService.deleteChat(chatId));
-    }
-
-    @GetMapping("get-chat/{id}")
-    public ChatEntity getChatById(@PathVariable UUID id) {
-        return chatService.getChat(id);
     }
 
     // COMMENT
@@ -161,20 +166,13 @@ public class AdminController {
     }
 
     // MESSAGE
-    @GetMapping("/get-messages{chatId}") // hammada bo'ladi bu API student, admin ham o'zini message larini olishi mumkun
-    public List<MessageResponse> getMessages(@PathVariable UUID chatId){
-        return messageService.getMessages(chatId);
-    }
+
 
     @PostMapping("/send-message")
     public ResponseEntity<String> sendMessage(MessageCreateRequest messageCreateRequest){
         return ResponseEntity.ok(messageService.sendMessage(messageCreateRequest));
     }
 
-    @GetMapping("/get-message-by-chatId")
-    private List<MessageResponse> getMessagesByChatId(UUID chatId){
-        return messageService.getMessagesByChatId(chatId);
-    }
 
     // MODULE
 
@@ -205,7 +203,7 @@ public class AdminController {
     }
 
     @GetMapping("/get-all-notification")
-    public List<NotificationEntity> getAllNotification(){
+    public List<NotificationResponse> getAllNotification(){
         return notificationService.getAll();
     }
 
@@ -217,11 +215,6 @@ public class AdminController {
     @DeleteMapping("delete-notification{id}")
     public ResponseEntity<String> delete(@PathVariable UUID id){
         return ResponseEntity.status(200).body(notificationService.delete(id));
-    }
-
-    @GetMapping("/get-notifications-by-student{studentId}")
-    public ResponseEntity<List<NotificationResponse>> getMyNotifications(@PathVariable UUID studentId){
-        return ResponseEntity.status(200).body(notificationService.getMyNotifications(studentId));
     }
 
     // SUBJECT
@@ -252,7 +245,7 @@ public class AdminController {
         return ResponseEntity.status(200).body(userService.blockUnblockUser(phoneNumber, status));
     }
 
-    @GetMapping("/get-all")
+    @GetMapping("/get-all-users")
     public List<UserResponse> getAll(){
         return userService.getAll();
     }
@@ -262,9 +255,5 @@ public class AdminController {
         return userService.getUser(id);
     }
 
-    @PostMapping("/sign-in")
-    public UserResponse signIn(
-            @RequestBody LoginRequest login) {
-        return userService.login(login);
-    }
+
 }

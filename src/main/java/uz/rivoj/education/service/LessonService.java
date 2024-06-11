@@ -18,6 +18,7 @@ import uz.rivoj.education.repository.LessonRepository;
 import uz.rivoj.education.repository.ModuleRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -29,19 +30,24 @@ public class LessonService {
     public LessonResponse create(LessonCreateRequest createRequest) {
         ModuleEntity moduleEntity = moduleRepository.findById(createRequest.getModuleId())
                 .orElseThrow(() -> new EntityNotFoundException("Module not found with this id " + createRequest.getModuleId()));
-        if (lessonRepository.existsByNumber(createRequest.getNumber())){
-            throw new DataAlreadyExistsException("Lesson already exists with number : " + createRequest.getNumber());
+
+        if (lessonRepository.existsByModuleAndNumber(moduleEntity, createRequest.getNumber())) {
+            throw new DataAlreadyExistsException("Lesson already exists with number : " + createRequest.getNumber() + " in module id : " + createRequest.getModuleId());
         }
-        if (lessonRepository.existsByTitle(createRequest.getTitle())){
-            throw new DataAlreadyExistsException("Lesson already exists with title : " + createRequest.getTitle());
+
+        if (lessonRepository.existsByModuleAndTitle(moduleEntity, createRequest.getTitle())) {
+            throw new DataAlreadyExistsException("Lesson already exists with title : " + createRequest.getTitle() + " in module id : " + createRequest.getModuleId());
         }
+
         LessonEntity lesson = modelMapper.map(createRequest, LessonEntity.class);
         lesson.setModule(moduleEntity);
         lessonRepository.save(lesson);
-        LessonResponse lessonResponse = modelMapper.map(createRequest, LessonResponse.class);
+
+        LessonResponse lessonResponse = modelMapper.map(lesson, LessonResponse.class);
         lessonResponse.setId(lesson.getId());
         return lessonResponse;
     }
+
 
     public String delete(UUID lessonId){
         LessonEntity lesson = getLesson(lessonId);
@@ -55,7 +61,11 @@ public class LessonService {
     public List<LessonResponse> getAll() {
         List<LessonResponse> list = new ArrayList<>();
         for (LessonEntity lesson : lessonRepository.findAll()) {
-            list.add(modelMapper.map(lesson, LessonResponse.class));
+            Optional<ModuleEntity> module = moduleRepository.findById(lesson.getModule().getId());
+            LessonResponse response = modelMapper.map(lesson, LessonResponse.class);
+            response.setModuleId(module.get().getId());
+            response.setNumber(lesson.getNumber());
+            list.add(response);
         }
         return list;
     }
