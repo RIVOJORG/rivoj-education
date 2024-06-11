@@ -26,14 +26,8 @@ public class TeacherService {
     private final ModelMapper modelMapper;
 
     public String createTeacher(TeacherInfoRequest teacherInfo) {
-        UserEntity userEntity = UserEntity.builder()
-                .name(teacherInfo.getName())
-                .surname(teacherInfo.getSurname())
-                .password(teacherInfo.getPassword())
-                .phoneNumber(teacherInfo.getPhoneNumber())
-                .role(UserRole.TEACHER)
-                .build();
-        userRepository.save(userEntity);
+        UserEntity userEntity = userRepository.findById(teacherInfo.getUserId()).orElseThrow(
+                () -> new DataNotFoundException("User not found"));
 
         if (!subjectRepository.existsByTitle(teacherInfo.getSubject())){
             throw new DataNotFoundException("Subject not found with this title: " + teacherInfo.getSubject());}

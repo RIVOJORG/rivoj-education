@@ -11,7 +11,7 @@ import java.util.UUID;
 @ToString
 @Builder
 public class NotificationRequest {
-    private UUID studentId;
+    private UUID userId;
     private String title;
     private String description;
 }

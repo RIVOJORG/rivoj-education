@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import uz.rivoj.education.entity.ModuleEntity;
 import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.dto.request.SubjectCreateRequest;
 import uz.rivoj.education.dto.response.SubjectResponse;
 import uz.rivoj.education.entity.SubjectEntity;
 import uz.rivoj.education.exception.DataNotFoundException;
+import uz.rivoj.education.repository.ModuleRepository;
 import uz.rivoj.education.repository.SubjectRepository;
 
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SubjectService {
     private final SubjectRepository subjectRepository;
+    private final ModuleRepository moduleRepository;
     private final ModelMapper modelMapper;
 
 
@@ -26,6 +29,10 @@ public class SubjectService {
         if (subjectRepository.existsByTitle(createRequest.getTitle())){
             throw new DataAlreadyExistsException("Subject already exists with: " + createRequest.getTitle());}
         SubjectEntity subjectEntity = modelMapper.map(createRequest, SubjectEntity.class);
+        ModuleEntity moduleEntity = new ModuleEntity();
+        moduleEntity.setSubject(subjectEntity);
+        moduleEntity.setNumber(createRequest.getModuleCount());
+        moduleRepository.save(moduleEntity);
         subjectRepository.save(subjectEntity);
         return modelMapper.map(createRequest, SubjectResponse.class);
     }

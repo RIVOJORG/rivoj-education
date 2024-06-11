@@ -52,9 +52,5 @@ public class ProgressController {
         return progressService.getEducationPage(studentId);
     }
 
-    @GetMapping("/test")
-    public String test(){
-        return "test";
-    }
 }
 

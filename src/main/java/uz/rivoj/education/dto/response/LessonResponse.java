@@ -12,10 +12,10 @@ import java.util.UUID;
 @ToString
 public class LessonResponse {
     private UUID id;
-    private Integer lessonNumber;
+    private Integer number;
     private String title;
     private String source;
     private String cover; // content abloshkasi
-    private Integer moduleNumber; // id edi numberga o'zagartirildi
+    private UUID moduleId;
     private String description;
 }

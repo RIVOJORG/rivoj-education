@@ -40,7 +40,7 @@ public class TeacherController {
 
 
     // ATTENDANCE
-    @DeleteMapping("/delete{id}")
+    @DeleteMapping("/delete-attendance{id}")
     public ResponseEntity<String> deleteAttendance(@PathVariable UUID id){
         return ResponseEntity.status(200).body(attendanceService.delete(id));
     }
@@ -58,50 +58,21 @@ public class TeacherController {
         return ResponseEntity.status(200).body(attendanceService.checkAttendance(checkAttendanceDTO));
     }
 
-    @GetMapping("/get-all{userId}")
+    @GetMapping("/get-all-attendance{userId}")
     public ResponseEntity<List<AttendanceResponse>> getAllUserAttendance(@PathVariable UUID userId){
         return ResponseEntity.ok(attendanceService.getAllUserAttendance(userId));
     }
-    @GetMapping("/get/{id}")
+    @GetMapping("/get-attendance/{id}")
     public ResponseEntity<AttendanceResponse> getAttendanceById(@PathVariable UUID id) {
         return ResponseEntity.ok(attendanceService.getAttendance(id));
-    }
-
-    @GetMapping("/get-attendances-by-lesson{lessonId}")
-    public ResponseEntity<List<AttendanceResponse>> getAttendancesByLesson(@PathVariable UUID lessonId){
-        return ResponseEntity.ok(attendanceService.getAttendancesByLesson(lessonId));
     }
 
 
     // CHAT
 
-    @GetMapping("/get-my-chats{memberId}") // hammada bo'ladi bu API student, admin ham o'zini chatlarini olishi mumkun
-    public List<ChatResponse> getMyChats(@PathVariable UUID memberId){
-        return chatService.getMyChats(memberId);
-    }
-    @PostMapping("/create_chat")
-    public ResponseEntity<UUID> createChat(Principal user, UUID user2){ // start chat
-        return ResponseEntity.ok(chatService.createChat(UUID.fromString(user.getName()),user2));
-    }
-    @DeleteMapping("/delete_chat")
-    public ResponseEntity<String> deleteChat(UUID chatId){
-        return ResponseEntity.ok(chatService.deleteChat(chatId));
-    }
-
-    @GetMapping("/get-all")
-    public List<ChatResponse> getAll(){
-        return chatService.getAll();
-    }
-
     @GetMapping("get-chat/{id}")
     public ChatEntity getChatById(@PathVariable UUID id) {
         return chatService.getChat(id);
-    }
-
-    // COMMENT
-    @PostMapping("/create-comment")
-    public ResponseEntity<CommentResponse> createComment(@RequestBody CommentCreateRequest createRequest){
-        return ResponseEntity.status(HttpStatus.CREATED).body(commentService.create(createRequest));
     }
 
     // LESSON
@@ -116,21 +87,6 @@ public class TeacherController {
     @GetMapping("get-lesson/{id}")
     public LessonEntity getLessonById(@PathVariable UUID id) {
         return lessonService.getLesson(id);
-    }
-
-    // MESSAGE
-    @GetMapping("/get-messages{chatId}") // hammada bo'ladi bu API student, admin ham o'zini message larini olishi mumkun
-    public List<MessageResponse> getMessages(@PathVariable UUID chatId){
-        return messageService.getMessages(chatId);
-    }
-    @PostMapping("/send-message")
-    public ResponseEntity<String> sendMessage(MessageCreateRequest messageCreateRequest){
-        return ResponseEntity.ok(messageService.sendMessage(messageCreateRequest));
-    }
-
-    @GetMapping("/get-message-by-chatId")
-    private List<MessageResponse> getMessagesByChatId(UUID chatId){
-        return messageService.getMessagesByChatId(chatId);
     }
 
     // MODULE

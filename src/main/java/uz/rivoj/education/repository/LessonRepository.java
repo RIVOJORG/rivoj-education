@@ -14,6 +14,8 @@ public interface LessonRepository extends JpaRepository<LessonEntity, UUID> {
     boolean existsByNumber(Integer number);
 
     boolean existsByTitle(String title);
+    boolean existsByModuleAndNumber(ModuleEntity module, Integer number);
+    boolean existsByModuleAndTitle(ModuleEntity module, String title);
 
     Page<LessonEntity> findLessonsByModule(Pageable pageable, ModuleEntity moduleEntity);
 
