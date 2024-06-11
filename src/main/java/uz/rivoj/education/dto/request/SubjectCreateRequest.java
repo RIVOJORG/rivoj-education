@@ -11,8 +11,7 @@ import java.util.UUID;
 @Builder
 @ToString
 public class SubjectCreateRequest {
-    private String name; // subject
-    private String table_of_contents;
+    private String title;
     private Integer moduleCount;
 
 
