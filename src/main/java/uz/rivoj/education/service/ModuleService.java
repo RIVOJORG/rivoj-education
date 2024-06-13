@@ -58,4 +58,12 @@ public class ModuleService {
         return moduleRepository.findFirstBySubjectOrderByNumberAsc(subject);
     }
 
+    public ModuleResponse findByModuleId(UUID moduleId) {
+        ModuleEntity moduleEntity = moduleRepository.findById(moduleId)
+                .orElseThrow(() -> new DataNotFoundException("Module not found with this id: " + moduleId));
+        return ModuleResponse.builder()
+                .number(moduleEntity.getNumber())
+                .subjectId(moduleEntity.getSubject().getId())
+                .build();
+    }
 }

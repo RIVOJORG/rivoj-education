@@ -14,9 +14,10 @@ import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.AttendanceStatus;
 import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.exception.DataNotFoundException;
-import uz.rivoj.education.repository.AttendanceRepository;
-import uz.rivoj.education.repository.LessonRepository;
-import uz.rivoj.education.repository.UserRepository;
+import uz.rivoj.education.repository.*;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,6 +28,8 @@ import static uz.rivoj.education.entity.enums.AttendanceStatus.*;
 public class AttendanceService {
     private final AttendanceRepository attendanceRepository;
     private final UserRepository userRepository;
+    private final StudentInfoRepository studentRepository;
+    private final TeacherInfoRepository teacherInfoRepository;
     private final ModelMapper modelMapper;
     private final LessonRepository lessonRepository;
 
@@ -34,6 +37,23 @@ public class AttendanceService {
         AttendanceEntity attendance = attendanceRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Attendance not found!"));
         return modelMapper.map(attendance, AttendanceResponse.class);
+    }
+
+    public AttendanceResponse findByAttendanceId(UUID attendanceId) {
+        AttendanceEntity attendanceEntity = attendanceRepository.findById(attendanceId)
+                .orElseThrow(() -> new DataNotFoundException("Attendance not found with this id: " + attendanceId));
+
+        return AttendanceResponse.builder()
+                .coin(attendanceEntity.getCoin())
+                .feedBack(attendanceEntity.getFeedBack())
+                .isCorrect(true)
+                .lessonId(attendanceEntity.getLessonEntity().getId())
+                .photo(attendanceEntity.getStudent().getAvatar())
+                .score(attendanceEntity.getScore())
+                .studentId(attendanceEntity.getStudent().getId())
+                .teacherId(attendanceEntity.getTeacher().getId())
+                .video(attendanceEntity.getLessonEntity().getCover())
+                .build();
     }
 
     public String delete(UUID id) {
@@ -47,8 +67,8 @@ public class AttendanceService {
         }.getType());
     }
     public AttendanceResponse create(AttendanceRequest attendance) {
-        userRepository.findById(attendance.getStudentId()).orElseThrow(() -> new DataNotFoundException("Student not found! " + attendance.getStudentId()));
-        userRepository.findById(attendance.getStudentId()).orElseThrow(() -> new DataNotFoundException("Teacher not found! " + attendance.getTeacherId()));
+        studentRepository.findById(attendance.getStudentId()).orElseThrow(() -> new DataNotFoundException("Student not found! " + attendance.getStudentId()));
+        teacherInfoRepository.findById(attendance.getStudentId()).orElseThrow(() -> new DataNotFoundException("Teacher not found! " + attendance.getTeacherId()));
         lessonRepository.findById(attendance.getLessonId()).orElseThrow(() -> new DataNotFoundException("Lesson not found! " + attendance.getLessonId()));
         AttendanceEntity attendanceEntity = modelMapper.map(attendance, AttendanceEntity.class);
         return modelMapper.map(attendanceEntity, AttendanceResponse.class);
@@ -62,9 +82,22 @@ public class AttendanceService {
 
     public List<AttendanceResponse> getAllAttendanceByStatus(int page, int size, AttendanceStatus status) {
         Pageable pageable = PageRequest.of(page, size);
-        List<AttendanceEntity> attendanceEntityList = attendanceRepository.findAllByStatus(pageable, status).getContent();
-        return modelMapper.map(attendanceEntityList, new TypeToken<List<AttendanceResponse>>() {
-        }.getType());
+        List<AttendanceResponse> attendanceResponseList = new ArrayList<>() ;
+        for (AttendanceEntity attendanceEntity : attendanceRepository.findAllByStatus(pageable, status).getContent()) {
+            AttendanceResponse attendanceResponse = AttendanceResponse.builder()
+                    .coin(attendanceEntity.getCoin())
+                    .feedBack(attendanceEntity.getFeedBack())
+                    .isCorrect(true)
+                    .lessonId(attendanceEntity.getLessonEntity().getId())
+                    .photo(attendanceEntity.getStudent().getAvatar())
+                    .score(attendanceEntity.getScore())
+                    .studentId(attendanceEntity.getStudent().getId())
+                    .teacherId(attendanceEntity.getTeacher().getId())
+                    .video(attendanceEntity.getLessonEntity().getCover())
+                    .build();
+            attendanceResponseList.add(attendanceResponse);
+        }
+        return attendanceResponseList;
     }
 
     public String checkAttendance(CheckAttendanceDTO checkAttendanceDTO) {
@@ -83,6 +116,8 @@ public class AttendanceService {
             attendanceEntity.setScore(score);
             attendanceEntity.setCoin(attendanceEntity.getCoin() + ((score + 5) / 10));
         }
+        attendanceEntity.setFeedBack(checkAttendanceDTO.getFeedBack());
+        attendanceEntity.setUpdatedDate(LocalDateTime.now());
         attendanceRepository.save(attendanceEntity);
         return "Attendance successfully checked";
     }

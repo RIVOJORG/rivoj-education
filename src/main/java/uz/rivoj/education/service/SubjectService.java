@@ -56,4 +56,11 @@ public class SubjectService {
         }
         return list;
     }
+
+    public String findBySubjectId(UUID subjectId) {
+        SubjectEntity subjectEntity = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> new DataNotFoundException("Subject not found with this id: " + subjectId));
+        return subjectEntity.getTitle();
+
+    }
 }

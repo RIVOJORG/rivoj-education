@@ -28,7 +28,7 @@ public class DiscountService {
                 () -> new DataNotFoundException("user not found")
         );
         DiscountEntity discountEntity = modelMapper.map(discountRequest, DiscountEntity.class);
-        discountEntity.setStudent(userEntity);
+//        discountEntity.setStudent(userEntity);
         return modelMapper.map(discountRepository.save(discountEntity), DiscountResponse.class);
     }
 

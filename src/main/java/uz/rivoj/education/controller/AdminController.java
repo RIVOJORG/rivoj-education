@@ -93,7 +93,7 @@ public class AdminController {
 
     @GetMapping("/get-attendance/{id}")
     public ResponseEntity<AttendanceResponse> getAttendanceById(@PathVariable UUID id) {
-        return ResponseEntity.ok(attendanceService.getAttendance(id));
+        return ResponseEntity.ok(attendanceService.findByAttendanceId(id));
     }
 
     @GetMapping("/get-attendance-by-status") // for mentor and admin
@@ -124,8 +124,8 @@ public class AdminController {
     }
 
     @GetMapping("get-comment/{id}")
-    public CommentEntity getCommentById(@PathVariable UUID id) {
-        return commentService.getComment(id);
+    public CommentResponse getCommentById(@PathVariable UUID id) {
+        return commentService.findByCommentId(id);
     }
 
     // LESSON
@@ -155,22 +155,14 @@ public class AdminController {
     }
 
     @GetMapping("get-lesson/{id}")
-    public LessonEntity getLessonById(@PathVariable UUID id) {
-        return lessonService.getLesson(id);
+    public LessonResponse getLessonById(@PathVariable UUID id) {
+        return lessonService.findByLessonId(id);
     }
 
     @PutMapping("/update-lesson{lessonId}")
     public ResponseEntity<String> updateLesson(@PathVariable UUID lessonId,
                                                @RequestBody LessonUpdateDTO updateDTO) {
         return ResponseEntity.status(200).body(lessonService.updateLesson(lessonId, updateDTO));
-    }
-
-    // MESSAGE
-
-
-    @PostMapping("/send-message")
-    public ResponseEntity<String> sendMessage(MessageCreateRequest messageCreateRequest){
-        return ResponseEntity.ok(messageService.sendMessage(messageCreateRequest));
     }
 
 
@@ -192,8 +184,8 @@ public class AdminController {
     }
 
     @GetMapping("get-module/{id}")
-    public ModuleEntity getModuleById(@PathVariable UUID id) {
-        return moduleService.getModule(id);
+    public ModuleResponse getModuleById(@PathVariable UUID id) {
+        return moduleService.findByModuleId(id);
     }
 
     // NOTIFICATION
@@ -235,8 +227,8 @@ public class AdminController {
     }
 
     @GetMapping("get-subject/{id}")
-    public SubjectEntity getSubjectById(@PathVariable UUID id) {
-        return subjectService.getSubject(id);
+    public String getSubjectById(@PathVariable UUID id) {
+        return subjectService.findBySubjectId(id);
     }
 
     // USER
