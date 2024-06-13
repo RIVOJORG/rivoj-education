@@ -58,6 +58,22 @@ public class LessonService {
         return lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new DataNotFoundException("Lesson not found with this id: " + lessonId));
     }
+
+
+
+    public LessonResponse findByLessonId(UUID lessonId){
+        LessonEntity lessonEntity = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new DataNotFoundException("Lesson not found with this id: " + lessonId));
+        return LessonResponse.builder()
+                .cover(lessonEntity.getCover())
+                .description(lessonEntity.getDescription())
+                .id(lessonEntity.getId())
+                .moduleId(lessonEntity.getModule().getId())
+                .number(lessonEntity.getNumber())
+                .source(lessonEntity.getSource())
+                .title(lessonEntity.getTitle())
+                .build();
+    }
     public List<LessonResponse> getAll() {
         List<LessonResponse> list = new ArrayList<>();
         for (LessonEntity lesson : lessonRepository.findAll()) {
@@ -92,7 +108,13 @@ public class LessonService {
         Pageable pageable = PageRequest.of(page, size);
         ModuleEntity moduleEntity = moduleRepository.findById(moduleId).orElseThrow(() -> new DataNotFoundException("Module not found with this id: " + moduleId));
         List<LessonEntity> lessonEntityList = lessonRepository.findLessonsByModule(pageable, moduleEntity).getContent();
-        return modelMapper.map(lessonEntityList, new TypeToken<List<LessonResponse>>(){}.getType());
+        List<LessonResponse> list = new ArrayList<>();
+        for (LessonEntity lessonEntity : lessonEntityList) {
+            LessonResponse response = modelMapper.map(lessonEntity, LessonResponse.class);
+            response.setModuleId(moduleId);
+            list.add(response);
+        }
+        return list;
     }
 
     public LessonEntity findFirstLessonOfNextModule(ModuleEntity module) {

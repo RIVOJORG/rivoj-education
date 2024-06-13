@@ -14,5 +14,8 @@ public class CommentEntity extends BaseEntity{
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "lesson_id", referencedColumnName = "id")
     private LessonEntity lesson;
+
+    @ManyToOne
+    private UserEntity owner;
     private String description;
 }

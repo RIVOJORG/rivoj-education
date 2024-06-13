@@ -11,5 +11,6 @@ import java.util.UUID;
 @ToString
 public class CheckAttendanceDTO {
     private UUID attendanceId;
+    private String feedBack;
     private Integer score;
 }

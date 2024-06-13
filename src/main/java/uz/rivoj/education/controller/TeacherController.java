@@ -1,20 +1,15 @@
 package uz.rivoj.education.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uz.rivoj.education.dto.request.CommentCreateRequest;
-import uz.rivoj.education.dto.request.MessageCreateRequest;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.dto.update.CheckAttendanceDTO;
 import uz.rivoj.education.entity.ChatEntity;
-import uz.rivoj.education.entity.LessonEntity;
 import uz.rivoj.education.entity.ModuleEntity;
 import uz.rivoj.education.entity.enums.AttendanceStatus;
 import uz.rivoj.education.service.*;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -64,7 +59,7 @@ public class TeacherController {
     }
     @GetMapping("/get-attendance/{id}")
     public ResponseEntity<AttendanceResponse> getAttendanceById(@PathVariable UUID id) {
-        return ResponseEntity.ok(attendanceService.getAttendance(id));
+        return ResponseEntity.ok(attendanceService.findByAttendanceId(id));
     }
 
 
@@ -85,15 +80,15 @@ public class TeacherController {
         return lessonService.getLessonsByModule(page, size, moduleId);
     }
     @GetMapping("get-lesson/{id}")
-    public LessonEntity getLessonById(@PathVariable UUID id) {
-        return lessonService.getLesson(id);
+    public LessonResponse getLessonById(@PathVariable UUID id) {
+        return lessonService.findByLessonId(id);
     }
 
     // MODULE
 
     @GetMapping("get-module/{id}")
-    public ModuleEntity getModuleById(@PathVariable UUID id) {
-        return moduleService.getModule(id);
+    public ModuleResponse getModuleById(@PathVariable UUID id) {
+        return moduleService.findByModuleId(id);
     }
 
 }

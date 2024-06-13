@@ -13,7 +13,7 @@ public class AttendanceResponse {
     private UUID teacherId;
     private String video;
     private String photo;
-    private String description;
+    private String feedBack;
     private Integer score;
     private Integer coin;
     private Boolean isCorrect;

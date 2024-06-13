@@ -13,7 +13,7 @@ import java.util.UUID;
 @ToString
 public class CommentResponse {
     private UUID commentId;
-    private UUID studentId;
+    private UUID ownerId;
     private UUID lessonId;
     private String name;
     private String surname;

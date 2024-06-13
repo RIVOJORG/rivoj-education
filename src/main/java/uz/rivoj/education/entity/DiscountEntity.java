@@ -12,7 +12,7 @@ import lombok.*;
 public class DiscountEntity extends BaseEntity {
     @OneToOne
     @JoinColumn(name = "student_id", referencedColumnName = "id")
-    private UserEntity student;
+    private StudentInfo student;
     private Double percentage; //foiz
     private Integer coin;
 }

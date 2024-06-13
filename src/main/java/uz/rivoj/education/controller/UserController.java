@@ -8,7 +8,6 @@ import uz.rivoj.education.dto.request.CommentCreateRequest;
 import uz.rivoj.education.dto.request.MessageCreateRequest;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.entity.ChatEntity;
-import uz.rivoj.education.entity.Message;
 import uz.rivoj.education.service.*;
 
 import java.security.Principal;
@@ -67,9 +66,9 @@ public class UserController {
         return ResponseEntity.ok(messageService.editMessage(messageId,text));
     }
 
-    @GetMapping("/get-all")
-    public List<Message> getAll(){
-        return messageService.getAll();
+    @GetMapping("/get-all-messages")
+    public List<MessageResponse> getAll(){
+        return messageService.getAllMessages();
     }
 
 

@@ -13,6 +13,7 @@ import uz.rivoj.education.repository.ChatRepository;
 import uz.rivoj.education.repository.MessageRepository;
 import uz.rivoj.education.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,8 +46,18 @@ public class MessageService {
         return messageRepository.save(message).getText();
     }
 
-    public List<Message> getAll(){
-        return messageRepository.findAll();
+    public List<MessageResponse> getAllMessages(){
+        List<Message> messageList = messageRepository.findAll();
+        List<MessageResponse> messageResponseList = new ArrayList<>();
+        for (Message message : messageList) {
+            MessageResponse messageResponse = new MessageResponse();
+            messageResponse.setChatId(message.getChat().getId());
+            messageResponse.setDate(message.getCreatedDate());
+            messageResponse.setSenderId(message.getSender().getId());
+            messageResponse.setText(message.getText());
+        messageResponseList.add(messageResponse);
+        }
+        return messageResponseList;
     }
     public List<MessageResponse> getMessagesByChatId(UUID chatId) {
         List<Message> byChatId = messageRepository.findByChatId(chatId);

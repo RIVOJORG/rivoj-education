@@ -6,10 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.rivoj.education.dto.request.AttendanceRequest;
 import uz.rivoj.education.dto.request.MessageCreateRequest;
-import uz.rivoj.education.dto.response.AttendanceResponse;
-import uz.rivoj.education.dto.response.ChatResponse;
-import uz.rivoj.education.dto.response.MessageResponse;
-import uz.rivoj.education.dto.response.NotificationResponse;
+import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.entity.ModuleEntity;
 import uz.rivoj.education.service.*;
 
@@ -36,15 +33,15 @@ public class StudentController {
 
     @GetMapping("/get/{id}")
     public ResponseEntity<AttendanceResponse> getAttendanceById(@PathVariable UUID id) {
-        return ResponseEntity.ok(attendanceService.getAttendance(id));
+        return ResponseEntity.ok(attendanceService.findByAttendanceId(id));
     }
 
 
 
     // MODULE
     @GetMapping("get-module/{id}")
-    public ModuleEntity getModuleById(@PathVariable UUID id) {
-        return moduleService.getModule(id);
+    public ModuleResponse getModuleById(@PathVariable UUID id) {
+        return moduleService.findByModuleId(id);
     }
 
 
