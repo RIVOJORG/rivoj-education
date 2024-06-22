@@ -15,7 +15,7 @@ import uz.rivoj.education.service.UserService;
 @RequiredArgsConstructor
 public class AuthController {
     private final UserService userService;
-
+    @CrossOrigin(origins = "http://84.54.70.22:5174")
     @PostMapping("/sign-in")
     public UserResponse signIn(
             @RequestBody LoginRequest login) {
