@@ -1,0 +1,23 @@
+{
+  "properties": [
+    {
+      "name": "spring.mvc.cors.mappings./**.allowed-methods",
+      "type": "java.lang.String",
+      "description": "Description for spring.mvc.cors.mappings./**.allowed-methods."
+    },
+    {
+      "name": "spring.mvc.cors.mappings./**.allowed-origins",
+      "type": "java.lang.String",
+      "description": "Description for spring.mvc.cors.mappings./**.allowed-origins."
+    },
+    {
+      "name": "spring.mvc.cors.mappings./**.allowed-headers",
+      "type": "java.lang.String",
+      "description": "Description for spring.mvc.cors.mappings./**.allowed-headers."
+    },
+    {
+      "name": "spring.mvc.cors.mappings./**.allow-credentials",
+      "type": "java.lang.String",
+      "description": "Description for spring.mvc.cors.mappings./**.allow-credentials."
+    }
+  ] }
