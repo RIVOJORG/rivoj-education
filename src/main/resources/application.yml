@@ -5,6 +5,7 @@ server:
     key-store-password: rivoj2024
     keyStoreType: PKCS12
     keyAlias: myapp
+
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -19,15 +20,15 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-  spring:
-    jpa:
-      hibernate:
-        ddl-auto: update
-        show-sql: true
-        open-in-view: true
-        properties:
-        hibernate:
-          format_sql: true
+  mvc:
+    cors:
+      mappings:
+        "/**":
+          allowed-origins: "*"
+          allowed-methods: "*"
+          allowed-headers: "*"
+          allow-credentials: true
+
 springdoc:
   api-docs:
     enabled: true
@@ -39,4 +40,3 @@ springdoc:
     operations-sorter: alpha
     disable-swagger-default-url: true
     doc-expansion: none
-
