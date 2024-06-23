@@ -4,6 +4,7 @@ package uz.rivoj.education.dto.response;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @ToString
 public class UserResponse {
+    private UUID id;
     private String name;
     private String surname;
     private String avatar;
