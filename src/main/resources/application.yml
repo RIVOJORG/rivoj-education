@@ -20,14 +20,14 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-  mvc:
-    cors:
-      mappings:
-        "/**":
-          allowed-origins: "*"
-          allowed-methods: "*"
-          allowed-headers: "*"
-          allow-credentials: true
+#  mvc:
+#    cors:
+#      mappings:
+#        "/**":
+#          allowed-origins: "*"
+#          allowed-methods: "*"
+#          allowed-headers: "*"
+#          allow-credentials: true
 
 springdoc:
   api-docs:
