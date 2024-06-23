@@ -5,7 +5,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.DiscountRequest;
 import uz.rivoj.education.dto.response.DiscountResponse;
-import uz.rivoj.education.dto.response.UserResponse;
 import uz.rivoj.education.entity.DiscountEntity;
 import uz.rivoj.education.entity.UserEntity;
 import uz.rivoj.education.exception.DataNotFoundException;

@@ -32,7 +32,9 @@ public class UserService {
         user.setName(userDto.getName());
         user.setRole(userRole);
 //        userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
-        return modelMapper.map(userRepository.save(user), UserResponse.class);
+        UserResponse userResponse = modelMapper.map(userRepository.save(user), UserResponse.class);
+        userResponse.setId(user.getId());
+        return userResponse;
     }
 
     public UserResponse login(LoginRequest login) {
@@ -40,7 +42,9 @@ public class UserService {
                 .orElseThrow(
                         () -> new DataNotFoundException("user not found"));
         if(Objects.equals(login.getPassword(), userEntity.getPassword())) {
-            return modelMapper.map(userEntity, UserResponse.class);
+            UserResponse userResponse = modelMapper.map(userEntity, UserResponse.class);
+            userResponse.setId(userEntity.getId());
+            return userResponse;
         }
         throw new WrongPasswordException("password didn't match");
     }
@@ -48,7 +52,9 @@ public class UserService {
     public List<UserResponse> getAll() {
         List<UserResponse> list = new ArrayList<>();
         for (UserEntity user : userRepository.findAll()) {
-            list.add(modelMapper.map(user, UserResponse.class));
+            UserResponse userResponse = modelMapper.map(user, UserResponse.class);
+            userResponse.setId(user.getId());
+            list.add(userResponse);
         }
         return list;
     }
@@ -57,7 +63,9 @@ public class UserService {
         UserEntity userEntity = userRepository.findById(id).orElseThrow(
                 () -> new DataNotFoundException("user not found")
         );
-        return modelMapper.map(userEntity, UserResponse.class);
+        UserResponse userResponse = modelMapper.map(userEntity, UserResponse.class);
+        userResponse.setId(userEntity.getId());
+        return userResponse;
     }
 
     public UserEntity getUserByPhoneNumber(String phoneNumber){
