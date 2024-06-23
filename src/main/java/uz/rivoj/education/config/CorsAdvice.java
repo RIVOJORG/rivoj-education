@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ControllerAdvice
 public class CorsAdvice {
 
-    @RequestMapping(value = "/**", method = RequestMethod.OPTIONS)
-    @ResponseBody
-    public ResponseEntity<Void> handle() {
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+//    @RequestMapping(value = "/**", method = RequestMethod.OPTIONS)
+//    @ResponseBody
+//    public ResponseEntity<Void> handle() {
+//        return new ResponseEntity<>(HttpStatus.OK);
+//    }
 }
