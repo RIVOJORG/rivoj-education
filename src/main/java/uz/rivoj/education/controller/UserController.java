@@ -25,7 +25,7 @@ public class UserController {
     private final AttendanceService attendanceService;
 
     // CHAT
-    @PostMapping("/create_chat")
+    @PostMapping("/start-chat")
     public ResponseEntity<UUID> createChat(Principal user, UUID user2){ // start chat
         return ResponseEntity.ok(chatService.createChat(UUID.fromString(user.getName()),user2));
     }
@@ -33,9 +33,9 @@ public class UserController {
     public List<ChatResponse> getMyChats(@PathVariable UUID memberId){
         return chatService.getMyChats(memberId);
     }
-    @GetMapping("/get-messages{chatId}") // hammada bo'ladi bu API student, admin ham o'zini message larini olishi mumkun
+    @GetMapping("/get-messages-by-chatId{chatId}") // hammada bo'ladi bu API student, admin ham o'zini message larini olishi mumkun
     public List<MessageResponse> getMessages(@PathVariable UUID chatId){
-        return messageService.getMessages(chatId);
+        return messageService.getMessagesByChatId(chatId);
     }
 
     @GetMapping("get-chat/{id}")
@@ -43,17 +43,10 @@ public class UserController {
         return chatService.getChat(id);
     }
 
-
-
     // MESSAGE
     @PostMapping("/send-message")
     public ResponseEntity<String> sendMessage(MessageCreateRequest messageCreateRequest){
         return ResponseEntity.ok(messageService.sendMessage(messageCreateRequest));
-    }
-
-    @GetMapping("/get-message-by-chatId")
-    private List<MessageResponse> getMessagesByChatId(UUID chatId){
-        return messageService.getMessagesByChatId(chatId);
     }
 
     @DeleteMapping("/delete-message")
