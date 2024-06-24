@@ -59,12 +59,8 @@ public class MessageService {
         }
         return messageResponseList;
     }
-    public List<MessageResponse> getMessagesByChatId(UUID chatId) {
-        List<Message> byChatId = messageRepository.findByChatId(chatId);
-        return modelMapper.map(byChatId, new TypeToken<List<MessageResponse>>(){}.getType());
-    }
 
-    public List<MessageResponse> getMessages(UUID chatId) {
+    public List<MessageResponse> getMessagesByChatId(UUID chatId) {
         ChatEntity chat = chatRepository.findById(chatId)
                 .orElseThrow(() -> new DataNotFoundException("Chat not found with this id: " + chatId));
 
