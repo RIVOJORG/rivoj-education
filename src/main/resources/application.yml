@@ -1,10 +1,5 @@
 server:
   port: 8080
-  ssl:
-    key-store: classpath:keystore.p12
-    key-store-password: rivoj2024
-    keyStoreType: PKCS12
-    keyAlias: myapp
 
 spring:
   datasource:
