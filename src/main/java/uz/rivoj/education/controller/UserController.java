@@ -87,6 +87,4 @@ public class UserController {
     public ResponseEntity<List<AttendanceResponse>> getAttendancesByLesson(@PathVariable UUID lessonId){
         return ResponseEntity.ok(attendanceService.getAttendancesByLesson(lessonId));
     }
-
-
 }
