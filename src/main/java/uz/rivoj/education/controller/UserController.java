@@ -23,8 +23,6 @@ public class UserController {
     private final NotificationService notificationService;
     private final CommentService commentService;
     private final AttendanceService attendanceService;
-
-    // CHAT
     @PostMapping("/create_chat")
     public ResponseEntity<UUID> createChat(Principal user, UUID user2){ // start chat
         return ResponseEntity.ok(chatService.createChat(UUID.fromString(user.getName()),user2));
