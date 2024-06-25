@@ -53,7 +53,7 @@ public class TeacherController {
         return ResponseEntity.status(200).body(attendanceService.checkAttendance(checkAttendanceDTO));
     }
 
-    @GetMapping("/get-all-attendance{userId}")
+    @GetMapping("/get-all-attendance-by-userId{userId}")
     public ResponseEntity<List<AttendanceResponse>> getAllUserAttendance(@PathVariable UUID userId){
         return ResponseEntity.ok(attendanceService.getAllUserAttendance(userId));
     }
