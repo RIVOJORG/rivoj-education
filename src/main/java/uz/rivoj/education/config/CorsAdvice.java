@@ -12,6 +12,7 @@ public class CorsAdvice {
 
 //    @RequestMapping(value = "/**", method = RequestMethod.OPTIONS)
 //    @ResponseBody
+
 //    public ResponseEntity<Void> handle() {
 //        return new ResponseEntity<>(HttpStatus.OK);
 //    }
