@@ -1,21 +1,23 @@
 server:
   port: 8080
-  ssl:
-    enabled: false
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
   datasource:
     driver-class-name: org.postgresql.Driver
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:1}
-    url: jdbc:postgresql://${DB_IP:localhost}:${DB_PORT:5432}/${DB_NAME:rivoj_storage}
+    url: jdbc:postgresql://${DB_IP:104.248.154.0}:${DB_PORT:5433}/${DB_NAME:postgres}
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: update
     show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 #  mvc:
 #    cors:
@@ -37,3 +39,11 @@ springdoc:
     operations-sorter: alpha
     disable-swagger-default-url: true
     doc-expansion: none
+do:
+  spaces:
+    key: DO008W9EHTX4EAW6U8KX
+    secret: IMkZlDKxR9Ku+/ytLZy8V2yuB+SZX8bO23xOYgqwHa0
+    endpoint2: https://rivojmediabucket.blr1.digitaloceanspaces.com
+    endpoint: https://blr1.digitaloceanspaces.com
+    region: blr1
+    bucket: rivojmediabucket
