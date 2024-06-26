@@ -22,6 +22,7 @@ public class UploadService {
     private final LessonRepository lessonRepository;
     private final String fileLink = "https://rivojmediabucket.blr1.digitaloceanspaces.com/";
     private final String absFilePath = "meta-data/";
+
     @Value("${do.spaces.bucket}")
     private String doSpaceBucket;
 
@@ -61,6 +62,9 @@ public class UploadService {
 
             s3Client.completeMultipartUpload(compRequest);
 
+            // Set the object to public
+            s3Client.setObjectAcl(doSpaceBucket, uniquePath, CannedAccessControlList.PublicRead);
+
             // Save file link to database
             LessonEntity lesson = lessonRepository.findById(lessonId).orElseThrow(
                     () -> new DataNotFoundException("Lesson not found with this id:" + lessonId)
@@ -75,5 +79,4 @@ public class UploadService {
             throw new IOException("Failed to upload file", e);
         }
     }
-
 }
