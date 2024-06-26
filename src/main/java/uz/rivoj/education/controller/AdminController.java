@@ -66,7 +66,7 @@ public class AdminController {
     @PutMapping(value = "/lessonVideoUpload",
             consumes = MULTIPART_FORM_DATA_VALUE,
             produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> uploadFile2(@RequestParam("file") final MultipartFile file,UUID lessonId) throws IOException {
+    public ResponseEntity<String> uploadFile(@RequestParam("file") final MultipartFile file,UUID lessonId) throws IOException {
         return ResponseEntity.ok(uploadService.uploadFile(file,lessonId));
     }
 
