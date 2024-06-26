@@ -1,17 +1,16 @@
 server:
   port: 8080
-#  ssl:
-#    key-store: classpath:keystore.p12
-#    key-store-password: rivoj2024
-#    keyStoreType: PKCS12
-#    keyAlias: myapp
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
   datasource:
     driver-class-name: org.postgresql.Driver
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:1}
-    url: jdbc:postgresql://${DB_IP:localhost}:${DB_PORT:5432}/${DB_NAME:rivoj_storage}
+    url: jdbc:postgresql://${DB_IP:104.248.154.0}:${DB_PORT:5433}/${DB_NAME:postgres}
   jpa:
     open-in-view: false
     hibernate:
@@ -20,6 +19,14 @@ spring:
     properties:
       hibernate:
         format_sql: true
+#  mvc:
+#    cors:
+#      mappings:
+#        "/**":
+#          allowed-origins: "http://84.54.70.22:5173"
+#          allowed-methods: "*"
+#          allowed-headers: "*"
+#          allow-credentials: true
 
 springdoc:
   api-docs:
@@ -32,7 +39,6 @@ springdoc:
     operations-sorter: alpha
     disable-swagger-default-url: true
     doc-expansion: none
-
 do:
   spaces:
     key: DO008W9EHTX4EAW6U8KX
