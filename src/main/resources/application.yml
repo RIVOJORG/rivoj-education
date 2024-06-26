@@ -1,7 +1,10 @@
 server:
   port: 8080
-  ssl:
-    enabled: false
+#  ssl:
+#    key-store: classpath:keystore.p12
+#    key-store-password: rivoj2024
+#    keyStoreType: PKCS12
+#    keyAlias: myapp
 
 spring:
   datasource:
@@ -10,21 +13,13 @@ spring:
     password: ${DB_PASSWORD:1}
     url: jdbc:postgresql://${DB_IP:localhost}:${DB_PORT:5432}/${DB_NAME:rivoj_storage}
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: update
     show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-#  mvc:
-#    cors:
-#      mappings:
-#        "/**":
-#          allowed-origins: "http://84.54.70.22:5173"
-#          allowed-methods: "*"
-#          allowed-headers: "*"
-#          allow-credentials: true
 
 springdoc:
   api-docs:
@@ -37,3 +32,12 @@ springdoc:
     operations-sorter: alpha
     disable-swagger-default-url: true
     doc-expansion: none
+
+do:
+  spaces:
+    key: DO008W9EHTX4EAW6U8KX
+    secret: IMkZlDKxR9Ku+/ytLZy8V2yuB+SZX8bO23xOYgqwHa0
+    endpoint2: https://rivojmediabucket.blr1.digitaloceanspaces.com
+    endpoint: https://blr1.digitaloceanspaces.com
+    region: blr1
+    bucket: rivojmediabucket
