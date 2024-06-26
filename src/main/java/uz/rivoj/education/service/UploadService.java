@@ -61,6 +61,8 @@ public class UploadService {
                     doSpaceBucket, uniquePath, initResponse.getUploadId(), partETags);
 
             s3Client.completeMultipartUpload(compRequest);
+            // Set the object to public
+            s3Client.setObjectAcl(doSpaceBucket, uniquePath, CannedAccessControlList.PublicRead);
 
             // Set the object to public
             s3Client.setObjectAcl(doSpaceBucket, uniquePath, CannedAccessControlList.PublicRead);
