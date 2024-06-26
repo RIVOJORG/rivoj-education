@@ -60,6 +60,8 @@ public class UploadService {
                     doSpaceBucket, uniquePath, initResponse.getUploadId(), partETags);
 
             s3Client.completeMultipartUpload(compRequest);
+            // Set the object to public
+            s3Client.setObjectAcl(doSpaceBucket, uniquePath, CannedAccessControlList.PublicRead);
 
             // Save file link to database
             LessonEntity lesson = lessonRepository.findById(lessonId).orElseThrow(
