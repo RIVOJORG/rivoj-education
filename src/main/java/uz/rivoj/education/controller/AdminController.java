@@ -69,8 +69,6 @@ public class AdminController {
     public ResponseEntity<String> uploadFile(@RequestParam("file") final MultipartFile file,UUID lessonId) throws IOException {
         return ResponseEntity.ok(uploadService.uploadFile(file,lessonId));
     }
-
-
     @PutMapping("/update-role{userPhoneNumber}")
     public ResponseEntity<String> updateRole(@PathVariable String userPhoneNumber, @RequestParam UserRole userRole){
         return ResponseEntity.status(200).body(userService.updateUser(userPhoneNumber, userRole));
