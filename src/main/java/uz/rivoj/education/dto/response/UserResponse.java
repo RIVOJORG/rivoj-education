@@ -3,7 +3,7 @@ package uz.rivoj.education.dto.response;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -17,7 +17,8 @@ public class UserResponse {
     private String name;
     private String surname;
     private String avatar;
-    private LocalDateTime birth;
+    private LocalDate birth;
     private String phoneNumber;
     private String password;
+    private String token;
 }

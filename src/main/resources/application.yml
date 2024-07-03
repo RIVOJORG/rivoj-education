@@ -48,3 +48,7 @@ do:
     endpoint: https://blr1.digitaloceanspaces.com
     region: blr1
     bucket: rivojmediabucket
+
+jwt:
+  expiry: 604800000
+  secret: qwetuykyjhfdgsafgjhkoiutrefdsavzbxcnmktjyhretgwedfvbnjkrjyerhsfg
