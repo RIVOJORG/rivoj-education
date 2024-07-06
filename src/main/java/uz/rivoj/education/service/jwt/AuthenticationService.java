@@ -8,7 +8,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthenticationService {
@@ -17,7 +20,7 @@ public class AuthenticationService {
             HttpServletRequest request
     ) {
         String userId = claims.getSubject();
-        List<String> roles = (List<String>) claims.get("roles");
+        List<String> roles = getRolesFromClaims(claims);
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(
@@ -31,9 +34,16 @@ public class AuthenticationService {
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
 
+    private List getRolesFromClaims(Claims claims) {
+        return Optional.ofNullable(claims.get("roles"))
+                .filter(List.class::isInstance)
+                .map(List.class::cast)
+                .orElse(Collections.emptyList());
+    }
+
     public List<SimpleGrantedAuthority> getAuthorities(List<String> roles) {
         return roles.stream()
                 .map(SimpleGrantedAuthority::new)
-                .toList();
+                .collect(Collectors.toList());
     }
 }
