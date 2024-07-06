@@ -11,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.entity.UserEntity;
 
+import java.security.Key;
 import java.util.Date;
 import java.util.Map;
 
@@ -35,10 +36,14 @@ public class JwtService {
     }
 
     public Jws<Claims> extractToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(secret.getBytes()))
-                .build()
-                .parseClaimsJws(token);
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token);
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid JWT token", e);  // Add proper exception handling
+        }
     }
 
     public Map<String, Object> getAuthorities(UserEntity user) {
@@ -46,5 +51,9 @@ public class JwtService {
                 user.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
                         .toList());
+    }
+
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(secret.getBytes());
     }
 }

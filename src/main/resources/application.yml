@@ -39,6 +39,7 @@ springdoc:
     tags-sorter: alpha
     operations-sorter: alpha
     doc-expansion: none
+
 do:
   spaces:
     key: DO008W9EHTX4EAW6U8KX
