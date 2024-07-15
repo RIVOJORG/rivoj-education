@@ -38,29 +38,33 @@ public class AdminController {
     private final UploadService uploadService;
 
     @PostMapping("/add-student")
-    public ResponseEntity<String> addStudent(StudentCreateRequest studentCreateRequest){
-        return ResponseEntity.status(200).body(studentService.addStudent(studentCreateRequest));
+    public ResponseEntity<String> addStudent(@RequestBody StudentCR studentCR){
+        return ResponseEntity.status(200).body(studentService.addStudent(studentCR));
     }
 
     @PostMapping("/create-teacher")
-    public ResponseEntity<String> createTeacher(@RequestBody TeacherInfoRequest teacherInfo){
+    public ResponseEntity<String> addTeacher(@RequestBody TeacherCR teacherInfo){
         return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.createTeacher(teacherInfo));
     }
+    @PostMapping("/create-teacher")
+    public ResponseEntity<String> addAdmin(@RequestBody UserCR adminDto){
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.add(adminDto));
+    }
     @PostMapping("/create-module")
-    public ResponseEntity<ModuleResponse> createModule(@RequestBody ModuleCreateRequest createRequest){
+    public ResponseEntity<ModuleResponse> createModule(@RequestBody ModuleCR createRequest){
         return ResponseEntity.status(HttpStatus.CREATED).body(moduleService.create(createRequest));
     }
 
     @PostMapping("/create-subject")
-    public ResponseEntity<SubjectResponse> createSubject(@RequestBody SubjectCreateRequest createRequest){
+    public ResponseEntity<SubjectResponse> createSubject(@RequestBody SubjectCR createRequest){
         return ResponseEntity.status(HttpStatus.CREATED).body(subjectService.create(createRequest));
     }
     @PostMapping("/create-notification")
-    public ResponseEntity<NotificationResponse> createNotification(@RequestBody NotificationRequest notificationRequest){
-        return ResponseEntity.status(HttpStatus.CREATED).body(notificationService.create(notificationRequest));
+    public ResponseEntity<NotificationResponse> createNotification(@RequestBody NotificationCR notificationCR){
+        return ResponseEntity.status(HttpStatus.CREATED).body(notificationService.create(notificationCR));
     }
     @PostMapping("/create-lesson")
-    public ResponseEntity<LessonResponse> createLesson(@RequestBody LessonCreateRequest createRequest){
+    public ResponseEntity<LessonResponse> createLesson(@RequestBody LessonCR createRequest){
         return ResponseEntity.status(HttpStatus.CREATED).body(lessonService.create(createRequest));
     }
     @PutMapping(value = "/lessonVideoUpload",

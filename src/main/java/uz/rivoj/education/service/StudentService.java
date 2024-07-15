@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import uz.rivoj.education.dto.request.StudentCreateRequest;
+import uz.rivoj.education.dto.request.StudentCR;
 import uz.rivoj.education.dto.response.StudentResponse;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.UserStatus;
@@ -38,22 +38,20 @@ public class StudentService {
         return responses;
     }
 
-    public String addStudent(StudentCreateRequest studentCreateRequest) {
-        if (userRepository.findUserEntityByPhoneNumber(studentCreateRequest.getPhoneNumber()).isPresent()){
-            throw new DataAlreadyExistsException("Student already exists with this phone number: " + studentCreateRequest.getPhoneNumber());}
+    public String addStudent(StudentCR studentCR) {
+        if (userRepository.findUserEntityByPhoneNumber(studentCR.getPhoneNumber()).isPresent()){
+            throw new DataAlreadyExistsException("Student already exists with this phone number: " + studentCR.getPhoneNumber());}
         UserEntity userEntity = UserEntity.builder()
-                .name(studentCreateRequest.getName())
-                .password(studentCreateRequest.getPassword())
-                .phoneNumber(studentCreateRequest.getPhoneNumber())
+                .name(studentCR.getName())
+                .password(studentCR.getPassword())
+                .phoneNumber(studentCR.getPhoneNumber())
                 .role(UserRole.STUDENT)
                 .userStatus(UserStatus.UNBLOCK)
-                .surname(studentCreateRequest.getSurname())
+                .surname(studentCR.getSurname())
                 .build();
-        userRepository.save(userEntity);
-
-        if (!subjectRepository.existsByTitle(studentCreateRequest.getSubject())){
-            throw new DataNotFoundException("Subject not found with this title: " + studentCreateRequest.getSubject());}
-        SubjectEntity subject = subjectRepository.findByTitle(studentCreateRequest.getSubject());
+        if (!subjectRepository.existsByTitle(studentCR.getSubject())){
+            throw new DataNotFoundException("Subject not found with this title: " + studentCR.getSubject());}
+        SubjectEntity subject = subjectRepository.findByTitle(studentCR.getSubject());
 
         if (moduleRepository.findFirstBySubjectOrderByNumberAsc(subject) == null){
             throw new DataNotFoundException("Module not found ");}
@@ -64,7 +62,7 @@ public class StudentService {
         LessonEntity lesson = lessonRepository.findFirstByModuleOrderByNumberAsc(moduleEntity);
 
         StudentInfo student = StudentInfo.builder()
-                .birthday(studentCreateRequest.getBirthday())
+                .birthday(studentCR.getBirthday())
                 .coin(0)
                 .student(userEntity)
                 .subject(subject)
@@ -72,7 +70,8 @@ public class StudentService {
                 .currentModule(moduleEntity)
                 .totalScore(0)
                 .build();
+        userRepository.save(userEntity);
         studentInfoRepository.save(student);
-        return "Student successfully added";
+        return "Created";
     }
 }

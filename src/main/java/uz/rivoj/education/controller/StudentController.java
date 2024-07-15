@@ -4,14 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uz.rivoj.education.dto.request.AttendanceRequest;
-import uz.rivoj.education.dto.request.MessageCreateRequest;
+import uz.rivoj.education.dto.request.AttendanceCR;
 import uz.rivoj.education.dto.response.*;
-import uz.rivoj.education.entity.ModuleEntity;
 import uz.rivoj.education.service.*;
 
-import java.security.Principal;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -27,7 +23,7 @@ public class StudentController {
     // ATTENDANCE
 
     @PostMapping("/create-attendance")
-    public ResponseEntity<AttendanceResponse> createAttendance(@RequestBody AttendanceRequest attendance){
+    public ResponseEntity<AttendanceResponse> createAttendance(@RequestBody AttendanceCR attendance){
         return ResponseEntity.status(HttpStatus.CREATED).body(attendanceService.create(attendance));
     }
 

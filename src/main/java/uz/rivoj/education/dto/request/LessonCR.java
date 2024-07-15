@@ -10,7 +10,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @ToString
-public class LessonCreateRequest {
+public class LessonCR {
     private Integer number;
     private String title;
     private String source;

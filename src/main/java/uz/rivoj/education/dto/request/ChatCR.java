@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @ToString
 @Builder
-public class ChatCreateRequest {
+public class ChatCR {
     private List<UserResponse> members;
     private List<MessageResponse> messages;
 }

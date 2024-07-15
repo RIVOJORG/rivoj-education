@@ -4,8 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uz.rivoj.education.dto.request.CommentCreateRequest;
-import uz.rivoj.education.dto.request.MessageCreateRequest;
+import uz.rivoj.education.dto.request.CommentCR;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.entity.ChatEntity;
 import uz.rivoj.education.service.*;
@@ -78,7 +77,7 @@ public class UserController {
 
     // COMMENT
     @PostMapping("/create-comment")
-    public ResponseEntity<CommentResponse> createComment(@RequestBody CommentCreateRequest createRequest){
+    public ResponseEntity<CommentResponse> createComment(@RequestBody CommentCR createRequest){
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.create(createRequest));
     }
 
