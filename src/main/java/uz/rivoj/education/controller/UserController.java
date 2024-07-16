@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.rivoj.education.dto.request.CommentCR;
+import uz.rivoj.education.dto.request.MessageCR;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.entity.ChatEntity;
 import uz.rivoj.education.service.*;
@@ -44,7 +45,7 @@ public class UserController {
 
     // MESSAGE
     @PostMapping("/send-message")
-    public ResponseEntity<String> sendMessage(MessageCreateRequest messageCreateRequest){
+    public ResponseEntity<String> sendMessage(MessageCR messageCreateRequest){
         return ResponseEntity.ok(messageService.sendMessage(messageCreateRequest));
     }
 
