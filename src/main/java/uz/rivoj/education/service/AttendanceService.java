@@ -6,9 +6,8 @@ import org.modelmapper.TypeToken;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import uz.rivoj.education.dto.request.AttendanceRequest;
+import uz.rivoj.education.dto.request.AttendanceCR;
 import uz.rivoj.education.dto.response.AttendanceResponse;
-import uz.rivoj.education.dto.response.MessageResponse;
 import uz.rivoj.education.dto.update.CheckAttendanceDTO;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.AttendanceStatus;
@@ -66,7 +65,7 @@ public class AttendanceService {
         return modelMapper.map(studentAttendances, new TypeToken<List<AttendanceResponse>>() {
         }.getType());
     }
-    public AttendanceResponse create(AttendanceRequest attendance) {
+    public AttendanceResponse create(AttendanceCR attendance) {
         studentRepository.findById(attendance.getStudentId()).orElseThrow(() -> new DataNotFoundException("Student not found! " + attendance.getStudentId()));
         teacherInfoRepository.findById(attendance.getStudentId()).orElseThrow(() -> new DataNotFoundException("Teacher not found! " + attendance.getTeacherId()));
         lessonRepository.findById(attendance.getLessonId()).orElseThrow(() -> new DataNotFoundException("Lesson not found! " + attendance.getLessonId()));

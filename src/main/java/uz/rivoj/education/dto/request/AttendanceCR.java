@@ -8,7 +8,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Builder
-public class AttendanceRequest {
+public class AttendanceCR {
     private UUID teacherId;
     private UUID studentId;
     private UUID lessonId;

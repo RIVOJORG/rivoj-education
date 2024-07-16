@@ -1,18 +1,17 @@
 package uz.rivoj.education.dto.request;
 
-
 import lombok.*;
 
 import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
 @Setter
-@Builder
+@Getter
 @ToString
-public class TeacherInfoRequest {
-    private UUID userId;
-    private String subject;
-    private String about;
+@Builder
+public class MessageCR {
+    private String text;
+    private UUID chatId;
+    private UUID senderId;
 }
