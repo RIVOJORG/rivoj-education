@@ -3,7 +3,7 @@ package uz.rivoj.education.controller;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import uz.rivoj.education.dto.request.DiscountRequest;
+import uz.rivoj.education.dto.request.DiscountCR;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.service.DiscountService;
 import uz.rivoj.education.service.ProgressService;
@@ -33,8 +33,8 @@ public class ProgressController {
     }
 
     @PostMapping("/create-discount{studentId}") // chegirma olish
-    public DiscountResponse createDiscount(@RequestBody DiscountRequest discountRequest, @PathVariable UUID studentId){
-        return discountService.create(discountRequest, studentId);
+    public DiscountResponse createDiscount(@RequestBody DiscountCR discountCR, @PathVariable UUID studentId){
+        return discountService.create(discountCR, studentId);
     }
 
     @GetMapping("/get-discounts-by-student{studentId}")

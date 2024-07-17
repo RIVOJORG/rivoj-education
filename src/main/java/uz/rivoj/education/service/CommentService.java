@@ -3,7 +3,7 @@ package uz.rivoj.education.service;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import uz.rivoj.education.dto.request.CommentCreateRequest;
+import uz.rivoj.education.dto.request.CommentCR;
 import uz.rivoj.education.dto.response.CommentResponse;
 import uz.rivoj.education.entity.CommentEntity;
 import uz.rivoj.education.entity.LessonEntity;
@@ -29,7 +29,7 @@ public class CommentService {
     private final StudentInfoRepository studentInfoRepository;
     private final ModelMapper modelMapper;
 
-    public CommentResponse create(CommentCreateRequest createRequest) {
+    public CommentResponse create(CommentCR createRequest) {
         LessonEntity lessonEntity = lessonRepository.findById(createRequest.getLessonId())
                 .orElseThrow(() -> new ClassCastException("Comment not found with ID: " + createRequest.getLessonId()));
         UserEntity owner = userRepository.findById(createRequest.getOwnerId())

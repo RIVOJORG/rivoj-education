@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
-import uz.rivoj.education.dto.request.MessageCreateRequest;
+import uz.rivoj.education.dto.request.MessageCR;
 import uz.rivoj.education.dto.response.MessageResponse;
 import uz.rivoj.education.entity.ChatEntity;
 import uz.rivoj.education.entity.Message;
@@ -25,7 +25,7 @@ public class MessageService {
     private final ChatRepository chatRepository;
     private final ModelMapper modelMapper;
 
-    public String sendMessage(MessageCreateRequest messageCreateRequest) {
+    public String sendMessage(MessageCR messageCreateRequest) {
         Message message = new Message();
         message.setSender(userRepository.findById(messageCreateRequest.getSenderId())
                 .orElseThrow(() -> new DataNotFoundException("User not found! " + messageCreateRequest.getSenderId())));

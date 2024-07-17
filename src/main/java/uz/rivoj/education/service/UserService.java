@@ -2,11 +2,10 @@ package uz.rivoj.education.service;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-//import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.LoginRequest;
-import uz.rivoj.education.dto.request.UserCreateRequest;
+import uz.rivoj.education.dto.request.UserCR;
 import uz.rivoj.education.dto.response.UserResponse;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.UserStatus;
@@ -22,14 +21,12 @@ import java.util.*;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final TeacherInfoRepository teacherInfoRepository;
     private final StudentInfoRepository studentInfoRepository;
-    private final SubjectRepository subjectRepository;
     private final JwtService jwtService;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public UserResponse add(UserCreateRequest userDto) {
+    public String add(UserCR userDto) {
         if(userRepository.findByPhoneNumber(userDto.getPhoneNumber()).isPresent()) {
             throw  new DataAlreadyExistsException("User already exists");
         }
@@ -42,7 +39,7 @@ public class UserService {
                 .build();
         UserResponse userResponse = modelMapper.map(userRepository.save(user), UserResponse.class);
         userResponse.setId(user.getId());
-        return userResponse;
+        return "Created";
     }
 
     public UserResponse login(LoginRequest login) {

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import uz.rivoj.education.dto.request.NotificationRequest;
+import uz.rivoj.education.dto.request.NotificationCR;
 import uz.rivoj.education.dto.response.NotificationResponse;
 import uz.rivoj.education.entity.NotificationEntity;
 import uz.rivoj.education.entity.UserEntity;
@@ -25,10 +25,10 @@ public class NotificationService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
-    public NotificationResponse create(NotificationRequest notificationRequest){
-        UserEntity user = userRepository.findById(notificationRequest.getUserId()).orElseThrow(
+    public NotificationResponse create(NotificationCR notificationCR){
+        UserEntity user = userRepository.findById(notificationCR.getUserId()).orElseThrow(
                 () -> new DataNotFoundException("User not found"));
-        NotificationEntity notificationEntity = modelMapper.map(notificationRequest, NotificationEntity.class);
+        NotificationEntity notificationEntity = modelMapper.map(notificationCR, NotificationEntity.class);
         notificationEntity.setUser(user);
         return modelMapper.map(notificationRepository.save(notificationEntity), NotificationResponse.class);
     }

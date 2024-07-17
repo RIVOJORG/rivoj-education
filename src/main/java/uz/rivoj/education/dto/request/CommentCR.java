@@ -10,7 +10,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @ToString
-public class CommentCreateRequest {
+public class CommentCR {
     private UUID lessonId;
     private UUID ownerId;
     private String description;

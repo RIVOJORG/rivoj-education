@@ -8,7 +8,7 @@ import lombok.*;
 @Setter
 @Builder
 @ToString
-public class DiscountRequest {
+public class DiscountCR {
     private Double percentage; //foiz
     private Integer coin;
 }

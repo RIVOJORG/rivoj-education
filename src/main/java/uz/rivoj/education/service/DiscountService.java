@@ -3,7 +3,7 @@ package uz.rivoj.education.service;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import uz.rivoj.education.dto.request.DiscountRequest;
+import uz.rivoj.education.dto.request.DiscountCR;
 import uz.rivoj.education.dto.response.DiscountResponse;
 import uz.rivoj.education.entity.DiscountEntity;
 import uz.rivoj.education.entity.UserEntity;
@@ -22,11 +22,11 @@ public class DiscountService {
     private final DiscountRepository discountRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
-    public DiscountResponse create(DiscountRequest discountRequest, UUID studentId){
+    public DiscountResponse create(DiscountCR discountCR, UUID studentId){
         UserEntity userEntity = userRepository.findById(studentId).orElseThrow(
                 () -> new DataNotFoundException("user not found")
         );
-        DiscountEntity discountEntity = modelMapper.map(discountRequest, DiscountEntity.class);
+        DiscountEntity discountEntity = modelMapper.map(discountCR, DiscountEntity.class);
 //        discountEntity.setStudent(userEntity);
         return modelMapper.map(discountRepository.save(discountEntity), DiscountResponse.class);
     }

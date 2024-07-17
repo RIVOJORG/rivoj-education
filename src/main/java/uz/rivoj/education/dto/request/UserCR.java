@@ -9,7 +9,7 @@ import lombok.*;
 @Setter
 @Builder
 @ToString
-public class UserCreateRequest {
+public class UserCR {
     private String name;
     private String surname;
     private String phoneNumber;

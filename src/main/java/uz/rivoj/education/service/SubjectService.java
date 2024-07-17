@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import uz.rivoj.education.entity.ModuleEntity;
 import uz.rivoj.education.exception.DataAlreadyExistsException;
-import uz.rivoj.education.dto.request.SubjectCreateRequest;
+import uz.rivoj.education.dto.request.SubjectCR;
 import uz.rivoj.education.dto.response.SubjectResponse;
 import uz.rivoj.education.entity.SubjectEntity;
 import uz.rivoj.education.exception.DataNotFoundException;
@@ -25,15 +25,16 @@ public class SubjectService {
     private final ModelMapper modelMapper;
 
 
-    public SubjectResponse create(SubjectCreateRequest createRequest) {
+    public SubjectResponse create(SubjectCR createRequest) {
         if (subjectRepository.existsByTitle(createRequest.getTitle())){
             throw new DataAlreadyExistsException("Subject already exists with: " + createRequest.getTitle());}
         SubjectEntity subjectEntity = modelMapper.map(createRequest, SubjectEntity.class);
+
         ModuleEntity moduleEntity = new ModuleEntity();
         moduleEntity.setSubject(subjectEntity);
         moduleEntity.setNumber(createRequest.getModuleCount());
-        moduleRepository.save(moduleEntity);
         subjectRepository.save(subjectEntity);
+        moduleRepository.save(moduleEntity);
         return modelMapper.map(createRequest, SubjectResponse.class);
     }
 

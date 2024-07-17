@@ -10,8 +10,8 @@ import java.util.UUID;
 @Getter
 @ToString
 @Builder
-public class MessageCreateRequest {
-    private String text;
-    private UUID chatId;
-    private UUID senderId;
+public class NotificationCR {
+    private UUID userId;
+    private String title;
+    private String description;
 }

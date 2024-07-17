@@ -3,11 +3,10 @@ package uz.rivoj.education.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import uz.rivoj.education.dto.request.LessonCreateRequest;
+import uz.rivoj.education.dto.request.LessonCR;
 import uz.rivoj.education.dto.response.LessonResponse;
 import uz.rivoj.education.dto.update.LessonUpdateDTO;
 import uz.rivoj.education.entity.LessonEntity;
@@ -27,7 +26,7 @@ public class LessonService {
     private final LessonRepository lessonRepository;
     private final ModuleRepository moduleRepository;
     private final ModelMapper modelMapper;
-    public LessonResponse create(LessonCreateRequest createRequest) {
+    public LessonResponse create(LessonCR createRequest) {
         ModuleEntity moduleEntity = moduleRepository.findById(createRequest.getModuleId())
                 .orElseThrow(() -> new EntityNotFoundException("Module not found with this id " + createRequest.getModuleId()));
 

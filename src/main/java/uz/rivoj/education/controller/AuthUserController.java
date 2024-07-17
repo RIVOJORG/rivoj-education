@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uz.rivoj.education.dto.request.LoginRequest;
-import uz.rivoj.education.dto.request.UserCreateRequest;
 import uz.rivoj.education.dto.response.UserResponse;
 import uz.rivoj.education.service.UserService;
 
@@ -24,8 +23,8 @@ public class AuthUserController {
         return ResponseEntity.ok(userService.login(request));
     }
 
-    @PostMapping("/sign-up")
-    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserCreateRequest request) {
-        return ResponseEntity.status(201).body(userService.add(request));
-    }
+//    @PostMapping("/sign-up")
+//    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserCreateRequest request) {
+//        return ResponseEntity.status(201).body(userService.add(request));
+//    }
 }

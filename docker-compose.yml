@@ -7,7 +7,7 @@ services:
       - "8080:8080"
     environment:
       DB_IP: db
-      DB_NAME: postgres
+      DB_NAME: rivojstorage
       DB_PASSWORD: 1
     depends_on:
       - db
