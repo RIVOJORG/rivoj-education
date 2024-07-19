@@ -13,7 +13,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -28,6 +27,7 @@ import uz.rivoj.education.dto.error.AppErrorDto;
 import uz.rivoj.education.service.jwt.AuthenticationService;
 import uz.rivoj.education.service.jwt.JwtFilter;
 import uz.rivoj.education.service.jwt.JwtService;
+import uz.rivoj.education.service.jwt.UserDetailsService;
 
 import java.util.List;
 
