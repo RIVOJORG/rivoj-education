@@ -6,15 +6,18 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.StudentCR;
 import uz.rivoj.education.dto.response.StudentResponse;
+import uz.rivoj.education.dto.response.StudentStatisticsDTO;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.UserStatus;
 import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.*;
 import org.springframework.data.domain.Pageable;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +28,7 @@ public class StudentService {
     private final LessonRepository lessonRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final TeacherInfoRepository teacherInfoRepository;
 
     public List<StudentResponse> getAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -74,4 +78,33 @@ public class StudentService {
         studentInfoRepository.save(student);
         return "Created";
     }
+
+    public List<StudentStatisticsDTO> getStudentStatistics(String teacher, Integer moduleNumber) {
+        Optional<TeacherInfo> teacherInfo = teacherInfoRepository.findById(UUID.fromString(teacher));
+        if (teacherInfo.isEmpty()) {
+            throw new RuntimeException("Teacher not found");
+        }
+
+        SubjectEntity subject = teacherInfo.get().getSubject();
+        ModuleEntity module = moduleRepository.findBySubjectAndNumber(subject, moduleNumber);
+        if (module == null) {
+            throw new RuntimeException("Module not found");
+        }
+
+        List<LessonEntity> lessons = lessonRepository.findByModule(module);
+
+        return lessons.stream()
+                .flatMap(lesson -> studentInfoRepository.findByLessonAndCurrentModule(lesson, module).stream())
+                .map(info -> {
+                    StudentStatisticsDTO dto = new StudentStatisticsDTO();
+                    dto.setStudentName(info.getStudent().getName());
+                    dto.setStudentSurname(info.getStudent().getSurname());
+                    dto.setAvatar(info.getAvatar());
+                    dto.setScore(info.getTotalScore());
+                    dto.setIsLessonOver(info.getIsLessonOver());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
 }

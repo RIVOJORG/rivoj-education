@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.*;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.dto.update.CheckAttendanceDTO;
 import uz.rivoj.education.entity.ChatEntity;
-import uz.rivoj.education.entity.ModuleEntity;
 import uz.rivoj.education.entity.enums.AttendanceStatus;
 import uz.rivoj.education.service.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -91,4 +91,12 @@ public class TeacherController {
         return moduleService.findByModuleId(id);
     }
 
+
+    @GetMapping("/statistics")
+    public ResponseEntity<List<StudentStatisticsDTO>> getStudentStatistics(
+            Principal principal,
+            @RequestParam Integer moduleNumber) {
+
+        return ResponseEntity.ok(studentService.getStudentStatistics(principal.getName(), moduleNumber));
+    }
 }
