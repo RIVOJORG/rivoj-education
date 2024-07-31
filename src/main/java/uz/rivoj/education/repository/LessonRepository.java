@@ -22,6 +22,10 @@ public interface LessonRepository extends JpaRepository<LessonEntity, UUID> {
     LessonEntity findFirstByModuleOrderByNumberAsc(ModuleEntity nextModule);
 
     List<LessonEntity> findByModuleNumber(int moduleNumber);
+    LessonEntity findByModuleAndNumber(ModuleEntity module, Integer number);
+
+    List<LessonEntity> findByModule(ModuleEntity module);
+
 
 //    Integer countByModuleAndStudent(int i, UUID studentId);
 //    Integer countByModuleAndStudent(ModuleEntity module, StudentInfo student);
