@@ -41,12 +41,12 @@ springdoc:
 
 do:
   spaces:
-    key: DO008W9EHTX4EAW6U8KX
-    secret: IMkZlDKxR9Ku+/ytLZy8V2yuB+SZX8bO23xOYgqwHa0
-    endpoint2: https://rivojmediabucket.blr1.digitaloceanspaces.com
-    endpoint: https://blr1.digitaloceanspaces.com
-    region: blr1
-    bucket: rivojmediabucket
+    key: DO00KUEACAV6EN2LYAE2
+    secret: RZcZOhkd3Jez3OcXlt0elQx/+2fFfSnDUPgTwk2ZxE
+    endpoint2: https://rivoj-space.nyc3.digitaloceanspaces.com
+    endpoint: https://nyc3.digitaloceanspaces.com
+    region: nyc3
+    bucket: rivoj-space
 
 jwt:
   expiry: 604800000
