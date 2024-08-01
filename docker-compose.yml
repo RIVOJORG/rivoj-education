@@ -1,6 +1,7 @@
 services:
   app:
     build:
+      context: .
       dockerfile: Dockerfile
     image: rivoj-education-app
     ports:
