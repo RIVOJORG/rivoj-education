@@ -18,6 +18,5 @@ public class SubjectEntity extends BaseEntity{
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ModuleEntity> modules;
     private String title;
-    @Column(unique = true)
-    private String subject;
+
 }
