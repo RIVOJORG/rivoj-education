@@ -48,7 +48,7 @@ public class AdminController {
     }
     @PostMapping("/add-admin")
     public ResponseEntity<String> addAdmin(@RequestBody UserCR adminDto){
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.add(adminDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.addAdmin(adminDto));
     }
     @PostMapping("/create-module")
     public ResponseEntity<ModuleResponse> createModule(@RequestBody ModuleCR createRequest){
