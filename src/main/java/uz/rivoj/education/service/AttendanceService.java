@@ -67,7 +67,7 @@ public class AttendanceService {
     }
     public AttendanceResponse create(AttendanceCR attendance) {
         studentRepository.findById(attendance.getStudentId()).orElseThrow(() -> new DataNotFoundException("Student not found! " + attendance.getStudentId()));
-        teacherInfoRepository.findById(attendance.getStudentId()).orElseThrow(() -> new DataNotFoundException("Teacher not found! " + attendance.getTeacherId()));
+        teacherInfoRepository.findById(attendance.getTeacherId()).orElseThrow(() -> new DataNotFoundException("Teacher not found! " + attendance.getTeacherId()));
         lessonRepository.findById(attendance.getLessonId()).orElseThrow(() -> new DataNotFoundException("Lesson not found! " + attendance.getLessonId()));
         AttendanceEntity attendanceEntity = modelMapper.map(attendance, AttendanceEntity.class);
         return modelMapper.map(attendanceEntity, AttendanceResponse.class);
