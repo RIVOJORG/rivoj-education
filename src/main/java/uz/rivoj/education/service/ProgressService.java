@@ -79,7 +79,6 @@ public class ProgressService {
     }
 
     public RankingPageResponse getRankingPage() {
-        //Sort sortByTotalScoreDesc = Sort.by(Sort.Direction.DESC, "totalScore");
         PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "totalScore"));
         Page<StudentInfo> page = studentInfoRepository.findAll(pageRequest);
         List<StudentInfo> sortedStudents = page.getContent();
@@ -87,22 +86,21 @@ public class ProgressService {
         List<BestStudentResponse> bestStudentResponseList = new ArrayList<>();
 
         for (StudentInfo studentInfo : sortedStudents) {
-            Optional<StudentInfo> studentInfoByStudentId = studentInfoRepository.findStudentInfoByStudentId(studentInfo.getId());
-            if (studentInfoByStudentId.isPresent()) {
-                UserEntity user = studentInfoByStudentId.get().getStudent();
-                BestStudentResponse bestStudent = BestStudentResponse.builder()
-                        .avatar(studentInfo.getAvatar())
-                        .name(user.getName())
-                        .percentage(studentInfo.getTotalScore())
-                        .surname(user.getSurname())
-                        .build();
-                bestStudentResponseList.add(bestStudent);
-            }
+            UserEntity user = studentInfo.getStudent();
+            BestStudentResponse bestStudent = BestStudentResponse.builder()
+                    .avatar(studentInfo.getAvatar())
+                    .name(user.getName())
+                    .percentage(studentInfo.getTotalScore())
+                    .surname(user.getSurname())
+                    .build();
+            bestStudentResponseList.add(bestStudent);
         }
+
         return RankingPageResponse.builder()
                 .bestStudents(bestStudentResponseList)
                 .build();
     }
+
 
 
     public LessonPageResponse getLessonPageResponseByLessonId(UUID studentId, UUID lessonId) {
