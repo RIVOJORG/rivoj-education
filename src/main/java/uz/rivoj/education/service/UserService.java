@@ -26,7 +26,7 @@ public class UserService {
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public String add(UserCR userDto) {
+    public String addAdmin(UserCR userDto) {
         if(userRepository.findByPhoneNumber(userDto.getPhoneNumber()).isPresent()) {
             throw  new DataAlreadyExistsException("User already exists");
         }

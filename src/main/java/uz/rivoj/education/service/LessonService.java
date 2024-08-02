@@ -44,6 +44,7 @@ public class LessonService {
 
         LessonResponse lessonResponse = modelMapper.map(lesson, LessonResponse.class);
         lessonResponse.setId(lesson.getId());
+        lessonResponse.setModuleId(lesson.getModule().getId());
         return lessonResponse;
     }
 
