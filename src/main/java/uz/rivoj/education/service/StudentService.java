@@ -5,6 +5,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.StudentCR;
+import uz.rivoj.education.dto.response.SpecialAttendanceResponse;
 import uz.rivoj.education.dto.response.StudentResponse;
 import uz.rivoj.education.dto.response.StudentStatisticsDTO;
 import uz.rivoj.education.entity.*;
@@ -29,6 +30,7 @@ public class StudentService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final TeacherInfoRepository teacherInfoRepository;
+    private final AttendanceRepository attendanceRepository;
 
     public List<StudentResponse> getAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -93,18 +95,36 @@ public class StudentService {
 
         List<LessonEntity> lessons = lessonRepository.findByModule(module);
 
-        return lessons.stream()
-                .flatMap(lesson -> studentInfoRepository.findByLessonAndCurrentModule(lesson, module).stream())
-                .map(info -> {
+        return studentInfoRepository.findByCurrentModule(module).stream()
+                .map(studentInfo -> {
+                    UserEntity student = studentInfo.getStudent();
+
                     StudentStatisticsDTO dto = new StudentStatisticsDTO();
-                    dto.setStudentName(info.getStudent().getName());
-                    dto.setStudentSurname(info.getStudent().getSurname());
-                    dto.setAvatar(info.getAvatar());
-                    dto.setScore(info.getTotalScore());
-                    dto.setIsLessonOver(info.getIsLessonOver());
+                    dto.setStudentName(student.getName());
+                    dto.setStudentSurname(student.getSurname());
+                    dto.setAvatar(studentInfo.getAvatar());
+                    dto.setScore(studentInfo.getTotalScore());
+
+                    // Create a list to hold attendance responses for each lesson
+                    List<SpecialAttendanceResponse> attendanceResponses = new ArrayList<>();
+
+                    for (LessonEntity lesson : lessons) {
+                        AttendanceEntity attendance = attendanceRepository.findByStudentAndLessonEntity(studentInfo, lesson);
+                        if (attendance != null) {
+                            SpecialAttendanceResponse response = new SpecialAttendanceResponse();
+                            response.setModuleNumber(moduleNumber);
+                            response.setLessonNumber(lesson.getNumber());  // Assuming lessonNumber is a field in LessonEntity
+                            response.setScore(attendance.getScore());
+                            attendanceResponses.add(response);
+                        }
+                    }
+
+                    dto.setAttendanceList(attendanceResponses);
                     return dto;
                 })
                 .collect(Collectors.toList());
     }
+
+
 
 }
