@@ -8,6 +8,7 @@ import uz.rivoj.education.dto.response.AttendanceResponse;
 import uz.rivoj.education.entity.AttendanceEntity;
 import uz.rivoj.education.entity.LessonEntity;
 import uz.rivoj.education.entity.ModuleEntity;
+import uz.rivoj.education.entity.StudentInfo;
 import uz.rivoj.education.entity.enums.AttendanceStatus;
 
 import java.util.List;
@@ -29,5 +30,5 @@ public interface AttendanceRepository extends JpaRepository<AttendanceEntity, UU
 
     List<AttendanceEntity> findAttendanceByLessonEntity(LessonEntity lessonEntity);
 
-    AttendanceEntity findByStudentAndLessonEntity(Object studentInfo, LessonEntity lesson);
+    Optional<AttendanceEntity> findByStudentAndLessonEntity(StudentInfo student, LessonEntity lessonEntity);
 }

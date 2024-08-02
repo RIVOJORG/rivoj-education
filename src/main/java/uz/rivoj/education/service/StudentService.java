@@ -82,12 +82,10 @@ public class StudentService {
     }
 
     public List<StudentStatisticsDTO> getStudentStatistics(String teacher, Integer moduleNumber) {
-        Optional<TeacherInfo> teacherInfo = teacherInfoRepository.findById(UUID.fromString(teacher));
-        if (teacherInfo.isEmpty()) {
-            throw new RuntimeException("Teacher not found");
-        }
+        TeacherInfo teacherInfo = teacherInfoRepository.findById(UUID.fromString(teacher))
+                .orElseThrow(() -> new RuntimeException("Teacher not found"));
 
-        SubjectEntity subject = teacherInfo.get().getSubject();
+        SubjectEntity subject = teacherInfo.getSubject();
         ModuleEntity module = moduleRepository.findBySubjectAndNumber(subject, moduleNumber);
         if (module == null) {
             throw new RuntimeException("Module not found");
@@ -105,18 +103,17 @@ public class StudentService {
                     dto.setAvatar(studentInfo.getAvatar());
                     dto.setScore(studentInfo.getTotalScore());
 
-                    // Create a list to hold attendance responses for each lesson
                     List<SpecialAttendanceResponse> attendanceResponses = new ArrayList<>();
 
                     for (LessonEntity lesson : lessons) {
-                        AttendanceEntity attendance = attendanceRepository.findByStudentAndLessonEntity(studentInfo, lesson);
-                        if (attendance != null) {
-                            SpecialAttendanceResponse response = new SpecialAttendanceResponse();
-                            response.setModuleNumber(moduleNumber);
-                            response.setLessonNumber(lesson.getNumber());  // Assuming lessonNumber is a field in LessonEntity
-                            response.setScore(attendance.getScore());
-                            attendanceResponses.add(response);
-                        }
+                        attendanceRepository.findByStudentAndLessonEntity(studentInfo, lesson)
+                                .ifPresent(attendance -> {
+                                    SpecialAttendanceResponse response = new SpecialAttendanceResponse();
+                                    response.setModuleNumber(moduleNumber);
+                                    response.setLessonNumber(lesson.getNumber());
+                                    response.setScore(attendance.getScore());
+                                    attendanceResponses.add(response);
+                                });
                     }
 
                     dto.setAttendanceList(attendanceResponses);
@@ -124,6 +121,7 @@ public class StudentService {
                 })
                 .collect(Collectors.toList());
     }
+
 
 
 
