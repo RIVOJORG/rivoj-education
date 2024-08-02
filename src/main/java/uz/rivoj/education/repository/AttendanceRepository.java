@@ -29,4 +29,5 @@ public interface AttendanceRepository extends JpaRepository<AttendanceEntity, UU
 
     List<AttendanceEntity> findAttendanceByLessonEntity(LessonEntity lessonEntity);
 
+    AttendanceEntity findByStudentAndLessonEntity(Object studentInfo, LessonEntity lesson);
 }
