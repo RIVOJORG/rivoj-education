@@ -35,7 +35,7 @@ public class UserService {
                 .surname(userDto.getSurname())
                 .phoneNumber(userDto.getPhoneNumber())
                 .password(passwordEncoder.encode(userDto.getPassword()))
-                .role(UserRole.STUDENT)
+                .role(UserRole.ADMIN)
                 .build();
         UserResponse userResponse = modelMapper.map(userRepository.save(user), UserResponse.class);
         userResponse.setId(user.getId());
