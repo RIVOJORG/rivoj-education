@@ -3,6 +3,7 @@ package uz.rivoj.education.service;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.TeacherCR;
 import uz.rivoj.education.entity.SubjectEntity;
@@ -24,6 +25,7 @@ public class TeacherService {
     private final UserRepository userRepository;
     private final SubjectRepository subjectRepository;
     private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
 
     public String createTeacher(TeacherCR teacherCr) {
         Optional<UserEntity> userByPhoneNumber = userRepository.findByPhoneNumber(teacherCr.getPhoneNumber());
@@ -36,6 +38,7 @@ public class TeacherService {
         UserEntity user = modelMapper.map(teacherCr, UserEntity.class);
         user.setRole(UserRole.TEACHER);
         user.setUserStatus(UserStatus.UNBLOCK);
+        user.setPassword(passwordEncoder.encode(teacherCr.getPassword()));
         TeacherInfo teacher = TeacherInfo.builder()
                 .about(teacherCr.getAbout())
                 .subject(subject)
