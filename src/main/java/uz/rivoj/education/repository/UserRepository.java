@@ -21,5 +21,7 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
 
 
     Page<UserEntity> findAllByRole(UserRole userRole, Pageable pageable);
+
+    boolean existsByPhoneNumber(String phoneNumber);
 }
 
