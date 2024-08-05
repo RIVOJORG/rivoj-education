@@ -53,6 +53,7 @@ public class UserService {
                     .name(user.getName())
                     .surname(user.getSurname())
                     .phoneNumber(user.getPhoneNumber())
+                    .password(user.getPassword())
                     .token(jwtService.generateToken(user))
                     .build();
             if(studentInfo.isPresent()){
