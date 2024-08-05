@@ -102,13 +102,5 @@ public class TeacherController {
         return ResponseEntity.ok(studentService.getStudentStatistics(principal.getName(), moduleNumber));
     }
 
-    @GetMapping("/statistics2")
-    public ResponseEntity<List<StudentStatisticsDTO>> getStudentStatistics2(
-            Principal principal,
-            @RequestParam Integer moduleNumber) {
 
-        System.out.println("principal = " + principal);
-        System.out.println("principal.getName() = " + principal.getName());
-        return ResponseEntity.ok(studentService.getStudentStatistics(principal.getName(), moduleNumber));
-    }
 }

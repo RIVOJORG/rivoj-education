@@ -1,9 +1,6 @@
 package uz.rivoj.education.entity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
@@ -14,9 +11,14 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class SubjectEntity extends BaseEntity{
+public class SubjectEntity extends BaseEntity {
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ModuleEntity> modules;
+
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TeacherInfo> teachers;
+
     private String title;
 
 }
+
