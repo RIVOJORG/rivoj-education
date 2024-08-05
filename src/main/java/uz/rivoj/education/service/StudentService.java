@@ -3,6 +3,7 @@ package uz.rivoj.education.service;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.StudentCR;
 import uz.rivoj.education.dto.response.SpecialAttendanceResponse;
@@ -31,6 +32,7 @@ public class StudentService {
     private final ModelMapper modelMapper;
     private final TeacherInfoRepository teacherInfoRepository;
     private final AttendanceRepository attendanceRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public List<StudentResponse> getAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -49,7 +51,7 @@ public class StudentService {
             throw new DataAlreadyExistsException("Student already exists with this phone number: " + studentCR.getPhoneNumber());}
         UserEntity userEntity = UserEntity.builder()
                 .name(studentCR.getName())
-                .password(studentCR.getPassword())
+                .password(passwordEncoder.encode(studentCR.getPassword()))
                 .phoneNumber(studentCR.getPhoneNumber())
                 .role(UserRole.STUDENT)
                 .userStatus(UserStatus.UNBLOCK)
@@ -82,8 +84,10 @@ public class StudentService {
     }
 
     public List<StudentStatisticsDTO> getStudentStatistics(String teacher, Integer moduleNumber) {
-        TeacherInfo teacherInfo = teacherInfoRepository.findById(UUID.fromString(teacher))
+        System.out.println("UUID.fromString(teacher) = " + UUID.fromString(teacher));
+        UserEntity userEntity = userRepository.findById(UUID.fromString(teacher))
                 .orElseThrow(() -> new RuntimeException("Teacher not found"));
+        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher(userEntity);
 
         SubjectEntity subject = teacherInfo.getSubject();
         ModuleEntity module = moduleRepository.findBySubjectAndNumber(subject, moduleNumber);
