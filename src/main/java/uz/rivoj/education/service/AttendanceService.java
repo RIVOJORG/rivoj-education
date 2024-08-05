@@ -108,7 +108,7 @@ public class AttendanceService {
 
         int score = checkAttendanceDTO.getScore();
         if (score < 70) {
-            attendanceEntity.setStatus(NOT_ENOUGH);
+            attendanceEntity.setStatus(NOT_LOADED);
             attendanceEntity.setCoin(attendanceEntity.getCoin() - ((70 - score) / 10));
         } else {
             attendanceEntity.setStatus(CHECKED);

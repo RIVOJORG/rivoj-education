@@ -2,6 +2,8 @@ package uz.rivoj.education.entity;
 
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.*;
 
@@ -11,12 +13,14 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class TeacherInfo extends BaseEntity{
+public class TeacherInfo extends BaseEntity {
 
     @OneToOne
     private UserEntity teacher;
-    @OneToOne
+
+    @ManyToOne
     private SubjectEntity subject;
+
     private String avatar;
     private String about;
 }
