@@ -27,14 +27,15 @@ public class SubjectService {
 
     public SubjectResponse create(SubjectCR createRequest) {
         if (subjectRepository.existsByTitle(createRequest.getTitle())){
-            throw new DataAlreadyExistsException("Subject already exists with: " + createRequest.getTitle());}
+            throw new DataAlreadyExistsException("Subject already exists with this title: " + createRequest.getTitle());}
         SubjectEntity subjectEntity = modelMapper.map(createRequest, SubjectEntity.class);
-
-        ModuleEntity moduleEntity = new ModuleEntity();
-        moduleEntity.setSubject(subjectEntity);
-        moduleEntity.setNumber(createRequest.getModuleCount());
         subjectRepository.save(subjectEntity);
-        moduleRepository.save(moduleEntity);
+        for (int i = 1; i <= createRequest.getModuleCount(); i++) {
+            ModuleEntity moduleEntity = new ModuleEntity();
+            moduleEntity.setSubject(subjectEntity);
+            moduleEntity.setNumber(i);
+            moduleRepository.save(moduleEntity);
+        }
         return modelMapper.map(createRequest, SubjectResponse.class);
     }
 
