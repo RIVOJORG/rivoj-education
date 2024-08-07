@@ -205,4 +205,10 @@ public class AdminController {
     public ResponseEntity<String> deleteLesson(@PathVariable UUID lessonId){
         return ResponseEntity.status(200).body(lessonService.delete(lessonId));
     }
+
+    @GetMapping("/student-progress")
+    public ResponseEntity<List<AdminHomePageResponse>> getStudentProgress(
+            @RequestParam UUID subjectId) {
+        return ResponseEntity.ok(studentService.getStudentProgress(subjectId));
+    }
 }
