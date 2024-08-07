@@ -6,19 +6,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.StudentCR;
-import uz.rivoj.education.dto.response.SpecialAttendanceResponse;
-import uz.rivoj.education.dto.response.StudentResponse;
-import uz.rivoj.education.dto.response.StudentStatisticsDTO;
+import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.UserStatus;
 import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.*;
 import org.springframework.data.domain.Pageable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -84,7 +80,6 @@ public class StudentService {
     }
 
     public List<StudentStatisticsDTO> getStudentStatistics(String teacher, Integer moduleNumber) {
-        System.out.println("UUID.fromString(teacher) = " + UUID.fromString(teacher));
         UserEntity userEntity = userRepository.findById(UUID.fromString(teacher))
                 .orElseThrow(() -> new RuntimeException("Teacher not found"));
         TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher(userEntity);
@@ -125,6 +120,37 @@ public class StudentService {
                 })
                 .collect(Collectors.toList());
     }
+
+    public List<AdminHomePageResponse> getStudentProgress(UUID subjectId) {
+        SubjectEntity subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> new DataNotFoundException("Subject not found"));
+
+        List<ModuleEntity> modules = moduleRepository.findAllBySubject(subject)
+                .orElseThrow(() -> new DataNotFoundException("Modules not found"));
+
+        List<TeacherInfo> teachers = teacherInfoRepository.findBySubject(subject);
+
+        List<Integer> moduleCounts = new ArrayList<>();
+        for (ModuleEntity module : modules) {
+            moduleCounts.add(module.getNumber());
+        }
+
+        List<StudentStatisticsDTO> studentStatistics = new ArrayList<>();
+        for (TeacherInfo teacher : teachers) {
+            for (ModuleEntity module : modules) {
+                studentStatistics.addAll(getStudentStatistics(teacher.getTeacher().getId().toString(), module.getNumber()));
+            }
+        }
+
+        AdminHomePageResponse adminHomePageResponse = AdminHomePageResponse.builder()
+                .modulesCounts(moduleCounts)
+                .studentsCount(studentStatistics.size())
+                .students(studentStatistics)
+                .build();
+
+        return Collections.singletonList(adminHomePageResponse);
+    }
+
 
 
 
