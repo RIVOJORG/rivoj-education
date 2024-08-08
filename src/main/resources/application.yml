@@ -51,3 +51,4 @@ do:
 jwt:
   expiry: 604800000
   secret: qwetuykyjhfdgsafgjhkoiutrefdsavzbxcnmktjyhretgwedfvbnjkrjyerhsfg
+
