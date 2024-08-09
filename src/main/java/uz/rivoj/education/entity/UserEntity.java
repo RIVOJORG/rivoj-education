@@ -33,7 +33,6 @@ public class UserEntity extends BaseEntity implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return new HashSet<>(Set.of(new SimpleGrantedAuthority("ROLE_" + role.name())));
     }
-
     @Override
     public String getPassword() {
         return password;

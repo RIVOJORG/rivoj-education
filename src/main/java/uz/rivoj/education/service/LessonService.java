@@ -31,7 +31,7 @@ public class LessonService {
     @SneakyThrows
     public LessonResponse create(LessonCR createRequest, MultipartFile lessonVideo, MultipartFile coverOfLesson)  {
         ModuleEntity moduleEntity = moduleRepository.findById(createRequest.getModuleId())
-                .orElseThrow(() -> new EntityNotFoundException("Module not found with this id " + createRequest.getModuleId()));
+                .orElseThrow(() -> new DataNotFoundException("Module not found with this id " + createRequest.getModuleId()));
         if (lessonRepository.existsByModuleAndNumber(moduleEntity, createRequest.getNumber())) {
             throw new DataAlreadyExistsException("Lesson already exists with number : " + createRequest.getNumber() + " in module id : " + createRequest.getModuleId());
         }
