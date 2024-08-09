@@ -7,6 +7,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import uz.rivoj.education.dto.error.ErrorDTO;
+import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.exception.NotEnoughFundsException;
 import uz.rivoj.education.exception.WrongPasswordException;
@@ -18,6 +19,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataNotFoundException.class)
     public ResponseEntity<ErrorDTO> dataNotFoundExceptionHandler(DataNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorDTO(e.getMessage(), 404));
+    }
+    @ExceptionHandler(DataAlreadyExistsException.class)
+    public ResponseEntity<ErrorDTO> handleDataAlreadyExistsException(DataAlreadyExistsException  e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorDTO(e.getMessage(), 409));
     }
     @ExceptionHandler(NotEnoughFundsException.class)
     public ResponseEntity<ErrorDTO> notEnoughFundsExceptionHandler(NotEnoughFundsException e) {

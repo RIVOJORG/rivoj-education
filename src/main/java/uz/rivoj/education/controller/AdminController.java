@@ -42,7 +42,6 @@ public class AdminController {
     public ResponseEntity<String> addStudent(@RequestBody StudentCR studentCR){
         return ResponseEntity.status(200).body(studentService.addStudent(studentCR));
     }
-
     @PostMapping("/add-teacher")
     public ResponseEntity<String> addTeacher(@RequestBody TeacherCR teacherInfo){
         return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.createTeacher(teacherInfo));
