@@ -2,6 +2,7 @@ package uz.rivoj.education.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -63,16 +64,21 @@ public class AdminController {
     public ResponseEntity<NotificationResponse> createNotification(@RequestBody NotificationCR notificationCR){
         return ResponseEntity.status(HttpStatus.CREATED).body(notificationService.create(notificationCR));
     }
-    @PostMapping("/create-lesson")
-    public ResponseEntity<LessonResponse> createLesson(@RequestBody LessonCR createRequest){
-        return ResponseEntity.status(HttpStatus.CREATED).body(lessonService.create(createRequest));
+    @PostMapping(value = "/create-lesson", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<LessonResponse> createLesson(
+            @ModelAttribute LessonCR createRequest,
+            @RequestPart("lessonVideo") MultipartFile lessonVideo,
+            @RequestPart("coverOfLesson") MultipartFile coverOfLesson
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(lessonService.create(createRequest, lessonVideo,coverOfLesson));
     }
-    @PutMapping(value = "/lessonVideoUpload",
-            consumes = MULTIPART_FORM_DATA_VALUE,
-            produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> uploadFile(@RequestParam("file") final MultipartFile file,UUID lessonId) throws IOException {
-        return ResponseEntity.ok(uploadService.uploadFile(file,lessonId));
-    }
+
+//        @PutMapping(value = "/lessonVideoUpload",
+//          consumes = MULTIPART_FORM_DATA_VALUE,
+//           produces = APPLICATION_JSON_VALUE)
+////    public ResponseEntity<String> uploadFile(@RequestParam("file") final MultipartFile file,UUID lessonId) throws IOException {
+////        return ResponseEntity.ok(uploadService.uploadFile(file,lessonId));
+////    }
     @PutMapping("/update-role{userPhoneNumber}")
     public ResponseEntity<String> updateRole(@PathVariable String userPhoneNumber, @RequestParam UserRole userRole){
         return ResponseEntity.status(200).body(userService.updateUser(userPhoneNumber, userRole));
