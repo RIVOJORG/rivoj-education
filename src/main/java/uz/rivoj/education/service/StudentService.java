@@ -79,31 +79,48 @@ public class StudentService {
         return "Created";
     }
 
-    public List<StudentStatisticsDTO> getStudentStatistics(String teacher, Integer moduleNumber) {
-        UserEntity userEntity = userRepository.findById(UUID.fromString(teacher))
+    public List<StudentStatisticsDTO> getStudentStatistics(String teacherId, Integer moduleNumber) {
+        // Find the teacher by their UUID
+        UserEntity teacher = userRepository.findById(UUID.fromString(teacherId))
                 .orElseThrow(() -> new RuntimeException("Teacher not found"));
-        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher(userEntity);
 
-        SubjectEntity subject = teacherInfo.getSubject();
-        ModuleEntity module = moduleRepository.findBySubjectAndNumber(subject, moduleNumber);
-        if (module == null) {
-            throw new RuntimeException("Module not found");
+        // Find the TeacherInfo entity linked to the user entity (teacher)
+        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher(teacher);
+        if (teacherInfo == null) {
+            throw new RuntimeException("Teacher information not found");
         }
 
+        // Fetch the subject that the teacher is assigned to
+        SubjectEntity subject = teacherInfo.getSubject();
+        if (subject == null) {
+            throw new RuntimeException("Subject not found for the teacher");
+        }
+
+        // Retrieve the module based on the subject and module number
+        ModuleEntity module = moduleRepository.findBySubjectAndNumber(subject, moduleNumber);
+        if (module == null) {
+            throw new RuntimeException("Module not found for the given module number");
+        }
+
+        // Retrieve lessons for the specified module
         List<LessonEntity> lessons = lessonRepository.findByModule(module);
 
+        // Retrieve students who are currently in the specified module
         return studentInfoRepository.findByCurrentModule(module).stream()
                 .map(studentInfo -> {
                     UserEntity student = studentInfo.getStudent();
 
+                    // Create DTO for student statistics
                     StudentStatisticsDTO dto = new StudentStatisticsDTO();
                     dto.setStudentName(student.getName());
                     dto.setStudentSurname(student.getSurname());
                     dto.setAvatar(studentInfo.getAvatar());
                     dto.setScore(studentInfo.getTotalScore());
 
+                    // List to hold attendance records for each lesson
                     List<SpecialAttendanceResponse> attendanceResponses = new ArrayList<>();
 
+                    // Populate attendance data for each lesson in the module
                     for (LessonEntity lesson : lessons) {
                         attendanceRepository.findByStudentAndLessonEntity(studentInfo, lesson)
                                 .ifPresent(attendance -> {
@@ -115,11 +132,13 @@ public class StudentService {
                                 });
                     }
 
+                    // Set the attendance records in the DTO
                     dto.setAttendanceList(attendanceResponses);
                     return dto;
                 })
                 .collect(Collectors.toList());
     }
+
 
     public List<AdminHomePageResponse> getStudentProgress(UUID subjectId) {
         SubjectEntity subject = subjectRepository.findById(subjectId)
