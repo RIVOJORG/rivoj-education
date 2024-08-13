@@ -92,15 +92,15 @@ public class TeacherController {
     }
 
 
-    @GetMapping("/statistics")
-    public ResponseEntity<List<StudentStatisticsDTO>> getStudentStatistics(
-            Principal principal,
-            @RequestParam Integer moduleNumber) {
-
-        System.out.println("principal = " + principal);
-        System.out.println("principal.getName() = " + principal.getName());
-        return ResponseEntity.ok(studentService.getStudentStatistics(principal.getName(), moduleNumber));
-    }
+//    @GetMapping("/statistics")
+//    public ResponseEntity<List<StudentStatisticsDTO>> getStudentStatistics(
+//            Principal principal,
+//            @RequestParam Integer moduleNumber) {
+//
+//        System.out.println("principal = " + principal);
+//        System.out.println("principal.getName() = " + principal.getName());
+//        return ResponseEntity.ok(studentService.getStudentStatistics(principal.getName(), moduleNumber));
+//    }
 
 
 }

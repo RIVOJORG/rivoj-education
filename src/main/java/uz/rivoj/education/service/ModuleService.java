@@ -6,7 +6,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.ModuleCR;
 import uz.rivoj.education.dto.response.ModuleResponse;
-import uz.rivoj.education.dto.response.SubjectResponse;
 import uz.rivoj.education.entity.ModuleEntity;
 import uz.rivoj.education.entity.StudentInfo;
 import uz.rivoj.education.entity.SubjectEntity;
@@ -19,7 +18,6 @@ import uz.rivoj.education.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -63,7 +61,7 @@ public class ModuleService {
     }
 
     public ModuleEntity findFirstModuleOfSubject(SubjectEntity subject) {
-        return moduleRepository.findFirstBySubjectOrderByModuleNumberAsc(subject);
+        return moduleRepository.findFirstBySubjectOrderByModuleNumber(subject);
     }
 
     public ModuleResponse findByModuleId(UUID moduleId) {
