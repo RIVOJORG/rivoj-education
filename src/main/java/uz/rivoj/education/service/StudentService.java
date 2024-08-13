@@ -60,9 +60,9 @@ public class StudentService {
             throw new DataNotFoundException("Subject not found with this title: " + studentCR.getSubject());}
         SubjectEntity subject = subjectRepository.findByTitle(studentCR.getSubject());
 
-        if (moduleRepository.findFirstBySubjectOrderByModuleNumberAsc(subject) == null){
+        if (moduleRepository.findFirstBySubjectOrderByModuleNumber(subject) == null){
             throw new DataNotFoundException("Module not found ");}
-        ModuleEntity moduleEntity = moduleRepository.findFirstBySubjectOrderByModuleNumberAsc(subject);
+        ModuleEntity moduleEntity = moduleRepository.findFirstBySubjectOrderByModuleNumber(subject);
 
         if (lessonRepository.findFirstByModuleOrderByNumberAsc(moduleEntity) == null) {
             throw new DataNotFoundException("Lesson not found ");}
@@ -82,77 +82,77 @@ public class StudentService {
         return "Created";
     }
 
-    public List<StudentStatisticsDTO> getStudentStatistics(String teacher, Integer moduleNumber) {
-        UserEntity userEntity = userRepository.findById(UUID.fromString(teacher))
-                .orElseThrow(() -> new RuntimeException("Teacher not found"));
-        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher(userEntity);
+//    public List<StudentStatisticsDTO> getStudentStatistics(String teacher, Integer moduleNumber) {
+//        UserEntity userEntity = userRepository.findById(UUID.fromString(teacher))
+//                .orElseThrow(() -> new RuntimeException("Teacher not found"));
+//        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher(userEntity);
+//
+//        SubjectEntity subject = teacherInfo.getSubject();
+//        ModuleEntity module = moduleRepository.findBySubjectAndModuleNumber(subject, moduleNumber);
+//        if (module == null) {
+//            throw new RuntimeException("Module not found");
+//        }
+//
+//        List<LessonEntity> lessons = lessonRepository.findByModule(module);
+//
+//        return studentInfoRepository.findByCurrentModule(module).stream()
+//                .map(studentInfo -> {
+//                    UserEntity student = studentInfo.getStudent();
+//
+//                    StudentStatisticsDTO dto = new StudentStatisticsDTO();
+//                    dto.setStudentName(student.getName());
+//                    dto.setStudentSurname(student.getSurname());
+//                    dto.setAvatar(studentInfo.getAvatar());
+//                    dto.setScore(studentInfo.getTotalScore());
+//
+//                    List<SpecialAttendanceResponse> attendanceResponses = new ArrayList<>();
+//
+//                    for (LessonEntity lesson : lessons) {
+//                        attendanceRepository.findByStudentAndLessonEntity(studentInfo, lesson)
+//                                .ifPresent(attendance -> {
+//                                    SpecialAttendanceResponse response = new SpecialAttendanceResponse();
+//                                    response.setModuleNumber(moduleNumber);
+//                                    response.setLessonNumber(lesson.getNumber());
+//                                    response.setScore(attendance.getScore());
+//                                    attendanceResponses.add(response);
+//                                });
+//                    }
+//
+//                    dto.setAttendanceList(attendanceResponses);
+//                    return dto;
+//                })
+//                .collect(Collectors.toList());
+//    }
 
-        SubjectEntity subject = teacherInfo.getSubject();
-        ModuleEntity module = moduleRepository.findBySubjectAndModuleNumber(subject, moduleNumber);
-        if (module == null) {
-            throw new RuntimeException("Module not found");
-        }
-
-        List<LessonEntity> lessons = lessonRepository.findByModule(module);
-
-        return studentInfoRepository.findByCurrentModule(module).stream()
-                .map(studentInfo -> {
-                    UserEntity student = studentInfo.getStudent();
-
-                    StudentStatisticsDTO dto = new StudentStatisticsDTO();
-                    dto.setStudentName(student.getName());
-                    dto.setStudentSurname(student.getSurname());
-                    dto.setAvatar(studentInfo.getAvatar());
-                    dto.setScore(studentInfo.getTotalScore());
-
-                    List<SpecialAttendanceResponse> attendanceResponses = new ArrayList<>();
-
-                    for (LessonEntity lesson : lessons) {
-                        attendanceRepository.findByStudentAndLessonEntity(studentInfo, lesson)
-                                .ifPresent(attendance -> {
-                                    SpecialAttendanceResponse response = new SpecialAttendanceResponse();
-                                    response.setModuleNumber(moduleNumber);
-                                    response.setLessonNumber(lesson.getNumber());
-                                    response.setScore(attendance.getScore());
-                                    attendanceResponses.add(response);
-                                });
-                    }
-
-                    dto.setAttendanceList(attendanceResponses);
-                    return dto;
-                })
-                .collect(Collectors.toList());
-    }
-
-    public List<AdminHomePageResponse> getStudentProgress(UUID subjectId) {
-        SubjectEntity subject = subjectRepository.findById(subjectId)
-                .orElseThrow(() -> new DataNotFoundException("Subject not found"));
-
-        List<ModuleEntity> modules = moduleRepository.findAllBySubject(subject)
-                .orElseThrow(() -> new DataNotFoundException("Modules not found"));
-
-        List<TeacherInfo> teachers = teacherInfoRepository.findBySubject(subject);
-
-        List<Integer> moduleCounts = new ArrayList<>();
-        for (ModuleEntity module : modules) {
-            moduleCounts.add(module.getModuleNumber());
-        }
-
-        List<StudentStatisticsDTO> studentStatistics = new ArrayList<>();
-        for (TeacherInfo teacher : teachers) {
-            for (ModuleEntity module : modules) {
-                studentStatistics.addAll(getStudentStatistics(teacher.getTeacher().getId().toString(), module.getModuleNumber()));
-            }
-        }
-
-        AdminHomePageResponse adminHomePageResponse = AdminHomePageResponse.builder()
-                .modulesCounts(moduleCounts)
-                .studentsCount(studentStatistics.size())
-                .students(studentStatistics)
-                .build();
-
-        return Collections.singletonList(adminHomePageResponse);
-    }
+//    public List<AdminHomePageResponse> getStudentProgress(UUID subjectId) {
+//        SubjectEntity subject = subjectRepository.findById(subjectId)
+//                .orElseThrow(() -> new DataNotFoundException("Subject not found"));
+//
+//        List<ModuleEntity> modules = moduleRepository.findAllBySubject(subject)
+//                .orElseThrow(() -> new DataNotFoundException("Modules not found"));
+//
+//        List<TeacherInfo> teachers = teacherInfoRepository.findBySubject(subject);
+//
+//        List<Integer> moduleCounts = new ArrayList<>();
+//        for (ModuleEntity module : modules) {
+//            moduleCounts.add(module.getModuleNumber());
+//        }
+//
+//        List<StudentStatisticsDTO> studentStatistics = new ArrayList<>();
+//        for (TeacherInfo teacher : teachers) {
+//            for (ModuleEntity module : modules) {
+//                studentStatistics.addAll(getStudentStatistics(teacher.getTeacher().getId().toString(), module.getModuleNumber()));
+//            }
+//        }
+//
+//        AdminHomePageResponse adminHomePageResponse = AdminHomePageResponse.builder()
+//                .modulesCounts(moduleCounts)
+//                .studentsCount(studentStatistics.size())
+//                .students(studentStatistics)
+//                .build();
+//
+//        return Collections.singletonList(adminHomePageResponse);
+//    }
 
 
 

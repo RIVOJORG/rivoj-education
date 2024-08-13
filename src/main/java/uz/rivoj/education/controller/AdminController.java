@@ -204,9 +204,9 @@ public class AdminController {
         return ResponseEntity.status(200).body(lessonService.delete(lessonId));
     }
 
-    @GetMapping("/student-progress")
-    public ResponseEntity<List<AdminHomePageResponse>> getStudentProgress(
-            @RequestParam UUID subjectId) {
-        return ResponseEntity.ok(studentService.getStudentProgress(subjectId));
-    }
+//    @GetMapping("/student-progress")
+//    public ResponseEntity<List<AdminHomePageResponse>> getStudentProgress(
+//            @RequestParam UUID subjectId) {
+//        return ResponseEntity.ok(studentService.getStudentProgress(subjectId));
+//    }
 }
