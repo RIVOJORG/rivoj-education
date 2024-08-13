@@ -50,7 +50,9 @@ public class LessonService {
         savedLesson.setSource(source);
         savedLesson.setCover(cover);
         lessonRepository.save(savedLesson);
-        return modelMapper.map(savedLesson, LessonResponse.class);
+        LessonResponse response = modelMapper.map(savedLesson, LessonResponse.class);
+        response.setModuleId(createRequest.getModuleId());
+        return response;
     }
 
 

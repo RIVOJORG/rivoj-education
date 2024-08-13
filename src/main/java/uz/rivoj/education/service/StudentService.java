@@ -82,15 +82,17 @@ public class StudentService {
         return "Created";
     }
 
-    public List<StudentStatisticsDTO> getStudentStatistics(String teacher, Integer moduleNumber) {
-        UserEntity userEntity = userRepository.findById(UUID.fromString(teacher))
+    public List<StudentStatisticsDTO> getStudentStatistics(String teacherId, Integer moduleNumber) {
+        UserEntity teacher = userRepository.findById(UUID.fromString(teacherId))
                 .orElseThrow(() -> new RuntimeException("Teacher not found"));
-        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher(userEntity);
 
-        SubjectEntity subject = teacherInfo.getSubject();
-        ModuleEntity module = moduleRepository.findBySubjectAndModuleNumber(subject, moduleNumber);
+        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher(teacher);
+        if (teacherInfo == null) {
+            throw new RuntimeException("Teacher information not found");
+        }
+        ModuleEntity module = moduleRepository.findBySubjectAndNumber(subject, moduleNumber);
         if (module == null) {
-            throw new RuntimeException("Module not found");
+            throw new RuntimeException("Module not found for the given module number");
         }
 
         List<LessonEntity> lessons = lessonRepository.findByModule(module);
@@ -123,6 +125,7 @@ public class StudentService {
                 })
                 .collect(Collectors.toList());
     }
+
 
     public List<AdminHomePageResponse> getStudentProgress(UUID subjectId) {
         SubjectEntity subject = subjectRepository.findById(subjectId)
