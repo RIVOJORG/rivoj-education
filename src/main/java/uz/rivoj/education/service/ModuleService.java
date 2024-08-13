@@ -5,19 +5,17 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.ModuleCR;
+import uz.rivoj.education.dto.response.LessonResponse;
 import uz.rivoj.education.dto.response.ModuleResponse;
+import uz.rivoj.education.entity.LessonEntity;
 import uz.rivoj.education.entity.ModuleEntity;
 import uz.rivoj.education.entity.StudentInfo;
 import uz.rivoj.education.entity.SubjectEntity;
 import uz.rivoj.education.exception.DataNotFoundException;
-import uz.rivoj.education.repository.ModuleRepository;
-import uz.rivoj.education.repository.StudentInfoRepository;
-import uz.rivoj.education.repository.SubjectRepository;
-import uz.rivoj.education.repository.UserRepository;
+import uz.rivoj.education.repository.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +25,7 @@ public class ModuleService {
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
     private final StudentInfoRepository studentRepository;
+    private final LessonRepository lessonRepository;
 
     public ModuleResponse create(ModuleCR createRequest) {
         SubjectEntity subjectEntity = subjectRepository.findById(createRequest.getSubjectId())
@@ -74,7 +73,7 @@ public class ModuleService {
     }
 
     public List<ModuleResponse> getAllModules(UUID userId) {
-        StudentInfo  studentInfo= studentRepository.findById(userId)
+        StudentInfo  studentInfo= studentRepository.findStudentInfoByStudentId(userId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found with this id => " + userId));
         List<ModuleEntity> modulesBySubject = moduleRepository.findAllBySubject(studentInfo.getSubject())
                 .orElseThrow(() -> new DataNotFoundException("Module not found with this subject => " + studentInfo.getSubject().getTitle()));
@@ -87,5 +86,40 @@ public class ModuleService {
             modules.add(moduleResponse);
         });
         return modules;
+    }
+
+    public List<LessonResponse> getAllAccessibleLessonsOfUser(UUID userId, UUID moduleId) {
+        StudentInfo studentInfo = studentRepository.findStudentInfoByStudentId(userId)
+                .orElseThrow(() -> new DataNotFoundException("Student not found with this id => " + userId));
+        List<ModuleResponse> allModules = getAllModules(userId);
+        List<LessonResponse> responseList = new ArrayList<>();
+        int currentLesson = studentInfo.getLesson().getNumber();
+        System.out.println("Current lesson: " + currentLesson);
+        System.out.println("Is empty " + allModules.isEmpty());
+        allModules.forEach(module -> {
+            if (Objects.equals(module.getModule_id(),moduleId)) {
+                List<LessonResponse> lessonResponseList = getAllLessonsByModule(moduleId);
+                for (LessonResponse lessonResponse : lessonResponseList) {
+                    System.out.println("LessonNumber " + lessonResponse.getNumber());
+                    if (currentLesson >= lessonResponse.getNumber()){
+                        responseList.add(lessonResponse);
+                    }
+                }
+            }
+        });
+        if(!responseList.isEmpty()){
+            return responseList;
+        }
+        throw  new DataNotFoundException("There is not any accessible lesson for this user!");
+    }
+
+    private List<LessonResponse> getAllLessonsByModule(UUID moduleId) {
+        ModuleEntity module = moduleRepository.findById(moduleId)
+                .orElseThrow(() -> new DataNotFoundException("Module not found with this id => " + moduleId));
+        List<LessonEntity> lessonEntities = lessonRepository.findAllByModule(module)
+                .orElseThrow(() -> new DataNotFoundException("Lesson not found in this module => " + moduleId));
+        return lessonEntities.stream()
+                .map(lessonEntity -> modelMapper.map(lessonEntity, LessonResponse.class))
+                .collect(Collectors.toList());
     }
 }

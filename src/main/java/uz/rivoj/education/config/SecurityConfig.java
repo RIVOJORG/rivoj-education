@@ -42,7 +42,6 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/swagger-ui.html"
     };
-
     @Bean
     public SecurityFilterChain configure (HttpSecurity http) throws Exception {
         return http

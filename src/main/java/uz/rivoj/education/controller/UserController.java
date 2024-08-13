@@ -41,7 +41,7 @@ public class UserController {
 //        return messageService.getMessages(chatId);
 //    }
 
-    @PreAuthorize("hasRole('STUDENT') or hasRole('TEACHER')")
+    @PreAuthorize("permitAll()")
     @GetMapping("get-chat/{id}")
     public ChatEntity getChatById(@PathVariable UUID id) {
         return chatService.getChat(id);
@@ -50,38 +50,38 @@ public class UserController {
 
 
     // MESSAGE
-    @PreAuthorize("hasRole('STUDENT') or hasRole('TEACHER')")
+    @PreAuthorize("permitAll()")
     @PostMapping("/send-message")
     public ResponseEntity<String> sendMessage(MessageCR messageCreateRequest){
         return ResponseEntity.ok(messageService.sendMessage(messageCreateRequest));
     }
 
-    @PreAuthorize("hasRole('STUDENT') or hasRole('TEACHER')")
+    @PreAuthorize("permitAll()")
     @GetMapping("/get-message-by-chatId")
     private List<MessageResponse> getMessagesByChatId(UUID chatId){
         return messageService.getMessagesByChatId(chatId);
     }
 
-    @PreAuthorize("hasRole('STUDENT') or hasRole('TEACHER')")
+    @PreAuthorize("permitAll()")
     @DeleteMapping("/delete-message")
     public ResponseEntity<String > deleteMessage(UUID messageId){
         return ResponseEntity.ok(messageService.deleteMessage(messageId));
     }
 
-    @PreAuthorize("hasRole('STUDENT') or hasRole('TEACHER')")
+    @PreAuthorize("permitAll()")
     @PutMapping("/edit-message")
     public ResponseEntity<String> editMessage(UUID messageId, String text){
         return ResponseEntity.ok(messageService.editMessage(messageId,text));
     }
 
-    @PreAuthorize("hasRole('STUDENT') or hasRole('TEACHER')")
+    @PreAuthorize("permitAll()")
     @GetMapping("/get-all-messages")
     public List<MessageResponse> getAll(){
         return messageService.getAllMessages();
     }
 
 
-    @PreAuthorize("hasRole('STUDENT') or hasRole('TEACHER')")
+    @PreAuthorize("permitAll()")
     @GetMapping("/get-notifications-by-user{userId}")
     public ResponseEntity<List<NotificationResponse>> getMyNotifications(@PathVariable UUID userId){
         return ResponseEntity.status(200).body(notificationService.getMyNotifications(userId));
@@ -89,7 +89,7 @@ public class UserController {
 
 
     // COMMENT
-    @PreAuthorize("hasRole('STUDENT') or hasRole('TEACHER')")
+    @PreAuthorize("permitAll()")
     @PostMapping("/create-comment")
     public ResponseEntity<CommentResponse> createComment(@RequestBody CommentCR createRequest){
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.create(createRequest));
@@ -101,4 +101,5 @@ public class UserController {
     public ResponseEntity<List<AttendanceResponse>> getAttendancesByLesson(@PathVariable UUID lessonId){
         return ResponseEntity.ok(attendanceService.getAttendancesByLesson(lessonId));
     }
+
 }
