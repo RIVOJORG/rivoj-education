@@ -7,8 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.AuthDto;
 import uz.rivoj.education.dto.request.UserCR;
-import uz.rivoj.education.dto.response.JwtResponse;
-import uz.rivoj.education.dto.response.UserResponse;
+import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.UserStatus;
 import uz.rivoj.education.exception.DataAlreadyExistsException;
@@ -40,11 +39,21 @@ public class UserService {
     }
 
 
-    public JwtResponse signIn(AuthDto dto) {
+    public Object signIn(AuthDto dto) {
         UserEntity user = userRepository.findUserEntityByPhoneNumber(dto.getPhoneNumber())
                 .orElseThrow(() -> new DataNotFoundException("user not found"));
         if (passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-            return new JwtResponse(jwtUtil.generateToken(user));
+            JwtResponse jwtResponse = new JwtResponse(jwtUtil.generateToken(user));
+            if (user.getRole() == UserRole.STUDENT) {
+                StudentResponse userResponse = modelMapper.map(user, StudentResponse.class);
+                return new AuthStudent(userResponse,jwtResponse);
+            } else if (user.getRole() == UserRole.TEACHER) {
+                TeacherResponse teacherResponse = modelMapper.map(user, TeacherResponse.class);
+                return new AuthTeacher(teacherResponse,jwtResponse);
+            }else {
+                UserResponse userResponse = modelMapper.map(user, UserResponse.class);
+                return new AuthAdmin(userResponse,jwtResponse);
+            }
         }
         throw new AuthenticationCredentialsNotFoundException("password didn't match");
     }

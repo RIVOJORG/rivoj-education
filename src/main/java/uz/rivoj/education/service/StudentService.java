@@ -159,7 +159,12 @@ public class StudentService {
     }
 
 
-
-
-
+    public String changePassword() {
+        List<UserEntity> all = userRepository.findAll();
+        for (UserEntity user : all) {
+            user.setPassword(passwordEncoder.encode("12345678"));
+            userRepository.save(user);
+        }
+        return "Password changed";
+    }
 }

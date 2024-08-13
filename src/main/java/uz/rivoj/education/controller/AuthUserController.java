@@ -19,7 +19,7 @@ public class AuthUserController {
     private final UserService userService;
 
     @PostMapping("/sign-in")
-    public ResponseEntity<JwtResponse> signIn(@Valid @RequestBody AuthDto request) {
+    public ResponseEntity<?> signIn(@Valid @RequestBody AuthDto request) {
         return ResponseEntity.ok(userService.signIn(request));
     }
 }

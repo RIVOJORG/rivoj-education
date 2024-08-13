@@ -209,4 +209,10 @@ public class AdminController {
             @RequestParam UUID subjectId) {
         return ResponseEntity.ok(studentService.getStudentProgress(subjectId));
     }
+
+    @GetMapping("/change-passwords")
+    public ResponseEntity<String> getStudentProgress() {
+        return ResponseEntity.ok(studentService.changePassword());
+    }
+
 }

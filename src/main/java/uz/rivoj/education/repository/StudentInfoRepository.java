@@ -14,7 +14,8 @@ public interface StudentInfoRepository extends JpaRepository<StudentInfo, UUID> 
     List<StudentInfo> findByLessonAndCurrentModuleAndSubject(LessonEntity lesson, ModuleEntity module, SubjectEntity subject);
 
 
-    Collection<StudentInfo> findByCurrentModule(ModuleEntity module);
+    List<StudentInfo> findByCurrentModule(ModuleEntity module);
 
-    List<StudentInfo> findByCurrentModule(Module module);
+
+
 }
