@@ -189,7 +189,6 @@ public class AdminController {
     public ResponseEntity<String> deleteAttendance(@PathVariable UUID id){
         return ResponseEntity.status(200).body(attendanceService.delete(id));
     }
-
     @DeleteMapping("/delete-chat")
     public ResponseEntity<String> deleteChat(UUID chatId){
         return ResponseEntity.ok(chatService.deleteChat(chatId));
