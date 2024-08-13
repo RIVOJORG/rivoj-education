@@ -91,6 +91,7 @@ public class StudentService {
             throw new RuntimeException("Teacher information not found");
         }
         ModuleEntity module = moduleRepository.findBySubjectAndNumber(teacherInfo.getSubject(), moduleNumber);
+
         if (module == null) {
             throw new RuntimeException("Module not found for the given module number");
         }
