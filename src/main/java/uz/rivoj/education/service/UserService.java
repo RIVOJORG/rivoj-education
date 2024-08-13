@@ -2,18 +2,19 @@ package uz.rivoj.education.service;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import uz.rivoj.education.dto.request.LoginRequest;
+import uz.rivoj.education.dto.request.AuthDto;
 import uz.rivoj.education.dto.request.UserCR;
+import uz.rivoj.education.dto.response.JwtResponse;
 import uz.rivoj.education.dto.response.UserResponse;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.UserStatus;
 import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.exception.DataNotFoundException;
-import uz.rivoj.education.exception.WrongPasswordException;
 import uz.rivoj.education.repository.*;
-import uz.rivoj.education.service.jwt.JwtService;
+import uz.rivoj.education.service.jwt.JwtUtil;
 
 import java.util.*;
 
@@ -22,9 +23,31 @@ import java.util.*;
 public class UserService {
     private final UserRepository userRepository;
     private final StudentInfoRepository studentInfoRepository;
-    private final JwtService jwtService;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+
+
+    public String add(UserCR dto) {
+        Optional<UserEntity> userEntity = userRepository.findUserEntityByPhoneNumber(dto.getPhoneNumber());
+        if(userEntity.isPresent()) {
+            throw  new DataAlreadyExistsException("User already exists");
+        }
+        UserEntity map = modelMapper.map(dto, UserEntity.class);
+        map.setPassword(passwordEncoder.encode(map.getPassword()));
+        userRepository.save(map);
+        return "Successfully signed up";
+    }
+
+
+    public JwtResponse signIn(AuthDto dto) {
+        UserEntity user = userRepository.findUserEntityByPhoneNumber(dto.getPhoneNumber())
+                .orElseThrow(() -> new DataNotFoundException("user not found"));
+        if (passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+            return new JwtResponse(jwtUtil.generateToken(user));
+        }
+        throw new AuthenticationCredentialsNotFoundException("password didn't match");
+    }
 
     public String addAdmin(UserCR userDto) {
         if(userRepository.findByPhoneNumber(userDto.getPhoneNumber()).isPresent()) {
@@ -41,29 +64,6 @@ public class UserService {
         UserResponse userResponse = modelMapper.map(userRepository.save(user), UserResponse.class);
         userResponse.setId(user.getId());
         return "Created";
-    }
-
-    public UserResponse login(LoginRequest login) {
-        UserEntity user = userRepository.findUserEntityByPhoneNumber(login.getPhoneNumber())
-                .orElseThrow(
-                        () -> new DataNotFoundException("user not found"));
-        Optional<StudentInfo> studentInfo = studentInfoRepository.findStudentInfoByStudentId(user.getId());
-        if (passwordEncoder.matches(login.getPassword(), user.getPassword())) {
-            UserResponse response =  UserResponse.builder()
-                    .id(user.getId())
-                    .name(user.getName())
-                    .surname(user.getSurname())
-                    .phoneNumber(user.getPhoneNumber())
-                    .password(user.getPassword())
-                    .token(jwtService.generateToken(user))
-                    .build();
-            if(studentInfo.isPresent()){
-                response.setAvatar(studentInfo.get().getAvatar());
-                response.setBirth(studentInfo.get().getBirthday());
-            }
-            return response;
-        }
-        throw new WrongPasswordException("password didn't match");
     }
 
     public List<UserResponse> getAll() {
