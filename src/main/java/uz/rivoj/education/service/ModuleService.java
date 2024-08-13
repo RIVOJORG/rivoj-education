@@ -61,14 +61,14 @@ public class ModuleService {
     }
 
     public ModuleEntity findFirstModuleOfSubject(SubjectEntity subject) {
-        return moduleRepository.findFirstBySubjectOrderByModuleNumber(subject);
+        return moduleRepository.findFirstBySubjectOrderByNumber(subject);
     }
 
     public ModuleResponse findByModuleId(UUID moduleId) {
         ModuleEntity moduleEntity = moduleRepository.findById(moduleId)
                 .orElseThrow(() -> new DataNotFoundException("Module not found with this id: " + moduleId));
         return ModuleResponse.builder()
-                .modulNumber(moduleEntity.getModuleNumber())
+                .modulNumber(moduleEntity.getNumber())
                 .subject(moduleEntity.getSubject().getTitle())
                 .build();
     }
@@ -82,7 +82,7 @@ public class ModuleService {
         modulesBySubject.forEach(module -> {
             ModuleResponse moduleResponse = new ModuleResponse();
             moduleResponse.setModule_id(module.getId());
-            moduleResponse.setModulNumber(module.getModuleNumber());
+            moduleResponse.setModulNumber(module.getNumber());
             moduleResponse.setSubject(module.getSubject().getTitle());
             modules.add(moduleResponse);
         });

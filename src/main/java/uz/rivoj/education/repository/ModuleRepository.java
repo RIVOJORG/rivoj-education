@@ -13,13 +13,13 @@ public interface ModuleRepository extends JpaRepository<ModuleEntity, UUID> {
 
     ModuleEntity findBySubject(SubjectEntity subject);
 
-    ModuleEntity findFirstBySubjectOrderByModuleNumber(SubjectEntity subject);
+    ModuleEntity findFirstBySubjectOrderByNumber(SubjectEntity subject);
 
 //    ModuleEntity findBySubjectAndNumber(SubjectEntity subject, Integer nextModuleNumber);
 
     Integer countBySubject(SubjectEntity subject);
-    ModuleEntity findBySubjectAndModuleNumber(SubjectEntity subject, Integer number);
+    ModuleEntity findBySubjectAndNumber(SubjectEntity subject, Integer number);
 
-    Optional<ModuleEntity> findByModuleNumberAndSubjectId(Integer moduleNumber, UUID subjectId);
+    Optional<ModuleEntity> findByNumberAndSubjectId(Integer moduleNumber, UUID subjectId);
     Optional<List<ModuleEntity>> findAllBySubject(SubjectEntity subject);
 }

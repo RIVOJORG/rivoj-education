@@ -33,7 +33,7 @@ public class SubjectService {
         for (int i = 1; i <= createRequest.getModuleCount(); i++) {
             ModuleEntity moduleEntity = new ModuleEntity();
             moduleEntity.setSubject(subjectEntity);
-            moduleEntity.setModuleNumber(i);
+            moduleEntity.setNumber(i);
             moduleRepository.save(moduleEntity);
         }
         return modelMapper.map(createRequest, SubjectResponse.class);
