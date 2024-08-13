@@ -11,6 +11,7 @@ import java.util.UUID;
 @Builder
 @ToString
 public class ModuleResponse {
-    private Integer number;
-    private UUID subjectId;
+    private UUID module_id;
+    private Integer modulNumber;
+    private String subject;
 }

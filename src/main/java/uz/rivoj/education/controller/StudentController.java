@@ -8,6 +8,7 @@ import uz.rivoj.education.dto.request.AttendanceCR;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.service.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -34,10 +35,15 @@ public class StudentController {
 
 
 
-    // MODULE
-    @GetMapping("get-module/{id}")
-    public ModuleResponse getModuleById(@PathVariable UUID id) {
-        return moduleService.findByModuleId(id);
+
+//    @GetMapping("getCurrentModule/{userId}")
+//    public ModuleResponse getCurrentModule(@PathVariable UUID userId) {
+//        return moduleService.getCurrentModule(userId);
+//    }
+
+    @GetMapping("getAllModules/{userId}")
+    public ResponseEntity<List<ModuleResponse>> getAllModules(@PathVariable UUID userId) {
+        return  ResponseEntity.ok(moduleService.getAllModules(userId));
     }
 
 

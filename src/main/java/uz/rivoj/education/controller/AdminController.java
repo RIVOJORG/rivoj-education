@@ -40,7 +40,7 @@ public class AdminController {
 
     @PostMapping("/add-student")
     public ResponseEntity<String> addStudent(@RequestBody StudentCR studentCR){
-        return ResponseEntity.status(200).body(studentService.addStudent(studentCR));
+        return ResponseEntity.status(HttpStatus.CREATED).body(studentService.addStudent(studentCR));
     }
     @PostMapping("/add-teacher")
     public ResponseEntity<String> addTeacher(@RequestBody TeacherCR teacherInfo){
@@ -71,27 +71,20 @@ public class AdminController {
     ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(lessonService.create(createRequest, lessonVideo,coverOfLesson));
     }
-
-//        @PutMapping(value = "/lessonVideoUpload",
-//          consumes = MULTIPART_FORM_DATA_VALUE,
-//           produces = APPLICATION_JSON_VALUE)
-////    public ResponseEntity<String> uploadFile(@RequestParam("file") final MultipartFile file,UUID lessonId) throws IOException {
-////        return ResponseEntity.ok(uploadService.uploadFile(file,lessonId));
-////    }
     @PutMapping("/update-role{userPhoneNumber}")
     public ResponseEntity<String> updateRole(@PathVariable String userPhoneNumber, @RequestParam UserRole userRole){
-        return ResponseEntity.status(200).body(userService.updateUser(userPhoneNumber, userRole));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userPhoneNumber, userRole));
     }
     @PutMapping("/update-lesson{lessonId}")
     public ResponseEntity<String> updateLesson(@PathVariable UUID lessonId,
                                                @RequestBody LessonUpdateDTO updateDTO) {
-        return ResponseEntity.status(200).body(lessonService.updateLesson(lessonId, updateDTO));
+        return ResponseEntity.status(HttpStatus.OK).body(lessonService.updateLesson(lessonId, updateDTO));
     }
     @PutMapping("/change-phoneNumber/{oldPhoneNumber}/{newPhoneNumber}")
     public ResponseEntity<String> changePhoneNumber(
             @PathVariable String oldPhoneNumber,
             @PathVariable String newPhoneNumber) {
-        return ResponseEntity.status(200).body(userService.changePhoneNumber(oldPhoneNumber, newPhoneNumber));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.changePhoneNumber(oldPhoneNumber, newPhoneNumber));
     }
     @GetMapping("/get-lessons-by-module{moduleId}") // for mentor and admin
     public List<LessonResponse> getLessonsByModule(

@@ -36,12 +36,15 @@ public class StudentService {
         List<StudentResponse> responses = new ArrayList<>();
         for (UserEntity userEntity : all) {
             StudentResponse studentResponse = modelMapper.map(userEntity, StudentResponse.class);
-             studentInfoRepository.findStudentInfoByStudentId(userEntity.getId()).get();
-             responses.add(studentResponse);
-        }
+            Optional<StudentInfo> studentInfo = studentInfoRepository.findStudentInfoByStudentId(userEntity.getId());
+            if (studentInfo.isPresent()) {
+                studentResponse.setId(String.valueOf(studentInfo.get().getId()));
+                responses.add(studentResponse);studentResponse.setId(String.valueOf(studentInfo.get().getId()));
+                responses.add(studentResponse); }
+
+            }
         return responses;
     }
-
     public String addStudent(StudentCR studentCR) {
         if (userRepository.findUserEntityByPhoneNumber(studentCR.getPhoneNumber()).isPresent()){
             throw new DataAlreadyExistsException("Student already exists with this phone number: " + studentCR.getPhoneNumber());}
@@ -57,9 +60,9 @@ public class StudentService {
             throw new DataNotFoundException("Subject not found with this title: " + studentCR.getSubject());}
         SubjectEntity subject = subjectRepository.findByTitle(studentCR.getSubject());
 
-        if (moduleRepository.findFirstBySubjectOrderByNumberAsc(subject) == null){
+        if (moduleRepository.findFirstBySubjectOrderByModuleNumberAsc(subject) == null){
             throw new DataNotFoundException("Module not found ");}
-        ModuleEntity moduleEntity = moduleRepository.findFirstBySubjectOrderByNumberAsc(subject);
+        ModuleEntity moduleEntity = moduleRepository.findFirstBySubjectOrderByModuleNumberAsc(subject);
 
         if (lessonRepository.findFirstByModuleOrderByNumberAsc(moduleEntity) == null) {
             throw new DataNotFoundException("Lesson not found ");}
@@ -85,7 +88,7 @@ public class StudentService {
         TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher(userEntity);
 
         SubjectEntity subject = teacherInfo.getSubject();
-        ModuleEntity module = moduleRepository.findBySubjectAndNumber(subject, moduleNumber);
+        ModuleEntity module = moduleRepository.findBySubjectAndModuleNumber(subject, moduleNumber);
         if (module == null) {
             throw new RuntimeException("Module not found");
         }
@@ -132,13 +135,13 @@ public class StudentService {
 
         List<Integer> moduleCounts = new ArrayList<>();
         for (ModuleEntity module : modules) {
-            moduleCounts.add(module.getNumber());
+            moduleCounts.add(module.getModuleNumber());
         }
 
         List<StudentStatisticsDTO> studentStatistics = new ArrayList<>();
         for (TeacherInfo teacher : teachers) {
             for (ModuleEntity module : modules) {
-                studentStatistics.addAll(getStudentStatistics(teacher.getTeacher().getId().toString(), module.getNumber()));
+                studentStatistics.addAll(getStudentStatistics(teacher.getTeacher().getId().toString(), module.getModuleNumber()));
             }
         }
 

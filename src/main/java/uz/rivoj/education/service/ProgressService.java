@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -68,7 +67,7 @@ public class ProgressService {
                 .name(userEntity.getName())
                 .surname(userEntity.getSurname())
                 .avatar(studentInfo.getAvatar())
-                .currentModule(studentInfo.getCurrentModule().getNumber())
+                .currentModule(studentInfo.getCurrentModule().getModuleNumber())
                 .currentLesson(studentInfo.getLesson().getNumber())
                 .isLessonOver(studentInfo.getIsLessonOver())
                 .coin(studentInfo.getCoin())
@@ -150,7 +149,7 @@ public class ProgressService {
             List<Integer> countLessonsList = new ArrayList<>();
 
             for (int i = 1; i <= totalCountModules; i++) {
-                List<LessonEntity> lessonsForModule = lessonRepository.findByModuleNumber(i);
+                List<LessonEntity> lessonsForModule = lessonRepository.findByModule_ModuleNumber(i);
 
                 int countLessons = countCompletedLessons(lessonsForModule, studentInfo);
                 countLessonsList.add(countLessons);
@@ -191,7 +190,7 @@ public class ProgressService {
                 .birthday(studentInfo.getBirthday())
                 .coin(studentInfo.getCoin())
                 .currentLesson(studentInfo.getLesson().getNumber())
-                .currentModule(studentInfo.getCurrentModule().getNumber())
+                .currentModule(studentInfo.getCurrentModule().getModuleNumber())
                 .isLessonOver(false)
                 .name(user.getName())
                 .surname(user.getSurname())
@@ -205,7 +204,7 @@ public class ProgressService {
         List<SpecialAttendanceResponse> attendanceResponseList = new ArrayList<>();
         for (AttendanceEntity attendanceEntity : attendanceRepository.findAllByStudentId(studentInfo.getId())) {
             SpecialAttendanceResponse attendanceResponse = SpecialAttendanceResponse.builder()
-                    .moduleNumber(attendanceEntity.getStudent().getCurrentModule().getNumber())
+                    .moduleNumber(attendanceEntity.getStudent().getCurrentModule().getModuleNumber())
                     .lessonNumber(attendanceEntity.getLessonEntity().getNumber())
                     .score(attendanceEntity.getScore())
                     .build();
