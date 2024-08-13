@@ -10,7 +10,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:1}
-    url: jdbc:postgresql://${DB_IP:143.110.188.247}:${DB_PORT:5433}/${DB_NAME:rivojstorage}
+    url: jdbc:postgresql://${DB_IP:localhost}:${DB_PORT:5432}/${DB_NAME:rivojstorage}
   jpa:
     open-in-view: false
     hibernate:
