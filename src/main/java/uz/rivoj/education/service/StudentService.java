@@ -90,7 +90,7 @@ public class StudentService {
         if (teacherInfo == null) {
             throw new RuntimeException("Teacher information not found");
         }
-        ModuleEntity module = moduleRepository.findBySubjectAndNumber(subject, moduleNumber);
+        ModuleEntity module = moduleRepository.findBySubjectAndModuleNumber(subject, moduleNumber);
         if (module == null) {
             throw new RuntimeException("Module not found for the given module number");
         }
