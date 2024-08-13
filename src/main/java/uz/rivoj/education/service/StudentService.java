@@ -60,9 +60,9 @@ public class StudentService {
             throw new DataNotFoundException("Subject not found with this title: " + studentCR.getSubject());}
         SubjectEntity subject = subjectRepository.findByTitle(studentCR.getSubject());
 
-        if (moduleRepository.findFirstBySubjectOrderByModuleNumberAsc(subject) == null){
+        if (moduleRepository.findFirstBySubjectOrderByNumber(subject) == null){
             throw new DataNotFoundException("Module not found ");}
-        ModuleEntity moduleEntity = moduleRepository.findFirstBySubjectOrderByModuleNumberAsc(subject);
+        ModuleEntity moduleEntity = moduleRepository.findFirstBySubjectOrderByNumber(subject);
 
         if (lessonRepository.findFirstByModuleOrderByNumberAsc(moduleEntity) == null) {
             throw new DataNotFoundException("Lesson not found ");}
@@ -90,7 +90,7 @@ public class StudentService {
         if (teacherInfo == null) {
             throw new RuntimeException("Teacher information not found");
         }
-        ModuleEntity module = moduleRepository.findBySubjectAndNumber(subject, moduleNumber);
+        ModuleEntity module = moduleRepository.findBySubjectAndNumber(teacherInfo.getSubject(), moduleNumber);
         if (module == null) {
             throw new RuntimeException("Module not found for the given module number");
         }
@@ -138,13 +138,13 @@ public class StudentService {
 
         List<Integer> moduleCounts = new ArrayList<>();
         for (ModuleEntity module : modules) {
-            moduleCounts.add(module.getModuleNumber());
+            moduleCounts.add(module.getNumber());
         }
 
         List<StudentStatisticsDTO> studentStatistics = new ArrayList<>();
         for (TeacherInfo teacher : teachers) {
             for (ModuleEntity module : modules) {
-                studentStatistics.addAll(getStudentStatistics(teacher.getTeacher().getId().toString(), module.getModuleNumber()));
+                studentStatistics.addAll(getStudentStatistics(teacher.getTeacher().getId().toString(), module.getNumber()));
             }
         }
 
