@@ -13,5 +13,5 @@ public class ModuleEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "subject_id", referencedColumnName = "id")
     private SubjectEntity subject;
-    private Integer number;
+    private Integer moduleNumber;
 }

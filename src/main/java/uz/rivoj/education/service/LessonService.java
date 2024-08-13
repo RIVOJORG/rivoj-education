@@ -125,8 +125,8 @@ public class LessonService {
     }
 
     public LessonEntity findFirstLessonOfNextModule(ModuleEntity module) {
-        Integer nextModuleNumber = module.getNumber() + 1;
-        ModuleEntity nextModule = moduleRepository.findBySubjectAndNumber(module.getSubject(), nextModuleNumber);
+        Integer nextModuleNumber = module.getModuleNumber() + 1;
+        ModuleEntity nextModule = moduleRepository.findBySubjectAndModuleNumber(module.getSubject(), nextModuleNumber);
 
         if (nextModule != null) {
             return lessonRepository.findFirstByModuleOrderByNumberAsc(nextModule);

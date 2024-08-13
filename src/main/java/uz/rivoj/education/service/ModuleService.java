@@ -6,14 +6,20 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.ModuleCR;
 import uz.rivoj.education.dto.response.ModuleResponse;
+import uz.rivoj.education.dto.response.SubjectResponse;
 import uz.rivoj.education.entity.ModuleEntity;
+import uz.rivoj.education.entity.StudentInfo;
 import uz.rivoj.education.entity.SubjectEntity;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.ModuleRepository;
+import uz.rivoj.education.repository.StudentInfoRepository;
 import uz.rivoj.education.repository.SubjectRepository;
+import uz.rivoj.education.repository.UserRepository;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +27,8 @@ public class ModuleService {
     private final ModuleRepository moduleRepository;
     private final SubjectRepository subjectRepository;
     private final ModelMapper modelMapper;
+    private final UserRepository userRepository;
+    private final StudentInfoRepository studentRepository;
 
     public ModuleResponse create(ModuleCR createRequest) {
         SubjectEntity subjectEntity = subjectRepository.findById(createRequest.getSubjectId())
@@ -48,22 +56,38 @@ public class ModuleService {
         List<ModuleResponse> list = new ArrayList<>();
         for (ModuleEntity module : moduleRepository.findAll()) {
             ModuleResponse moduleResponse = modelMapper.map(module, ModuleResponse.class);
-            moduleResponse.setSubjectId(module.getSubject().getId());
+            moduleResponse.setSubject(module.getSubject().getTitle());
             list.add(moduleResponse);
         }
         return list;
     }
 
     public ModuleEntity findFirstModuleOfSubject(SubjectEntity subject) {
-        return moduleRepository.findFirstBySubjectOrderByNumberAsc(subject);
+        return moduleRepository.findFirstBySubjectOrderByModuleNumberAsc(subject);
     }
 
     public ModuleResponse findByModuleId(UUID moduleId) {
         ModuleEntity moduleEntity = moduleRepository.findById(moduleId)
                 .orElseThrow(() -> new DataNotFoundException("Module not found with this id: " + moduleId));
         return ModuleResponse.builder()
-                .number(moduleEntity.getNumber())
-                .subjectId(moduleEntity.getSubject().getId())
+                .modulNumber(moduleEntity.getModuleNumber())
+                .subject(moduleEntity.getSubject().getTitle())
                 .build();
+    }
+
+    public List<ModuleResponse> getAllModules(UUID userId) {
+        StudentInfo  studentInfo= studentRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("Student not found with this id => " + userId));
+        List<ModuleEntity> modulesBySubject = moduleRepository.findAllBySubject(studentInfo.getSubject())
+                .orElseThrow(() -> new DataNotFoundException("Module not found with this subject => " + studentInfo.getSubject().getTitle()));
+        List<ModuleResponse> modules = new ArrayList<>();
+        modulesBySubject.forEach(module -> {
+            ModuleResponse moduleResponse = new ModuleResponse();
+            moduleResponse.setModule_id(module.getId());
+            moduleResponse.setModulNumber(module.getModuleNumber());
+            moduleResponse.setSubject(module.getSubject().getTitle());
+            modules.add(moduleResponse);
+        });
+        return modules;
     }
 }

@@ -36,6 +36,7 @@ public class UserService {
                 .phoneNumber(userDto.getPhoneNumber())
                 .password(passwordEncoder.encode(userDto.getPassword()))
                 .role(UserRole.ADMIN)
+                .userStatus(UserStatus.UNBLOCK)
                 .build();
         UserResponse userResponse = modelMapper.map(userRepository.save(user), UserResponse.class);
         userResponse.setId(user.getId());
