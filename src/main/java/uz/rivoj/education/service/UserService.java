@@ -42,20 +42,21 @@ public class UserService {
     public Object signIn(AuthDto dto) {
         UserEntity user = userRepository.findUserEntityByPhoneNumber(dto.getPhoneNumber())
                 .orElseThrow(() -> new DataNotFoundException("user not found"));
-        if (passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-            JwtResponse jwtResponse = new JwtResponse(jwtUtil.generateToken(user));
-            if (user.getRole() == UserRole.STUDENT) {
-                StudentResponse userResponse = modelMapper.map(user, StudentResponse.class);
-                return new AuthStudent(userResponse,jwtResponse);
-            } else if (user.getRole() == UserRole.TEACHER) {
-                TeacherResponse teacherResponse = modelMapper.map(user, TeacherResponse.class);
-                return new AuthTeacher(teacherResponse,jwtResponse);
-            }else {
-                UserResponse userResponse = modelMapper.map(user, UserResponse.class);
-                return new AuthAdmin(userResponse,jwtResponse);
-            }
-        }
-        throw new AuthenticationCredentialsNotFoundException("password didn't match");
+//        if (passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+//            JwtResponse jwtResponse = new JwtResponse(jwtUtil.generateToken(user));
+//            if (user.getRole() == UserRole.STUDENT) {
+//                StudentResponse userResponse = modelMapper.map(user, StudentResponse.class);
+//                return new AuthStudent(userResponse,jwtResponse);
+//            } else if (user.getRole() == UserRole.TEACHER) {
+//                TeacherResponse teacherResponse = modelMapper.map(user, TeacherResponse.class);
+//                return new AuthTeacher(teacherResponse,jwtResponse);
+//            }else {
+//                UserResponse userResponse = modelMapper.map(user, UserResponse.class);
+//                return new AuthAdmin(userResponse,jwtResponse);
+//            }
+//        }
+
+        return  new JwtResponse(jwtUtil.generateToken(user));
     }
 
     public String addAdmin(UserCR userDto) {
