@@ -20,9 +20,10 @@ spring:
       hibernate:
         format_sql: true
 
-  redis:
-    host: ${REDIS_HOST:redis}
-    port: ${REDIS_PORT:6379}
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
 
 springdoc:
   api-docs:
