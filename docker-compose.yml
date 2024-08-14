@@ -10,8 +10,12 @@ services:
       DB_IP: db
       DB_NAME: rivojstorage
       DB_PASSWORD: 1
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     depends_on:
       - db
+      - redis
+
   db:
     image: postgres
     ports:
@@ -22,5 +26,11 @@ services:
       POSTGRES_DB: rivojstorage
     volumes:
       - pg_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+
 volumes:
   pg_data:
