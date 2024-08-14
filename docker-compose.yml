@@ -13,12 +13,12 @@ services:
     depends_on:
       - db
   db:
-    image: postgres
+    image: rivoj-db
     ports:
       - "5433:5432"
     environment:
       POSTGRES_PASSWORD: 1
-      POSTGRES_USERNAME: rivoj-db
+      POSTGRES_USERNAME: postgres
       POSTGRES_DB: rivojstorage
     volumes:
       - pg_data:/var/lib/postgresql/data
