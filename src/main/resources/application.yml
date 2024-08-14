@@ -10,7 +10,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:1}
-    url: jdbc:postgresql://${DB_IP:localhost}:${DB_PORT:5432}/${DB_NAME:rivojstorage}
+    url: jdbc:postgresql://${DB_IP:db}:${DB_PORT:5432}/${DB_NAME:rivojstorage}
   jpa:
     open-in-view: false
     hibernate:
@@ -40,8 +40,8 @@ do:
   spaces:
     key: DO00X6PPB8UT7TTRXVW2
     secret: uyracnuBfeQr0euoLp6NWdnAu1kx+tV3Y/mOU+JkK/s
-    endpoint2:  https://rivoj-bucket.blr1.digitaloceanspaces.com
-    endpoint:  https://blr1.digitaloceanspaces.com
+    endpoint2: https://rivoj-bucket.blr1.digitaloceanspaces.com
+    endpoint: https://blr1.digitaloceanspaces.com
     region: blr1
     bucket: rivoj-bucket
 
