@@ -39,7 +39,7 @@ public class UserService {
     }
 
 
-    public Object signIn(AuthDto dto) {
+    public JwtResponse signIn(AuthDto dto) {
         UserEntity user = userRepository.findUserEntityByPhoneNumber(dto.getPhoneNumber())
                 .orElseThrow(() -> new DataNotFoundException("user not found"));
       if (passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
