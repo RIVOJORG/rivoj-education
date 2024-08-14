@@ -2,23 +2,27 @@ package uz.rivoj.education.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.AttendanceCR;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.service.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/student")
 public class StudentController {
     private final AttendanceService attendanceService;
-    private final ChatService chatService;
-    private final MessageService messageService;
+    private final UploadService uploadService;
     private final ModuleService moduleService;
     private final NotificationService notificationService;
 
@@ -43,5 +47,12 @@ public class StudentController {
         return  ResponseEntity.ok(moduleService.getAllModules(userId));
     }
 
+    @PostMapping(value = "/upload-homework", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> uploadHomework(
+            @ModelAttribute UUID attendanceId,
+            @RequestPart("homeworkVideo") MultipartFile homeworkVideo
+    ) throws IOException {
+        return ResponseEntity.status(HttpStatus.CREATED).body(uploadService.uploadFile(homeworkVideo, attendanceId.toString()));
+    }
 
 }
