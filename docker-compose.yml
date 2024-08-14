@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   app:
     build:
@@ -6,6 +8,19 @@ services:
     image: rivoj-education-app
     ports:
       - "8080:8080"
+    environment:
+      DB_USERNAME: postgres
+      DB_PASSWORD: 1
+      DB_IP: db
+      DB_PORT: 5432
+      DB_NAME: rivojstorage
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      # Add other environment variables as needed
+    depends_on:
+      - db
+      - redis
+
   redis:
     image: redis
     container_name: redis
@@ -14,37 +29,29 @@ services:
       - redis_volume_data:/data
     ports:
       - "6379:6379"
+
   redis_insight:
     image: redislabs/redisinsight:latest
     container_name: redis_insight
     restart: always
     ports:
-      - 8001:8001
+      - "8001:8001"
     volumes:
       - redis_insight_volume_data:/db
-
-    environment:
-      DB_IP: db
-      DB_NAME: rivojstorage
-      DB_PASSWORD: 1
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
     depends_on:
-      - db
       - redis
 
   db:
     image: postgres
+    container_name: postgres
     ports:
       - "5433:5432"
     environment:
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1
-      POSTGRES_USERNAME: postgres
       POSTGRES_DB: rivojstorage
     volumes:
       - pg_data:/var/lib/postgresql/data
-
-
 
 volumes:
   pg_data:
