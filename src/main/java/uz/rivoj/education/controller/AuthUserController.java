@@ -24,5 +24,9 @@ public class AuthUserController {
     public ResponseEntity<JwtResponse> signIn(@Valid @RequestBody AuthDto request) {
         return ResponseEntity.ok(userService.signIn(request));
     }
+    @PostMapping("/sign-in2")
+    public ResponseEntity<StudentResponse> signIn2(@Valid @RequestBody AuthDto request) {
+        return ResponseEntity.ok(userService.login2(request));
+    }
 
 }
