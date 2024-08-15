@@ -2,6 +2,8 @@ package uz.rivoj.education.dto.response;
 
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @AllArgsConstructor

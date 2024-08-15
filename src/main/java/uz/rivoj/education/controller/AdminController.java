@@ -1,5 +1,6 @@
 package uz.rivoj.education.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -38,6 +39,10 @@ public class AdminController {
     private final SubjectService subjectService;
     private final UploadService uploadService;
 
+    @PostMapping("/sign-in2")
+    public ResponseEntity<StudentResponse> signIn2(@Valid @RequestBody AuthDto request) {
+        return ResponseEntity.ok(userService.login2(request));
+    }
     @PostMapping("/add-student")
     public ResponseEntity<String> addStudent(@RequestBody StudentCR studentCR){
         return ResponseEntity.status(HttpStatus.CREATED).body(studentService.addStudent(studentCR));
