@@ -44,7 +44,7 @@ public StudentResponse login2(AuthDto dto) {
                 .orElseThrow(() -> new DataNotFoundException("user not found"));
         StudentResponse studentResponse = modelMapper.map(user, StudentResponse.class);
         studentResponse.setAvatar(studentInfo.getAvatar());
-        studentInfo.setBirthday(studentInfo.getBirthday());
+        studentResponse.setBirth(studentInfo.getBirthday());
         return studentResponse;
     }
 
