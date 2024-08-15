@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.LoginRequest;
 import uz.rivoj.education.dto.request.UserCR;
+import uz.rivoj.education.dto.response.StudentResponse;
 import uz.rivoj.education.dto.response.UserResponse;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.UserStatus;
@@ -81,6 +82,16 @@ public class UserService {
         UserResponse userResponse = modelMapper.map(userEntity, UserResponse.class);
         userResponse.setId(userEntity.getId());
         return userResponse;
+    }
+    public StudentResponse login2(LoginRequest login) {
+        UserEntity user = userRepository.findByPhoneNumber(login.getPhoneNumber())
+                .orElseThrow(() -> new DataNotFoundException("User not found!"));
+        StudentInfo studentInfo = studentInfoRepository.findStudentInfoByStudentId(user.getId())
+                .orElseThrow(() -> new DataNotFoundException("User not found!"));
+        StudentResponse student = modelMapper.map(user, StudentResponse.class);
+        student.setAvatar(studentInfo.getAvatar());
+        student.setBirth(studentInfo.getBirthday());
+        return  student;
     }
 
     public UserEntity getUserByPhoneNumber(String phoneNumber){
