@@ -6,7 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-public class LoginRequest {
+public class AuthDto {
     private String phoneNumber;
     private String password;
 }

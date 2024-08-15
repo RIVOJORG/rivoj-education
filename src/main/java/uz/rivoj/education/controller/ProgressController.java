@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1/progress")
+@RequestMapping("/api/v1/progress")
 public class ProgressController {
     private final ProgressService progressService;
     private final DiscountService discountService;

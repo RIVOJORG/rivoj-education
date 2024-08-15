@@ -8,6 +8,7 @@ import uz.rivoj.education.entity.LessonEntity;
 import uz.rivoj.education.entity.ModuleEntity;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 @Repository
 public interface LessonRepository extends JpaRepository<LessonEntity, UUID> {
@@ -23,7 +24,8 @@ public interface LessonRepository extends JpaRepository<LessonEntity, UUID> {
 
     List<LessonEntity> findByModuleNumber(int moduleNumber);
 
-//    Integer countByModuleAndStudent(int i, UUID studentId);
-//    Integer countByModuleAndStudent(ModuleEntity module, StudentInfo student);
+    List<LessonEntity> findByModule(ModuleEntity module);
+    Optional<List<LessonEntity>> findAllByModule(ModuleEntity module);
+
 
 }

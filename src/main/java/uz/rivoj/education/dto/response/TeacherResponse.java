@@ -9,7 +9,7 @@ import lombok.*;
 @Getter
 @Builder
 @ToString
-public class TeacherResponse {
+public class TeacherResponse { //
     private String name;
     private String surname;
     private String avatar;

@@ -1,6 +1,7 @@
 services:
   app:
     build:
+      context: .
       dockerfile: Dockerfile
     image: rivoj-education-app
     ports:
@@ -23,3 +24,7 @@ services:
       - pg_data:/var/lib/postgresql/data
 volumes:
   pg_data:
+
+ 
+
+  

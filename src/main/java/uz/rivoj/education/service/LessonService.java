@@ -2,10 +2,12 @@ package uz.rivoj.education.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.LessonCR;
 import uz.rivoj.education.dto.response.LessonResponse;
 import uz.rivoj.education.dto.update.LessonUpdateDTO;
@@ -15,10 +17,9 @@ import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.LessonRepository;
 import uz.rivoj.education.repository.ModuleRepository;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+
+import java.io.IOException;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -26,25 +27,32 @@ public class LessonService {
     private final LessonRepository lessonRepository;
     private final ModuleRepository moduleRepository;
     private final ModelMapper modelMapper;
-    public LessonResponse create(LessonCR createRequest) {
+    private final UploadService uploadService;
+    @SneakyThrows
+    public LessonResponse create(LessonCR createRequest, MultipartFile lessonVideo, MultipartFile coverOfLesson)  {
         ModuleEntity moduleEntity = moduleRepository.findById(createRequest.getModuleId())
-                .orElseThrow(() -> new EntityNotFoundException("Module not found with this id " + createRequest.getModuleId()));
-
+                .orElseThrow(() -> new DataNotFoundException("Module not found with this id " + createRequest.getModuleId()));
         if (lessonRepository.existsByModuleAndNumber(moduleEntity, createRequest.getNumber())) {
             throw new DataAlreadyExistsException("Lesson already exists with number : " + createRequest.getNumber() + " in module id : " + createRequest.getModuleId());
         }
-
         if (lessonRepository.existsByModuleAndTitle(moduleEntity, createRequest.getTitle())) {
             throw new DataAlreadyExistsException("Lesson already exists with title : " + createRequest.getTitle() + " in module id : " + createRequest.getModuleId());
         }
-
         LessonEntity lesson = modelMapper.map(createRequest, LessonEntity.class);
         lesson.setModule(moduleEntity);
-        lessonRepository.save(lesson);
-
-        LessonResponse lessonResponse = modelMapper.map(lesson, LessonResponse.class);
-        lessonResponse.setId(lesson.getId());
-        return lessonResponse;
+        LessonEntity savedLesson = lessonRepository.save(lesson);
+        String lessonVideoContentType = lessonVideo.getContentType();
+        String lessonSuffix = Objects.requireNonNull(lessonVideoContentType).substring(lessonVideoContentType.indexOf("/") + 1);
+        String source = uploadService.uploadFile(lessonVideo,"Lesson"+savedLesson.getNumber()+"."+lessonSuffix);
+        String coverContentType = coverOfLesson.getContentType();
+        String coverSuffix = Objects.requireNonNull(coverContentType).substring(coverContentType.indexOf("/")+1);
+        String cover = uploadService.uploadFile(coverOfLesson,"CoverOfLesson"+savedLesson.getNumber()+"."+coverSuffix);
+        savedLesson.setSource(source);
+        savedLesson.setCover(cover);
+        lessonRepository.save(savedLesson);
+        LessonResponse response = modelMapper.map(savedLesson, LessonResponse.class);
+        response.setModuleId(createRequest.getModuleId());
+        return response;
     }
 
 

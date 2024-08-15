@@ -20,16 +20,16 @@ import java.util.UUID;
 public class UploadService {
     private final AmazonS3 s3Client;
     private final LessonRepository lessonRepository;
-    private final String fileLink = "https://rivojmediabucket.blr1.digitaloceanspaces.com/";
-    private final String absFilePath = "meta-data/";
+    @Value("${do.spaces.endpoint2}")
+    private String fileLink;
 
     @Value("${do.spaces.bucket}")
     private String doSpaceBucket;
 
-    public String uploadFile(MultipartFile file, UUID lessonId) throws IOException {
-        String uniquePath = absFilePath + UUID.randomUUID() + file.getOriginalFilename();
+    public String uploadFile(MultipartFile file, String fileName) throws IOException {
+        String absFilePath = "meta-data/";
+        String uniquePath = absFilePath + UUID.randomUUID() + "_" + fileName;
 
-        // Initiate multipart upload
         InitiateMultipartUploadRequest initRequest = new InitiateMultipartUploadRequest(doSpaceBucket, uniquePath);
         InitiateMultipartUploadResult initResponse = s3Client.initiateMultipartUpload(initRequest);
 
@@ -38,7 +38,6 @@ public class UploadService {
         long partSize = 100 * 1024 * 1024; // Set part size to 100 MB
 
         try {
-            // Upload parts
             long filePosition = 0;
             for (int i = 1; filePosition < contentLength; i++) {
                 partSize = Math.min(partSize, (contentLength - filePosition));
@@ -61,24 +60,16 @@ public class UploadService {
                     doSpaceBucket, uniquePath, initResponse.getUploadId(), partETags);
 
             s3Client.completeMultipartUpload(compRequest);
-            // Set the object to public
-            s3Client.setObjectAcl(doSpaceBucket, uniquePath, CannedAccessControlList.PublicRead);
 
             // Set the object to public
             s3Client.setObjectAcl(doSpaceBucket, uniquePath, CannedAccessControlList.PublicRead);
 
-            // Save file link to database
-            LessonEntity lesson = lessonRepository.findById(lessonId).orElseThrow(
-                    () -> new DataNotFoundException("Lesson not found with this id:" + lessonId)
-            );
-            lesson.setSource(fileLink + uniquePath);
-            lessonRepository.save(lesson);
-
-            return fileLink + uniquePath;
+            return fileLink + "/" + uniquePath;
         } catch (Exception e) {
             s3Client.abortMultipartUpload(new AbortMultipartUploadRequest(
                     doSpaceBucket, uniquePath, initResponse.getUploadId()));
             throw new IOException("Failed to upload file", e);
         }
     }
+
 }
