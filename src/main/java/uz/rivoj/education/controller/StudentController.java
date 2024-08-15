@@ -26,22 +26,18 @@ public class StudentController {
     private final ModuleService moduleService;
     private final NotificationService notificationService;
 
-    @PreAuthorize("permitAll()")
     @PostMapping("/create-attendance")
     public ResponseEntity<AttendanceResponse> createAttendance(@RequestBody AttendanceCR attendance){
         return ResponseEntity.status(HttpStatus.CREATED).body(attendanceService.create(attendance));
     }
-    @PreAuthorize("permitAll()")
     @GetMapping("/get/{id}")
     public ResponseEntity<AttendanceResponse> getAttendanceById(@PathVariable UUID id) {
         return ResponseEntity.ok(attendanceService.findByAttendanceId(id));
     }
-    @PreAuthorize("permitAll()")
     @GetMapping("/getAllLessons/{userId}")
     public ResponseEntity<List<LessonResponse>> getAllLessons(@PathVariable UUID userId, UUID moduleId){
         return ResponseEntity.ok(moduleService.getAllAccessibleLessonsOfUser(userId,moduleId));
     }
-    @PreAuthorize("permitAll()")
     @GetMapping("/getAllModules/{userId}")
     public ResponseEntity<List<ModuleResponse>> getAllModules(@PathVariable UUID userId) {
         return  ResponseEntity.ok(moduleService.getAllModules(userId));

@@ -51,10 +51,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(requestConfigurer -> {
                     requestConfigurer
                             .requestMatchers(WHITE_LIST).permitAll()
-                            .requestMatchers("/api/v1/progress/**").permitAll()
-                            .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                            .requestMatchers("/api/v1/teacher/**").hasRole("TEACHER")
-                            .requestMatchers("/api/v1/student/**").hasRole("STUDENT")
                             .anyRequest().authenticated();
                 })
                 .addFilterBefore(
