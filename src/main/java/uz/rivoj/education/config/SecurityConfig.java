@@ -52,9 +52,9 @@ public class SecurityConfig {
                     requestConfigurer
                             .requestMatchers(WHITE_LIST).permitAll()
                             .requestMatchers("/api/v1/progress/**").permitAll()
-                            .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                            .requestMatchers("/api/v1/teacher/**").hasRole("TEACHER")
-                            .requestMatchers("/api/v1/student/**").hasRole("STUDENT")
+                            .requestMatchers("/api/v1/admin/**").permitAll()
+                            .requestMatchers("/api/v1/teacher/**").permitAll()
+                            .requestMatchers("/api/v1/student/**").permitAll()
                             .anyRequest().authenticated();
                 })
                 .addFilterBefore(
