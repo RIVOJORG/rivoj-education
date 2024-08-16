@@ -1,5 +1,6 @@
 package uz.rivoj.education.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,6 +38,7 @@ public class AdminController {
     private final NotificationService notificationService;
     private final SubjectService subjectService;
     private final UploadService uploadService;
+
 
     @PostMapping("/add-student")
     public ResponseEntity<String> addStudent(@RequestBody StudentCR studentCR){

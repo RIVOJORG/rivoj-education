@@ -37,7 +37,16 @@ public class UserService {
         userRepository.save(map);
         return "Successfully signed up";
     }
-
+public StudentResponse login2(AuthDto dto) {
+        UserEntity user = userRepository.findByPhoneNumber(dto.getPhoneNumber())
+                .orElseThrow(() -> new DataNotFoundException("user not found"));
+        StudentInfo studentInfo = studentInfoRepository.findStudentInfoByStudentId(user.getId())
+                .orElseThrow(() -> new DataNotFoundException("user not found"));
+        StudentResponse studentResponse = modelMapper.map(user, StudentResponse.class);
+        studentResponse.setAvatar(studentInfo.getAvatar());
+        studentResponse.setBirth(studentInfo.getBirthday());
+        return studentResponse;
+    }
 
     public JwtResponse signIn(AuthDto dto) {
         UserEntity user = userRepository.findUserEntityByPhoneNumber(dto.getPhoneNumber())
