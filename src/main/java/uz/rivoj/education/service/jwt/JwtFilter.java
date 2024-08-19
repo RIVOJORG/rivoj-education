@@ -35,13 +35,10 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = authorization.substring(7);
 
         Jws<Claims> claimsJws = jwtUtil.extractToken(token);
-        String phoneNumber = claimsJws.getBody().getSubject();
-        String storedToken = redisTemplate.opsForValue().get(phoneNumber);
-        System.out.println("phoneNumber = " + phoneNumber);
-        System.out.println("storedToken = " + storedToken);
+        String id = claimsJws.getBody().getSubject();
+        String storedToken = redisTemplate.opsForValue().get(id);
 
         if (!token.equals(storedToken)){
-            System.out.println("checking>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
             filterChain.doFilter(request, response);
             return;
         }
