@@ -10,8 +10,6 @@ import java.util.UUID;
 @Builder
 public class AttendanceCR {
     private UUID teacherId;
-    private UUID studentId;
     private UUID lessonId;
     private String answer;
-    private Boolean status;
 }

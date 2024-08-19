@@ -1,11 +1,14 @@
 package uz.rivoj.education.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.StudentCR;
+import uz.rivoj.education.dto.request.StudentUpdate;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.UserStatus;
@@ -29,6 +32,7 @@ public class StudentService {
     private final TeacherInfoRepository teacherInfoRepository;
     private final AttendanceRepository attendanceRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UploadService uploadService;
 
     public List<StudentResponse> getAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -166,5 +170,34 @@ public class StudentService {
             userRepository.save(user);
         }
         return "Password changed";
+    }
+
+    @SneakyThrows
+    public StudentResponse updateProfile(StudentUpdate studentUpdate, MultipartFile picture, UUID studentId) {
+        StudentInfo studentInfo = studentInfoRepository.findStudentInfoByStudentId(studentId)
+                .orElseThrow(() -> new DataNotFoundException("Student not found!"));
+        UserEntity userEntity = userRepository.findById(studentId)
+                .orElseThrow(() -> new DataNotFoundException("Student not found!"));
+        if(studentUpdate.getBirthday() != null){
+            studentInfo.setBirthday(studentInfo.getBirthday());}
+        if(studentUpdate.getSurname() != null){
+            userEntity.setSurname(studentUpdate.getSurname());}
+        if(studentUpdate.getPhoneNumber() != null){
+            userEntity.setPhoneNumber(studentUpdate.getPhoneNumber());}
+        if(studentUpdate.getName() != null){
+            userEntity.setName(studentUpdate.getName());}
+        if(studentUpdate.getPassword() != null){
+            userEntity.setPassword(passwordEncoder.encode(studentUpdate.getPassword()));
+        }
+        if(!picture.isEmpty()){
+            String filename = userEntity.getName() + "_ProfilePicture";
+            String avatarPath = uploadService.uploadFile(picture, filename);
+            userEntity.setAvatar(avatarPath);
+        }
+        userRepository.save(userEntity);
+        studentInfoRepository.save(studentInfo);
+        StudentResponse response = modelMapper.map(userEntity, StudentResponse.class);
+        response.setBirth(studentInfo.getBirthday());
+    return  response;
     }
 }

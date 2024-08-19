@@ -10,9 +10,11 @@ import uz.rivoj.education.entity.LessonEntity;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.LessonRepository;
 
+import javax.print.DocFlavor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -28,7 +30,9 @@ public class UploadService {
 
     public String uploadFile(MultipartFile file, String fileName) throws IOException {
         String absFilePath = "meta-data/";
-        String uniquePath = absFilePath + UUID.randomUUID() + "_" + fileName;
+        String contentType = Objects.requireNonNull(file.getContentType()).split("/")[1];
+        System.out.println(contentType);
+        String uniquePath = absFilePath + UUID.randomUUID() + "_" + fileName + "." + contentType;
 
         InitiateMultipartUploadRequest initRequest = new InitiateMultipartUploadRequest(doSpaceBucket, uniquePath);
         InitiateMultipartUploadResult initResponse = s3Client.initiateMultipartUpload(initRequest);
@@ -54,14 +58,10 @@ public class UploadService {
                 partETags.add(uploadResult.getPartETag());
                 filePosition += partSize;
             }
-
-            // Complete multipart upload
             CompleteMultipartUploadRequest compRequest = new CompleteMultipartUploadRequest(
                     doSpaceBucket, uniquePath, initResponse.getUploadId(), partETags);
 
             s3Client.completeMultipartUpload(compRequest);
-
-            // Set the object to public
             s3Client.setObjectAcl(doSpaceBucket, uniquePath, CannedAccessControlList.PublicRead);
 
             return fileLink + "/" + uniquePath;

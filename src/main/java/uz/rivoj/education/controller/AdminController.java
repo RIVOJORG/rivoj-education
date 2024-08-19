@@ -56,7 +56,6 @@ public class AdminController {
     public ResponseEntity<ModuleResponse> createModule(@RequestBody ModuleCR createRequest){
         return ResponseEntity.status(HttpStatus.CREATED).body(moduleService.create(createRequest));
     }
-
     @PostMapping("/create-subject")
     public ResponseEntity<SubjectResponse> createSubject(@RequestBody SubjectCR createRequest){
         return ResponseEntity.status(HttpStatus.CREATED).body(subjectService.create(createRequest));

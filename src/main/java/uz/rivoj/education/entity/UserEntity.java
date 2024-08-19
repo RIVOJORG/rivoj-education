@@ -24,6 +24,7 @@ public class UserEntity extends BaseEntity implements UserDetails {
     @Column(unique = true, nullable = false)
     private String phoneNumber;
     private String password;
+    private String avatar;
     @Enumerated(EnumType.STRING)
     private UserRole role;
     @Enumerated(EnumType.STRING)

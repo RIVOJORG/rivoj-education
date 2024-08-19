@@ -15,6 +15,7 @@ import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.*;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,8 +80,8 @@ public class AttendanceService {
         return attendanceResponseList;
 
     }
-    public AttendanceResponse create(AttendanceCR attendance) {
-        StudentInfo studentInfo = studentRepository.findById(attendance.getStudentId()).orElseThrow(() -> new DataNotFoundException("Student not found! " + attendance.getStudentId()));
+    public AttendanceResponse create(AttendanceCR attendance, UUID studentId) {
+        StudentInfo studentInfo = studentRepository.findById(studentId).orElseThrow(() -> new DataNotFoundException("Student not found! " + studentId));
         TeacherInfo teacherInfo = teacherInfoRepository.findById(attendance.getTeacherId()).orElseThrow(() -> new DataNotFoundException("Teacher not found! " + attendance.getTeacherId()));
         LessonEntity lessonEntity = lessonRepository.findById(attendance.getLessonId()).orElseThrow(() -> new DataNotFoundException("Lesson not found! " + attendance.getLessonId()));
         AttendanceEntity attendanceEntity = AttendanceEntity.builder()
@@ -92,7 +93,6 @@ public class AttendanceService {
                 .status(UNCHECKED)
                 .build();
         attendanceRepository.save(attendanceEntity);
-
         return AttendanceResponse.builder()
                 .coin(attendanceEntity.getCoin())
                 .feedBack(attendanceEntity.getFeedBack())

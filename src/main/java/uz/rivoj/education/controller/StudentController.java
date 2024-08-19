@@ -8,10 +8,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.AttendanceCR;
+import uz.rivoj.education.dto.request.StudentUpdate;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.service.*;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,30 +27,37 @@ public class StudentController {
     private final UploadService uploadService;
     private final ModuleService moduleService;
     private final NotificationService notificationService;
+    private  final StudentService studentService;
 
     @PostMapping("/create-attendance")
-    public ResponseEntity<AttendanceResponse> createAttendance(@RequestBody AttendanceCR attendance){
-        return ResponseEntity.status(HttpStatus.CREATED).body(attendanceService.create(attendance));
+    public ResponseEntity<AttendanceResponse> createAttendance(@RequestBody AttendanceCR attendance, Principal principal){
+        return ResponseEntity.status(HttpStatus.CREATED).body(attendanceService.create(attendance, UUID.fromString(principal.getName())));
     }
-    @GetMapping("/get/{id}")
-    public ResponseEntity<AttendanceResponse> getAttendanceById(@PathVariable UUID id) {
-        return ResponseEntity.ok(attendanceService.findByAttendanceId(id));
+    @GetMapping("/getAllAttendance")
+    public ResponseEntity<AttendanceResponse> getAttendanceById(Principal principal) {
+        return ResponseEntity.ok(attendanceService.findByAttendanceId(UUID.fromString(principal.getName())));
     }
-    @GetMapping("/getAllLessons/{userId}")
-    public ResponseEntity<List<LessonResponse>> getAllLessons(@PathVariable UUID userId, UUID moduleId){
-        return ResponseEntity.ok(moduleService.getAllAccessibleLessonsOfUser(userId,moduleId));
+    @GetMapping("/getAllLessonsOfModule")
+    public ResponseEntity<List<LessonResponse>> getAllLessons(Principal principal,@RequestParam UUID moduleId){
+        return ResponseEntity.ok(moduleService.getAllAccessibleLessonsOfUser(UUID.fromString(principal.getName()),moduleId));
     }
-    @GetMapping("/getAllModules/{userId}")
-    public ResponseEntity<List<ModuleResponse>> getAllModules(@PathVariable UUID userId) {
-        return  ResponseEntity.ok(moduleService.getAllModules(userId));
+    @GetMapping("/getAllModules")
+    public ResponseEntity<List<ModuleResponse>> getAllModules(Principal principal) {
+        return  ResponseEntity.ok(moduleService.getAllModules(UUID.fromString(principal.getName())));
     }
 
     @PostMapping(value = "/upload-homework", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> uploadHomework(
-            @ModelAttribute UUID attendanceId,
-            @RequestPart("homeworkVideo") MultipartFile homeworkVideo
+            @RequestParam UUID attendanceId,
+            @RequestPart("Homework File") MultipartFile homeworkVideo
     ) throws IOException {
         return ResponseEntity.status(HttpStatus.CREATED).body(uploadService.uploadFile(homeworkVideo, attendanceId.toString()));
     }
-
+    @PutMapping(value = "/update_profile", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<StudentResponse> createComment(
+            @ModelAttribute StudentUpdate studentUpdate,
+            Principal principal,
+            @RequestPart("ProfilePicture") MultipartFile picture){
+        return ResponseEntity.status(HttpStatus.CREATED).body(studentService.updateProfile(studentUpdate,picture, UUID.fromString(principal.getName())));
+    }
 }
