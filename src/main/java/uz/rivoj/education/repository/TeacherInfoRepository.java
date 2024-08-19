@@ -18,4 +18,5 @@ public interface TeacherInfoRepository extends JpaRepository<TeacherInfo, UUID> 
     TeacherInfo findByTeacher(UserEntity teacher);
 
     List<TeacherInfo> findBySubject(SubjectEntity subject);
+    Optional<TeacherInfo> findTeacherInfoByTeacherId(UUID id);
 }
