@@ -7,6 +7,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Entity(name = "teacher_info")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,13 +16,11 @@ import lombok.*;
 @Setter
 @Builder
 public class TeacherInfo extends BaseEntity {
-
     @OneToOne
     private UserEntity teacher;
-
     @ManyToOne
     private SubjectEntity subject;
-
     private String avatar;
     private String about;
+    private LocalDate birthday;
 }

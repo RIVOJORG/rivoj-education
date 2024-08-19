@@ -26,7 +26,6 @@ public class StudentController {
     private final AttendanceService attendanceService;
     private final UploadService uploadService;
     private final ModuleService moduleService;
-    private final NotificationService notificationService;
     private  final StudentService studentService;
 
     @PostMapping("/create-attendance")

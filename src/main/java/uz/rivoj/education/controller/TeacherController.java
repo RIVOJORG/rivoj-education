@@ -1,8 +1,13 @@
 package uz.rivoj.education.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import uz.rivoj.education.dto.request.StudentUpdate;
+import uz.rivoj.education.dto.request.TeacherUpdate;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.dto.update.CheckAttendanceDTO;
 import uz.rivoj.education.entity.ChatEntity;
@@ -12,6 +17,8 @@ import uz.rivoj.education.service.*;
 import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping("/api/v1/teacher")
@@ -24,6 +31,7 @@ public class TeacherController {
     private final MessageService messageService;
     private final CommentService commentService;
     private final ModuleService moduleService;
+    private final TeacherService teacherService;
 
     //  @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     @GetMapping("/get-all-student")
@@ -100,6 +108,13 @@ public class TeacherController {
         System.out.println("principal = " + principal);
         System.out.println("principal.getName() = " + principal.getName());
         return ResponseEntity.ok(studentService.getStudentStatistics(principal.getName(), moduleNumber));
+    }
+    @PutMapping(value = "/update_profile", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<TeacherResponse> createComment(
+            @ModelAttribute TeacherUpdate teacherUpdate,
+            Principal principal,
+            @RequestPart("ProfilePicture") MultipartFile picture){
+        return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.updateProfile(teacherUpdate,picture, UUID.fromString(principal.getName())));
     }
 
 
