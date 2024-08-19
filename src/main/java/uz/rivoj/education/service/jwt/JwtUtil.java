@@ -31,20 +31,20 @@ public class JwtUtil {
     public String generateToken(UserEntity user) {
         Date iat = new Date();
         String token = Jwts.builder()
-                .setSubject(user.getPhoneNumber())
+                .setSubject(String.valueOf(user.getId()))
                 .setIssuedAt(iat)
                 .setExpiration(new Date(iat.getTime() + expiry))
                 .addClaims(getAuthorities(user))
                 .signWith(Keys.hmacShaKeyFor(secret.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
 
-        String oldToken = redisTemplate.opsForValue().get(user.getPhoneNumber());
+        String oldToken = redisTemplate.opsForValue().get(String.valueOf(user.getId()));
         System.out.println("Old Token = " + oldToken);
         if (oldToken != null) {
             redisTemplate.delete(oldToken);
         }
         System.out.println("New token = " + token);
-        redisTemplate.opsForValue().set(user.getPhoneNumber(), token);
+        redisTemplate.opsForValue().set(String.valueOf(user.getId()), token);
         return token;
 
     }

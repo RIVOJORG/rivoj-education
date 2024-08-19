@@ -13,5 +13,4 @@ public class AttendanceCR {
     private UUID studentId;
     private UUID lessonId;
     private String answer;
-    private Boolean status;
 }
