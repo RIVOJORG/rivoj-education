@@ -38,7 +38,7 @@ public class JwtUtil {
                 .signWith(Keys.hmacShaKeyFor(secret.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
 
-        String oldToken = redisTemplate.opsForValue().get(String.valueOf(user.getId()));
+        String oldToken = redisTemplate.opsForValue().get(user.getId().toString());
         System.out.println("Old Token = " + oldToken);
         if (oldToken != null) {
             redisTemplate.delete(oldToken);

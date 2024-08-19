@@ -18,11 +18,11 @@ public class AuthenticationService {
 
     private final RedisTemplate<String, Object> redisTemplate;
     public void authenticate(Claims claims, HttpServletRequest request) {
-        String phoneNumber = claims.getSubject();
+        String id = claims.getSubject();
         List<String> roles = (List<String>) claims.get("roles");
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        phoneNumber, null, getAuthorities(roles));
+                        id, null, getAuthorities(roles));
 
         authenticationToken.setDetails(
                 new WebAuthenticationDetailsSource().buildDetails(request)
