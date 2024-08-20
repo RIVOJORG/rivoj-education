@@ -21,9 +21,9 @@ spring:
         format_sql: true
   data:
     redis:
-      host: 64.227.117.209
+      host: 164.90.187.178
       port: 6379
-      timeout: 60000
+      password: 1234
 
 springdoc:
   api-docs:
