@@ -15,7 +15,8 @@ public class TeacherResponse { //
     private String name;
     private String surname;
     private String avatar;
-    private String subject;
+
+    private SubjectResponse subject;
     private String about;
     private LocalDate birthday;
 }
