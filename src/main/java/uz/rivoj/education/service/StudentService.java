@@ -43,7 +43,9 @@ public class StudentService {
             Optional<StudentInfo> studentInfo = studentInfoRepository.findStudentInfoByStudentId(userEntity.getId());
             if (studentInfo.isPresent()) {
                 studentResponse.setId(String.valueOf(studentInfo.get().getId()));
-                responses.add(studentResponse);studentResponse.setId(String.valueOf(studentInfo.get().getId()));
+                studentResponse.setAvatar(studentInfo.get().getAvatar());
+                studentResponse.setBirth(studentInfo.get().getBirthday());
+                responses.add(studentResponse);
                 responses.add(studentResponse); }
 
             }
@@ -111,6 +113,7 @@ public class StudentService {
                     dto.setStudentSurname(student.getSurname());
                     dto.setAvatar(studentInfo.getAvatar());
                     dto.setScore(studentInfo.getTotalScore());
+                    dto.setIsLessonOver(studentInfo.getIsLessonOver());
 
                     List<SpecialAttendanceResponse> attendanceResponses = new ArrayList<>();
 

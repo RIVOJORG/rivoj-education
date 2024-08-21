@@ -37,11 +37,12 @@ public class SecurityConfig {
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
     private final String[] WHITE_LIST = {
-            "/api/v1/auth/**",
+            "/api/v1/auth/sign-in",
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html"
     };
+
     @Bean
     public SecurityFilterChain configure (HttpSecurity http) throws Exception {
         return http
