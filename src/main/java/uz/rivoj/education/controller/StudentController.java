@@ -47,10 +47,10 @@ public class StudentController {
 
     @PostMapping(value = "/upload-homework", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> uploadHomework(
-            @RequestParam UUID attendanceId,
-            @RequestPart("Homework File") MultipartFile homeworkVideo
+            @RequestParam UUID studentId,
+            @RequestPart("HomeworkFile") MultipartFile homeworkVideo
     ) throws IOException {
-        return ResponseEntity.status(HttpStatus.CREATED).body(uploadService.uploadFile(homeworkVideo, attendanceId.toString()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(uploadService.uploadFile(homeworkVideo, studentId.toString()));
     }
     @PutMapping(value = "/update_profile", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<StudentResponse> createComment(
