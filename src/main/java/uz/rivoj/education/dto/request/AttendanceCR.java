@@ -2,6 +2,7 @@ package uz.rivoj.education.dto.request;
 
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,5 +12,5 @@ import java.util.UUID;
 public class AttendanceCR {
     private UUID teacherId;
     private UUID lessonId;
-    private String answer;
+    private List<String> answer;
 }
