@@ -1,6 +1,7 @@
 package uz.rivoj.education.dto.response;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
@@ -8,11 +9,12 @@ import java.util.UUID;
 @Setter
 @Builder
 public class AttendanceResponse {
+    private UUID attendanceId;
     private UUID lessonId;
     private UUID studentId;
     private UUID teacherId;
     private String video;
-    private String photo;
+    private List<String> answers;
     private String feedBack;
     private Integer score;
     private Integer coin;
