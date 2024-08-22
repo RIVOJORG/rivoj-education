@@ -2,7 +2,6 @@ package uz.rivoj.education.service;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,6 @@ import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.*;
 
-import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +46,7 @@ public class AttendanceService {
                 .feedBack(attendanceEntity.getFeedBack())
                 .isCorrect(true)
                 .lessonId(attendanceEntity.getLessonEntity().getId())
-                .photo(attendanceEntity.getStudent().getAvatar())
+                .answers(attendanceEntity.getAnswer())
                 .score(attendanceEntity.getScore())
                 .studentId(attendanceEntity.getStudent().getId())
                 .teacherId(attendanceEntity.getTeacher().getId())
@@ -70,7 +68,7 @@ public class AttendanceService {
                     .feedBack(studentAttendance.getFeedBack())
                     .isCorrect(true)
                     .lessonId(studentAttendance.getLessonEntity().getId())
-                    .photo(studentAttendance.getStudent().getAvatar())
+                    .answers(studentAttendance.getAnswer())
                     .score(studentAttendance.getScore())
                     .studentId(studentAttendance.getStudent().getId())
                     .teacherId(studentAttendance.getTeacher().getId())
@@ -80,8 +78,9 @@ public class AttendanceService {
         return attendanceResponseList;
 
     }
-    public AttendanceResponse create(AttendanceCR attendance, UUID studentId) {
-        StudentInfo studentInfo = studentRepository.findById(studentId).orElseThrow(() -> new DataNotFoundException("Student not found! " + studentId));
+    public AttendanceResponse create(AttendanceCR attendance, UUID userId) {
+        UserEntity user = userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("User not found! " + userId));
+        StudentInfo studentInfo = studentRepository.findStudentInfoByStudentId(user.getId()).orElseThrow(() -> new DataNotFoundException("Student not found! " + userId));
         TeacherInfo teacherInfo = teacherInfoRepository.findById(attendance.getTeacherId()).orElseThrow(() -> new DataNotFoundException("Teacher not found! " + attendance.getTeacherId()));
         LessonEntity lessonEntity = lessonRepository.findById(attendance.getLessonId()).orElseThrow(() -> new DataNotFoundException("Lesson not found! " + attendance.getLessonId()));
         AttendanceEntity attendanceEntity = AttendanceEntity.builder()
@@ -94,11 +93,12 @@ public class AttendanceService {
                 .build();
         attendanceRepository.save(attendanceEntity);
         return AttendanceResponse.builder()
+                .attendanceId(attendanceEntity.getId())
                 .coin(attendanceEntity.getCoin())
                 .feedBack(attendanceEntity.getFeedBack())
                 .isCorrect(true)
                 .lessonId(attendanceEntity.getLessonEntity().getId())
-                .photo(attendanceEntity.getStudent().getAvatar())
+                .answers(attendanceEntity.getAnswer())
                 .score(attendanceEntity.getScore())
                 .studentId(attendanceEntity.getStudent().getId())
                 .teacherId(attendanceEntity.getTeacher().getId())
@@ -116,7 +116,7 @@ public class AttendanceService {
                     .feedBack(studentAttendance.getFeedBack())
                     .isCorrect(true)
                     .lessonId(studentAttendance.getLessonEntity().getId())
-                    .photo(studentAttendance.getStudent().getAvatar())
+                    .answers(studentAttendance.getAnswer())
                     .score(studentAttendance.getScore())
                     .studentId(studentAttendance.getStudent().getId())
                     .teacherId(studentAttendance.getTeacher().getId())
@@ -137,7 +137,7 @@ public class AttendanceService {
                     .feedBack(attendanceEntity.getFeedBack())
                     .isCorrect(true)
                     .lessonId(attendanceEntity.getLessonEntity().getId())
-                    .photo(attendanceEntity.getStudent().getAvatar())
+                    .answers(attendanceEntity.getAnswer())
                     .score(attendanceEntity.getScore())
                     .studentId(attendanceEntity.getStudent().getId())
                     .teacherId(attendanceEntity.getTeacher().getId())
