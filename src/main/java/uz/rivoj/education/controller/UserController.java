@@ -24,6 +24,7 @@ public class UserController {
     private final NotificationService notificationService;
     private final CommentService commentService;
     private final AttendanceService attendanceService;
+    private final UserService userService;
 
 
     @PostMapping("/create_chat")
@@ -97,4 +98,8 @@ public class UserController {
         return ResponseEntity.ok(attendanceService.getAttendancesByLesson(lessonId));
     }
 
+    @GetMapping("/get-user-details")
+    public ResponseEntity<?> getUserDetails(Principal principal){
+        return ResponseEntity.ok(userService.getUserDetails(UUID.fromString(principal.getName())));
+    }
 }

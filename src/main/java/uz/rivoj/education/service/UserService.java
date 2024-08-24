@@ -25,27 +25,18 @@ public class UserService {
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final TeacherInfoRepository teacherInfoRepository;
 
 
     public String add(UserCR dto) {
         Optional<UserEntity> userEntity = userRepository.findUserEntityByPhoneNumber(dto.getPhoneNumber());
-        if(userEntity.isPresent()) {
-            throw  new DataAlreadyExistsException("User already exists");
+        if (userEntity.isPresent()) {
+            throw new DataAlreadyExistsException("User already exists");
         }
         UserEntity map = modelMapper.map(dto, UserEntity.class);
         map.setPassword(passwordEncoder.encode(map.getPassword()));
         userRepository.save(map);
         return "Successfully signed up";
-    }
-public StudentResponse login2(AuthDto dto) {
-        UserEntity user = userRepository.findByPhoneNumber(dto.getPhoneNumber())
-                .orElseThrow(() -> new DataNotFoundException("user not found"));
-        StudentInfo studentInfo = studentInfoRepository.findStudentInfoByStudentId(user.getId())
-                .orElseThrow(() -> new DataNotFoundException("user not found"));
-        StudentResponse studentResponse = modelMapper.map(user, StudentResponse.class);
-        studentResponse.setAvatar(studentInfo.getAvatar());
-        studentResponse.setBirth(studentInfo.getBirthday());
-        return studentResponse;
     }
 
     public JwtResponse signIn(AuthDto dto) {
@@ -121,5 +112,29 @@ public StudentResponse login2(AuthDto dto) {
         user.setRole(userRole);
         userRepository.save(user);
         return "Successfully updated";
+    }
+
+    public Object getUserDetails(UUID userId) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
+        if(user.getRole().equals(UserRole.ADMIN)){
+            return modelMapper.map(user, AdminResponse.class);
+        } else if (user.getRole().equals(UserRole.TEACHER)) {
+            TeacherInfo teacherInfo = teacherInfoRepository.findTeacherInfoByTeacherId(userId)
+                    .orElseThrow(() -> new DataNotFoundException("User not found"));
+            TeacherResponse teacherResponse = modelMapper.map(user, TeacherResponse.class);
+            teacherResponse.setSubject(modelMapper.map(teacherInfo.getSubject(),SubjectResponse.class));
+            teacherResponse.setAbout(teacherInfo.getAbout());
+            return teacherResponse;
+        } else {
+            StudentInfo studentInfo = studentInfoRepository.findStudentInfoByStudentId(userId)
+                    .orElseThrow(() -> new DataNotFoundException("User not found"));
+            StudentResponse studentResponse = modelMapper.map(user, StudentResponse.class);
+            studentResponse.setBirth(studentInfo.getBirthday());
+            studentResponse.setSubjectId(studentInfo.getSubject().getId());
+            studentResponse.setCurrentLessonId(studentInfo.getLesson().getId());
+            return studentResponse;
+        }
+
     }
 }

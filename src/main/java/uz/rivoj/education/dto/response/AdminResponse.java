@@ -7,15 +7,14 @@ import java.time.LocalDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
 @Getter
+@Setter
 @Builder
 @ToString
-public class TeacherResponse { //
+public class AdminResponse {
     private String name;
     private String surname;
     private String avatar;
-    private SubjectResponse subject;
-    private String about;
-    private LocalDate birthday;
+    private LocalDate birth;
+    private String phoneNumber;
 }
