@@ -113,7 +113,7 @@ public class TeacherController {
     public ResponseEntity<TeacherResponse> createComment(
             @ModelAttribute TeacherUpdate teacherUpdate,
             Principal principal,
-            @RequestPart("ProfilePicture") MultipartFile picture){
+            @RequestPart(value = "ProfilePicture",required = false) MultipartFile picture){
         return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.updateProfile(teacherUpdate,picture, UUID.fromString(principal.getName())));
     }
 

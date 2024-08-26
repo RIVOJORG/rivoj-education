@@ -103,6 +103,9 @@ public class ModuleService {
                     System.out.println("LessonNumber " + lessonResponse.getNumber());
                     if (currentLesson >= lessonResponse.getNumber()){
                         responseList.add(lessonResponse);
+                    }else {
+                        lessonResponse.setSource(null);
+                        responseList.add(lessonResponse);
                     }
                 }
             }
