@@ -25,8 +25,8 @@ public class DiscountService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final StudentInfoRepository studentInfoRepository;
-    public DiscountResponse create(DiscountCR discountCR, UUID studentId){
-        UserEntity student = userRepository.findById(UUID.fromString(String.valueOf(studentId)))
+    public DiscountResponse create(DiscountCR discountCR, UUID userId){
+        UserEntity student = userRepository.findById(UUID.fromString(String.valueOf(userId)))
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         StudentInfo studentInfo = studentInfoRepository.findByStudent(student);
@@ -39,9 +39,16 @@ public class DiscountService {
         return modelMapper.map(discountEntity, DiscountResponse.class);
     }
 
-    public List<DiscountResponse> getDiscountsByStudentId(UUID studentId){
+    public List<DiscountResponse> getDiscountsByStudentId(UUID userId){
+        UserEntity student = userRepository.findById(UUID.fromString(String.valueOf(userId)))
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        StudentInfo studentInfo = studentInfoRepository.findByStudent(student);
+        if (studentInfo == null) {
+            throw new RuntimeException("Student information not found");
+        }
         List<DiscountResponse> list = new ArrayList<>();
-        for (DiscountEntity discount : discountRepository.findDiscountEntitiesByStudentId(studentId)) {
+        for (DiscountEntity discount : discountRepository.findDiscountEntitiesByStudentId(studentInfo.getId())) {
             list.add(modelMapper.map(discount, DiscountResponse.class));
         }
         return list;
