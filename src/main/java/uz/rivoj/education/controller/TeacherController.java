@@ -34,11 +34,13 @@ public class TeacherController {
     private final TeacherService teacherService;
 
     //  @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
-    @GetMapping("/get-all-student")
+    @GetMapping("/get-my-all-student")
     public ResponseEntity<List<StudentResponse>> getAllStudent(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size){
-        return ResponseEntity.status(200).body(studentService.getAll(page, size));
+            @RequestParam(defaultValue = "10") int size,
+            Principal principal)
+        {
+        return ResponseEntity.status(200).body(studentService.getAllMyStudent(page, size, UUID.fromString(principal.getName())));
     }
 
 
@@ -104,9 +106,6 @@ public class TeacherController {
     public ResponseEntity<List<StudentStatisticsDTO>> getStudentStatistics(
             Principal principal,
             @RequestParam Integer moduleNumber) {
-
-        System.out.println("principal = " + principal);
-        System.out.println("principal.getName() = " + principal.getName());
         return ResponseEntity.ok(studentService.getStudentStatistics(principal.getName(), moduleNumber));
     }
     @PutMapping(value = "/update_profile", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
