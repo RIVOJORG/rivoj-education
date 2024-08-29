@@ -32,9 +32,9 @@ public class UserController {
         return ResponseEntity.ok(chatService.createChat(UUID.fromString(user.getName()),user2));
     }
 
-    @GetMapping("/get-my-chats{memberId}") // hammada bo'ladi bu API student, admin ham o'zini chatlarini olishi mumkun
-    public List<ChatResponse> getMyChats(@PathVariable UUID memberId){
-        return chatService.getMyChats(memberId);
+    @GetMapping("/get-my-chats") // hammada bo'ladi bu API student, admin ham o'zini chatlarini olishi mumkun
+    public List<ChatResponse> getMyChats(Principal principal){
+        return chatService.getMyChats(UUID.fromString(principal.getName()));
     }
 //    @GetMapping("/get-messages{chatId}") // hammada bo'ladi bu API student, admin ham o'zini message larini olishi mumkun
 //    public List<MessageResponse> getMessages(@PathVariable UUID chatId){
@@ -79,9 +79,9 @@ public class UserController {
 
 
 
-    @GetMapping("/get-notifications-by-user{userId}")
-    public ResponseEntity<List<NotificationResponse>> getMyNotifications(@PathVariable UUID userId){
-        return ResponseEntity.status(200).body(notificationService.getMyNotifications(userId));
+    @GetMapping("/get-notifications-by-user")
+    public ResponseEntity<List<NotificationResponse>> getMyNotifications(Principal principal){
+        return ResponseEntity.status(200).body(notificationService.getMyNotifications(UUID.fromString(principal.getName())));
     }
 
 
