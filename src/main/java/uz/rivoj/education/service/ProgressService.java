@@ -102,7 +102,14 @@ public class ProgressService {
 
 
 
-    public LessonPageResponse getLessonPageResponseByLessonId(UUID studentId, UUID lessonId) {
+    public LessonPageResponse getLessonPageResponseByLessonId(String studentId, UUID lessonId) {
+        UserEntity student = userRepository.findById(UUID.fromString(studentId))
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        StudentInfo studentInfo = studentInfoRepository.findByStudent(student);
+        if (studentInfo == null) {
+            throw new RuntimeException("Student information not found");
+        }
 
         LessonEntity lesson = lessonRepository.findById(lessonId).orElseThrow(
                 () -> new DataNotFoundException("lesson not found")
@@ -127,7 +134,7 @@ public class ProgressService {
                 .toList();
 
         List<AttendanceResponse> attendances = attendanceRepository
-                .findAttendanceEntitiesByStudentIdAndLessonEntity(studentId, lesson)
+                .findAttendanceEntitiesByStudentIdAndLessonEntity(UUID.fromString(String.valueOf(studentInfo.getId())), lesson)
                 .stream().map(attendance -> modelMapper.map(attendance, AttendanceResponse.class))
                 .toList();
 
