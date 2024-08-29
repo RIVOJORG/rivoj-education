@@ -203,4 +203,43 @@ public class StudentService {
         response.setBirth(studentInfo.getBirthday());
     return  response;
     }
+
+    public List<StudentResponse> getAllMyStudent(int page, int size, UUID userId) {
+        UserEntity teacher = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Teacher not found"));
+
+        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher(teacher);
+        if (teacherInfo == null) {
+            throw new RuntimeException("Teacher information not found");
+        }
+
+        List<SubjectEntity> subjects = subjectRepository.findAllByTeachersTeacherId(teacherInfo.getTeacher().getId());
+        System.out.println("Fetched subjects: " + subjects);
+
+        if (subjects.isEmpty()) {
+            throw new RuntimeException("No subjects found for the teacher");
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        List<StudentInfo> students = studentInfoRepository.findAllBySubjectIn(subjects, pageable);
+        System.out.println("Fetched students: " + students);
+
+        return students.stream()
+                .map(this::convertToStudentResponse)
+                .collect(Collectors.toList());
+    }
+
+
+    private StudentResponse convertToStudentResponse(StudentInfo studentInfo) {
+        return new StudentResponse(
+                studentInfo.getStudent().getId().toString(),
+                studentInfo.getStudent().getName(),
+                studentInfo.getStudent().getSurname(),
+                studentInfo.getAvatar(),
+                studentInfo.getStudent().getPhoneNumber(),
+                studentInfo.getBirthday(),
+                studentInfo.getSubject() != null ? studentInfo.getSubject().getId() : null,
+                studentInfo.getLesson() != null ? studentInfo.getLesson().getId() : null
+        );
+    }
 }
