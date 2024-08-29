@@ -102,8 +102,8 @@ public class ProgressService {
 
 
 
-    public LessonPageResponse getLessonPageResponseByLessonId(String studentId, UUID lessonId) {
-        UserEntity student = userRepository.findById(UUID.fromString(studentId))
+    public LessonPageResponse getLessonPageResponseByLessonId(String userId, UUID lessonId) {
+        UserEntity student = userRepository.findById(UUID.fromString(userId))
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
         StudentInfo studentInfo = studentInfoRepository.findByStudent(student);
@@ -146,8 +146,15 @@ public class ProgressService {
                 .attendances(attendances).build();
     }
 
-    public EducationPageResponse getEducationPage(UUID studentId) {
-        Optional<StudentInfo> studentInfoOptional = studentInfoRepository.findStudentInfoByStudentId(studentId);
+    public EducationPageResponse getEducationPage(UUID userId) {
+        UserEntity student = userRepository.findById(UUID.fromString(String.valueOf(userId)))
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        StudentInfo studentInfoEntity = studentInfoRepository.findByStudent(student);
+        if (studentInfoEntity == null) {
+            throw new RuntimeException("Student information not found");
+        }
+        Optional<StudentInfo> studentInfoOptional = studentInfoRepository.findStudentInfoByStudentId(studentInfoEntity.getId());
 
         if (studentInfoOptional.isPresent()) {
             StudentInfo studentInfo = studentInfoOptional.get();
@@ -172,7 +179,7 @@ public class ProgressService {
                     .totalScore(studentInfo.getTotalScore())
                     .build();
         } else {
-            throw new DataNotFoundException("student not found with this id: " + studentId);
+            throw new DataNotFoundException("user not found with this id: " + userId);
         }
     }
 
