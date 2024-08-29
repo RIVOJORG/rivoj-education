@@ -1,10 +1,7 @@
 package uz.rivoj.education.entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -18,7 +15,7 @@ import java.time.LocalDate;
 public class TeacherInfo extends BaseEntity {
     @OneToOne
     private UserEntity teacher;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private SubjectEntity subject;
     private String avatar;
     private String about;
