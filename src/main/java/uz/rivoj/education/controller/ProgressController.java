@@ -8,6 +8,7 @@ import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.service.DiscountService;
 import uz.rivoj.education.service.ProgressService;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,9 +23,9 @@ public class ProgressController {
         return progressService.getProgressByPhoneNumber(phoneNumber);
     }
 
-    @GetMapping("get-lesson/{studentId}{lessonId}")
-    public LessonPageResponse getLessonPageResponseByLessonId(@PathVariable UUID studentId, @PathVariable UUID lessonId) {
-        return progressService.getLessonPageResponseByLessonId(studentId, lessonId);
+    @GetMapping("get-lesson/{lessonId}")
+    public LessonPageResponse getLessonPageResponseByLessonId(Principal principal, @PathVariable UUID lessonId) {
+        return progressService.getLessonPageResponseByLessonId(principal.getName(), lessonId);
     }
 
     @GetMapping("/get-ranking-page")
@@ -32,9 +33,9 @@ public class ProgressController {
         return progressService.getRankingPage();
     }
 
-    @PostMapping("/create-discount{studentId}") // chegirma olish
-    public DiscountResponse createDiscount(@RequestBody DiscountCR discountCR, @PathVariable UUID studentId){
-        return discountService.create(discountCR, studentId);
+    @PostMapping("/create-discount") // chegirma olish
+    public DiscountResponse createDiscount(@RequestBody DiscountCR discountCR, Principal principal){
+        return discountService.create(discountCR, UUID.fromString(principal.getName()));
     }
 
     @GetMapping("/get-discounts-by-student{studentId}")
