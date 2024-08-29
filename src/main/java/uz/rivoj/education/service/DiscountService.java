@@ -6,9 +6,11 @@ import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.DiscountCR;
 import uz.rivoj.education.dto.response.DiscountResponse;
 import uz.rivoj.education.entity.DiscountEntity;
+import uz.rivoj.education.entity.StudentInfo;
 import uz.rivoj.education.entity.UserEntity;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.DiscountRepository;
+import uz.rivoj.education.repository.StudentInfoRepository;
 import uz.rivoj.education.repository.UserRepository;
 
 import java.util.ArrayList;
@@ -22,12 +24,17 @@ public class DiscountService {
     private final DiscountRepository discountRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final StudentInfoRepository studentInfoRepository;
     public DiscountResponse create(DiscountCR discountCR, UUID studentId){
-        UserEntity userEntity = userRepository.findById(studentId).orElseThrow(
-                () -> new DataNotFoundException("user not found")
-        );
+        UserEntity student = userRepository.findById(UUID.fromString(String.valueOf(studentId)))
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        StudentInfo studentInfo = studentInfoRepository.findByStudent(student);
+        if (studentInfo == null) {
+            throw new RuntimeException("Student information not found");
+        }
         DiscountEntity discountEntity = modelMapper.map(discountCR, DiscountEntity.class);
-//        discountEntity.setStudent(userEntity);
+        discountEntity.setStudent(studentInfo);
         return modelMapper.map(discountRepository.save(discountEntity), DiscountResponse.class);
     }
 
