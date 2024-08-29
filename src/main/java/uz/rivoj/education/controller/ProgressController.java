@@ -38,9 +38,9 @@ public class ProgressController {
         return discountService.create(discountCR, UUID.fromString(principal.getName()));
     }
 
-    @GetMapping("/get-discounts-by-student{studentId}")
-    public List<DiscountResponse> getDiscountsByStudentId(@PathVariable UUID studentId){
-        return discountService.getDiscountsByStudentId(studentId);
+    @GetMapping("/get-discounts-by-student")
+    public List<DiscountResponse> getDiscountsByStudentId(Principal principal){
+        return discountService.getDiscountsByStudentId(UUID.fromString(principal.getName()));
     }
 
     @DeleteMapping("/delete-discount{discountId}")
@@ -48,9 +48,9 @@ public class ProgressController {
         return discountService.delete(discountId);
     }
 
-    @GetMapping("/get-education{studentId}")
-    public EducationPageResponse getEducationPage(@PathVariable UUID studentId){
-        return progressService.getEducationPage(studentId);
+    @GetMapping("/get-education")
+    public EducationPageResponse getEducationPage(Principal principal){
+        return progressService.getEducationPage(UUID.fromString(principal.getName()));
     }
 
 }
