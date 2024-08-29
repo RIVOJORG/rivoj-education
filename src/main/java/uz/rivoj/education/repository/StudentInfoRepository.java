@@ -10,6 +10,7 @@ import java.util.UUID;
 
 public interface StudentInfoRepository extends JpaRepository<StudentInfo, UUID> {
     Optional<StudentInfo> findStudentInfoByStudentId(UUID id);
+    StudentInfo findByStudent(UserEntity user);
     List<StudentInfo> findByLessonAndCurrentModule(LessonEntity lesson, ModuleEntity module);
     List<StudentInfo> findByLessonAndCurrentModuleAndSubject(LessonEntity lesson, ModuleEntity module, SubjectEntity subject);
 
