@@ -211,7 +211,7 @@ public class AdminController {
     }
 
     @GetMapping("/change-passwords")
-    public ResponseEntity<String> getStudentProgress() {
+    public ResponseEntity<String> changePassword() {
         return ResponseEntity.ok(studentService.changePassword());
     }
 
