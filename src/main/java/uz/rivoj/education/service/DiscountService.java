@@ -35,7 +35,8 @@ public class DiscountService {
         }
         DiscountEntity discountEntity = modelMapper.map(discountCR, DiscountEntity.class);
         discountEntity.setStudent(studentInfo);
-        return modelMapper.map(discountRepository.save(discountEntity), DiscountResponse.class);
+        discountRepository.save(discountEntity);
+        return modelMapper.map(discountEntity, DiscountResponse.class);
     }
 
     public List<DiscountResponse> getDiscountsByStudentId(UUID studentId){
