@@ -28,9 +28,15 @@ public class ProgressController {
         return progressService.getLessonPageResponseByLessonId(principal.getName(), lessonId);
     }
 
-    @GetMapping("/get-ranking-page")
+    @GetMapping("/get-top10")
     public RankingPageResponse getRankingPage(){
-        return progressService.getRankingPage();
+        return progressService.getTop10Students();
+    }
+
+
+    @GetMapping("/get-top10-by-subject")
+    public RankingPageResponse getTop10StudentBySubject(Principal principal){
+        return progressService.getTop10StudentsBySubject(UUID.fromString(principal.getName()));
     }
 
     @PostMapping("/create-discount") // chegirma olish

@@ -77,29 +77,37 @@ public class ProgressService {
                 .build();
     }
 
-    public RankingPageResponse getRankingPage() {
-        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "totalScore"));
+    public RankingPageResponse getTop10Students() {
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "totalScore"));
         Page<StudentInfo> page = studentInfoRepository.findAll(pageRequest);
         List<StudentInfo> sortedStudents = page.getContent();
 
+        return mapToBestStudentResponse(sortedStudents);
+    }
+
+    public RankingPageResponse getTop10StudentsBySubject(UUID userId) {
+        StudentInfo studentInfo = studentInfoRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
+        List<StudentInfo> list = studentInfoRepository.findTop10BySubjectOrderByTotalScoreDesc(studentInfo.getSubject(), PageRequest.of(0, 10));
+        return mapToBestStudentResponse(list);
+    }
+
+    private RankingPageResponse mapToBestStudentResponse(List<StudentInfo> list) {
         List<BestStudentResponse> bestStudentResponseList = new ArrayList<>();
 
-        for (StudentInfo studentInfo : sortedStudents) {
-            UserEntity user = studentInfo.getStudent();
+        for (StudentInfo s : list) {
+            UserEntity user = s.getStudent();
             BestStudentResponse bestStudent = BestStudentResponse.builder()
-                    .avatar(studentInfo.getAvatar())
+                    .avatar(s.getAvatar())
                     .name(user.getName())
-                    .percentage(studentInfo.getTotalScore())
+                    .percentage(s.getTotalScore())
                     .surname(user.getSurname())
                     .build();
             bestStudentResponseList.add(bestStudent);
         }
-
         return RankingPageResponse.builder()
-                .bestStudents(bestStudentResponseList)
-                .build();
+                .bestStudents(bestStudentResponseList).build();
     }
-
 
 
     public LessonPageResponse getLessonPageResponseByLessonId(String userId, UUID lessonId) {
@@ -170,7 +178,7 @@ public class ProgressService {
             }
 
             return EducationPageResponse.builder()
-                    .bestStudentsOfLesson(getRankingPage().getBestStudents())
+                    .bestStudentsOfLesson(getTop10Students().getBestStudents())
                     .coin(studentInfo.getCoin())
                     .countModules(totalCountModules)
                     .countLessons(countLessonsList)

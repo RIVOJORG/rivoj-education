@@ -19,4 +19,6 @@ public interface StudentInfoRepository extends JpaRepository<StudentInfo, UUID> 
     List<StudentInfo> findByCurrentModule(ModuleEntity module);
     List<StudentInfo> findAllBySubjectIn(List<SubjectEntity> subjects, Pageable pageable);
 
+    List<StudentInfo> findTop10BySubjectOrderByTotalScoreDesc(SubjectEntity subject, Pageable pageable);
+
 }
