@@ -178,7 +178,7 @@ public class ProgressService {
             }
 
             return EducationPageResponse.builder()
-                    .bestStudentsOfLesson(getRankingPage().getBestStudents())
+                    .bestStudentsOfLesson(getTop10Students().getBestStudents())
                     .coin(studentInfo.getCoin())
                     .countModules(totalCountModules)
                     .countLessons(countLessonsList)
