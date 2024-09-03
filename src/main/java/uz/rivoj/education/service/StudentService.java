@@ -192,15 +192,18 @@ public class StudentService {
         if(studentUpdate.getPassword() != null){
             userEntity.setPassword(passwordEncoder.encode(studentUpdate.getPassword()));
         }
-        if(!picture.isEmpty()){
-            String filename = userEntity.getName() + "_ProfilePicture";
-            String avatarPath = uploadService.uploadFile(picture, filename);
-            userEntity.setAvatar(avatarPath);
+        if(picture.isEmpty()){
+            userEntity.setAvatar(userEntity.getAvatar());
         }
+        String filename = userEntity.getName() + "_ProfilePicture";
+        String avatarPath = uploadService.uploadFile(picture, filename);
+        userEntity.setAvatar(avatarPath);
         userRepository.save(userEntity);
         studentInfoRepository.save(studentInfo);
         StudentResponse response = modelMapper.map(userEntity, StudentResponse.class);
         response.setBirth(studentInfo.getBirthday());
+        response.setSubjectId(studentInfo.getSubject().getId());
+        response.setCurrentLessonId(studentInfo.getLesson().getId());
     return  response;
     }
 
