@@ -86,8 +86,11 @@ public class ProgressService {
     }
 
     public RankingPageResponse getTop10StudentsBySubject(UUID userId) {
-        StudentInfo studentInfo = studentInfoRepository.findById(userId)
+        UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new DataNotFoundException("User not found"));
+
+        StudentInfo studentInfo = studentInfoRepository.findByStudent(user);
+
         List<StudentInfo> list = studentInfoRepository.findTop10BySubjectOrderByTotalScoreDesc(studentInfo.getSubject(), PageRequest.of(0, 10));
         return mapToBestStudentResponse(list);
     }
