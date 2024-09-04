@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.TeacherCR;
 import uz.rivoj.education.dto.request.TeacherUpdate;
 import uz.rivoj.education.dto.response.StudentResponse;
+import uz.rivoj.education.dto.response.SubjectResponse;
 import uz.rivoj.education.dto.response.TeacherResponse;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.UserStatus;
@@ -80,6 +81,7 @@ public class TeacherService {
         teacherInfoRepository.save(teacherInfo);
         TeacherResponse response = modelMapper.map(userEntity, TeacherResponse.class);
         response.setBirthday(teacherInfo.getBirthday());
+        response.setSubject(SubjectResponse.builder().title(teacherInfo.getSubject().getTitle()).build());
         return  response;
     }
 }
