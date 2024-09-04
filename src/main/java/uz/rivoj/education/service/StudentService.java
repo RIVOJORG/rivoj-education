@@ -17,6 +17,7 @@ import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.*;
 import org.springframework.data.domain.Pageable;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -175,8 +176,8 @@ public class StudentService {
         return "Password changed";
     }
 
-    @SneakyThrows
-    public StudentResponse updateProfile(StudentUpdate studentUpdate, MultipartFile picture, UUID studentId) {
+
+    public StudentResponse updateProfile(StudentUpdate studentUpdate, UUID studentId) {
         StudentInfo studentInfo = studentInfoRepository.findStudentInfoByStudentId(studentId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found!"));
         UserEntity userEntity = userRepository.findById(studentId)
@@ -192,12 +193,6 @@ public class StudentService {
         if(studentUpdate.getPassword() != null){
             userEntity.setPassword(passwordEncoder.encode(studentUpdate.getPassword()));
         }
-        if(picture.isEmpty()){
-            userEntity.setAvatar(userEntity.getAvatar());
-        }
-        String filename = userEntity.getName() + "_ProfilePicture";
-        String avatarPath = uploadService.uploadFile(picture, filename);
-        userEntity.setAvatar(avatarPath);
         userRepository.save(userEntity);
         studentInfoRepository.save(studentInfo);
         StudentResponse response = modelMapper.map(userEntity, StudentResponse.class);
@@ -205,6 +200,16 @@ public class StudentService {
         response.setSubjectId(studentInfo.getSubject().getId());
         response.setCurrentLessonId(studentInfo.getLesson().getId());
     return  response;
+    }
+
+    public String updateProfilePicture(MultipartFile picture, UUID userId) throws IOException {
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("Student not found!"));
+
+        String filename = userEntity.getName() + "_ProfilePicture";
+        String avatarPath = uploadService.uploadFile(picture, filename);
+        userEntity.setAvatar(avatarPath);
+        return "Profile picture changed";
     }
 
     public List<StudentResponse> getAllMyStudent(int page, int size, UUID userId) {

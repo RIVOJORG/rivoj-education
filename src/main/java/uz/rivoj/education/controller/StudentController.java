@@ -48,7 +48,7 @@ public class StudentController {
     @PostMapping(value = "/upload-homework", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> uploadHomework(
             @RequestParam UUID studentId,
-            @RequestPart("HomeworkFiles") List<MultipartFile> homeworkFiles
+            @RequestPart("Homework Files") List<MultipartFile> homeworkFiles
     ) throws IOException {
         for (MultipartFile homeworkFile : homeworkFiles) {
             uploadService.uploadFile(homeworkFile, studentId.toString());
@@ -56,11 +56,24 @@ public class StudentController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Files uploaded successfully!");
     }
 
-    @PutMapping(value = "/update_profile", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<StudentResponse> createComment(
+    @PutMapping(value = "/update-profile")
+    public ResponseEntity<StudentResponse> updateProfile(
             @ModelAttribute StudentUpdate studentUpdate,
+            Principal principal
+    ){
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(studentService.updateProfile(studentUpdate, UUID.fromString(principal.getName())));
+    }
+
+
+    @PutMapping(value = "/update-profile-picture",
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
+            produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> updateProfilePicture(
             Principal principal,
-            @RequestPart(value = "ProfilePicture",required = false) MultipartFile picture){
-        return ResponseEntity.status(HttpStatus.CREATED).body(studentService.updateProfile(studentUpdate,picture, UUID.fromString(principal.getName())));
+            @RequestPart("Profile Picture ") MultipartFile picture
+    ) throws IOException {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(studentService.updateProfilePicture(picture, UUID.fromString(principal.getName())));
     }
 }
