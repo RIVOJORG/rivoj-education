@@ -115,6 +115,4 @@ public class TeacherController {
             @RequestPart(value = "ProfilePicture",required = false) MultipartFile picture){
         return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.updateProfile(teacherUpdate,picture, UUID.fromString(principal.getName())));
     }
-
-
 }
