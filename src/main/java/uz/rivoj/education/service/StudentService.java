@@ -176,7 +176,6 @@ public class StudentService {
         return "Password changed";
     }
 
-
     public StudentResponse updateProfile(StudentUpdate studentUpdate, UUID studentId) {
         StudentInfo studentInfo = studentInfoRepository.findStudentInfoByStudentId(studentId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found!"));
@@ -199,7 +198,7 @@ public class StudentService {
         response.setBirth(studentInfo.getBirthday());
         response.setSubjectId(studentInfo.getSubject().getId());
         response.setCurrentLessonId(studentInfo.getLesson().getId());
-    return  response;
+        return  response;
     }
 
     public String updateProfilePicture(MultipartFile picture, UUID userId) throws IOException {
