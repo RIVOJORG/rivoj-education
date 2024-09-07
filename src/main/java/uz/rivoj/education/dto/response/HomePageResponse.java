@@ -23,7 +23,7 @@ public class HomePageResponse {
     private Boolean isLessonOver;
     private Integer coin;
     private Integer totalScore;
-    private List<Integer> scores;
+    private List<ScoreByAttendance> scores;
     private List<DiscountResponse> discounts;
 
 }
