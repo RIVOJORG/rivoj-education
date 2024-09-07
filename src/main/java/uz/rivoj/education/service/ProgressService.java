@@ -35,31 +35,31 @@ public class ProgressService {
     private final UserService userService;
 
     public HomePageResponse getProgressByPhoneNumber(String phoneNumber) {
-
         UserEntity userEntity = userRepository.findUserEntityByPhoneNumber(phoneNumber)
-                .orElseThrow(
-                        () -> new DataNotFoundException("data not found")
-                );
+                .orElseThrow(() -> new DataNotFoundException("data not found"));
 
         StudentInfo studentInfo = studentInfoRepository.findStudentInfoByStudentId(userEntity.getId())
-                .orElseThrow(
-                        () -> new DataNotFoundException("data not found")
-                );
+                .orElseThrow(() -> new DataNotFoundException("data not found"));
 
         List<AttendanceEntity> attendancesOfModule = attendanceRepository.findAttendanceEntitiesByStudentIdAndLessonEntity_Module(
                 userEntity.getId(),
                 studentInfo.getCurrentModule()
         );
 
-        List<Integer> scores = new ArrayList<>();
+        List<ScoreByAttendance> scores = new ArrayList<>();
         for (AttendanceEntity attendance : attendancesOfModule) {
             if (attendance.getStatus() == AttendanceStatus.CHECKED) {
-                scores.add(attendance.getLessonEntity().getNumber(), attendance.getScore());
+                scores.add(new ScoreByAttendance(
+                        attendance.getLessonEntity().getNumber(),
+                        attendance.getScore()
+                ));
             }
         }
+        System.out.println("scores = " + scores);
 
         List<DiscountResponse> discounts = discountRepository.findDiscountEntitiesByStudentId(userEntity.getId())
-                .stream().map(discount -> modelMapper.map(discount, DiscountResponse.class))
+                .stream()
+                .map(discount -> modelMapper.map(discount, DiscountResponse.class))
                 .collect(Collectors.toList());
 
         return HomePageResponse.builder()
@@ -76,6 +76,7 @@ public class ProgressService {
                 .discounts(discounts)
                 .build();
     }
+
 
     public RankingPageResponse getTop10Students() {
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "totalScore"));
