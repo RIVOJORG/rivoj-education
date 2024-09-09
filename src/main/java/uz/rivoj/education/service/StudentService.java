@@ -208,6 +208,7 @@ public class StudentService {
         String filename = userEntity.getName() + "_ProfilePicture";
         String avatarPath = uploadService.uploadFile(picture, filename);
         userEntity.setAvatar(avatarPath);
+        userRepository.save(userEntity);
         return "Profile picture changed";
     }
 
