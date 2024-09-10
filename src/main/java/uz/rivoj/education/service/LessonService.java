@@ -9,17 +9,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.LessonCR;
+import uz.rivoj.education.dto.response.CommentResponse;
 import uz.rivoj.education.dto.response.LessonResponse;
 import uz.rivoj.education.dto.update.LessonUpdateDTO;
+import uz.rivoj.education.entity.CommentEntity;
 import uz.rivoj.education.entity.LessonEntity;
 import uz.rivoj.education.entity.ModuleEntity;
 import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.exception.DataNotFoundException;
+import uz.rivoj.education.repository.CommentRepository;
 import uz.rivoj.education.repository.LessonRepository;
 import uz.rivoj.education.repository.ModuleRepository;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +32,8 @@ public class LessonService {
     private final ModuleRepository moduleRepository;
     private final ModelMapper modelMapper;
     private final UploadService uploadService;
+    private final CommentService commentService;
+    private final CommentRepository commentRepository;
     @SneakyThrows
     public LessonResponse create(LessonCR createRequest, MultipartFile lessonVideo, MultipartFile coverOfLesson)  {
         ModuleEntity moduleEntity = moduleRepository.findById(createRequest.getModuleId())
@@ -74,11 +80,33 @@ public class LessonService {
         return LessonResponse.builder()
                 .cover(lessonEntity.getCover())
                 .description(lessonEntity.getDescription())
+                .comments(getCommentsByLessonId(lessonId))
                 .id(lessonEntity.getId())
                 .moduleId(lessonEntity.getModule().getId())
                 .number(lessonEntity.getNumber())
                 .source(lessonEntity.getSource())
                 .title(lessonEntity.getTitle())
+                .build();
+    }
+
+
+
+    public List<CommentResponse> getCommentsByLessonId(UUID lessonId) {
+        List<CommentEntity> comments = commentRepository.findByLessonId(lessonId);
+        return comments.stream()
+                .map(this::convertToCommentResponse)
+                .collect(Collectors.toList());
+    }
+
+    private CommentResponse convertToCommentResponse(CommentEntity comment) {
+        return CommentResponse.builder()
+                .commentId(comment.getId())
+                .ownerId(comment.getOwner().getId())
+                .lessonId(comment.getLesson().getId())
+                .name(comment.getOwner().getName())
+                .surname(comment.getOwner().getSurname())
+                .avatar(comment.getOwner().getAvatar())
+                .description(comment.getDescription())
                 .build();
     }
     public List<LessonResponse> getAll() {
@@ -134,5 +162,6 @@ public class LessonService {
 
         return null;
     }
+
 
 }
