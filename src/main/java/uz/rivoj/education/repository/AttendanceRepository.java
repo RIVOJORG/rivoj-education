@@ -18,10 +18,11 @@ import java.util.UUID;
 @Repository
 public interface AttendanceRepository extends JpaRepository<AttendanceEntity, UUID> {
 
-    List<AttendanceEntity> findAttendanceEntitiesByStudentIdAndLessonEntity_Module(
-            UUID student_id,
-            ModuleEntity module
+    List<AttendanceEntity> findAttendanceEntitiesByStudent_IdAndLessonEntity_Module_Id(
+            UUID studentId,
+            UUID moduleId
     );
+
 
     List<AttendanceEntity> findAttendanceEntitiesByStudentIdAndLessonEntity(UUID studentId, LessonEntity lesson);
     List<AttendanceEntity> findAllByStudentId(UUID userId);
