@@ -35,18 +35,30 @@ public class ProgressService {
     private final UserService userService;
 
     public HomePageResponse getProgressByPhoneNumber(String phoneNumber) {
+        // Fetch user entity by phone number
         UserEntity userEntity = userRepository.findUserEntityByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> new DataNotFoundException("data not found"));
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
 
+        // Fetch student info by user ID
         StudentInfo studentInfo = studentInfoRepository.findStudentInfoByStudentId(userEntity.getId())
-                .orElseThrow(() -> new DataNotFoundException("data not found"));
+                .orElseThrow(() -> new DataNotFoundException("Student info not found"));
 
-        List<AttendanceEntity> attendancesOfModule = attendanceRepository.findAttendanceEntitiesByStudentIdAndLessonEntity_Module(
+        // Fetch the current module for the student
+        ModuleEntity currentModule = studentInfo.getCurrentModule();
+        if (currentModule == null) {
+            throw new DataNotFoundException("Current module not found for student");
+        }
+
+        // Fetch attendance entities for the student in the current module
+        List<AttendanceEntity> attendancesOfModule = attendanceRepository.findAttendanceEntitiesByStudent_IdAndLessonEntity_Module_Id(
                 userEntity.getId(),
-                studentInfo.getCurrentModule()
+                currentModule.getId()
         );
 
+        // Prepare list to hold scores
         List<ScoreByAttendance> scores = new ArrayList<>();
+
+        // Process attendance data to extract scores
         for (AttendanceEntity attendance : attendancesOfModule) {
             if (attendance.getStatus() == AttendanceStatus.CHECKED) {
                 scores.add(new ScoreByAttendance(
@@ -55,19 +67,20 @@ public class ProgressService {
                 ));
             }
         }
-        System.out.println("scores = " + scores);
 
+        // Fetch and map discount data
         List<DiscountResponse> discounts = discountRepository.findDiscountEntitiesByStudentId(userEntity.getId())
                 .stream()
                 .map(discount -> modelMapper.map(discount, DiscountResponse.class))
                 .collect(Collectors.toList());
 
+        // Build and return the HomePageResponse
         return HomePageResponse.builder()
                 .phoneNumber(userEntity.getPhoneNumber())
                 .name(userEntity.getName())
                 .surname(userEntity.getSurname())
                 .avatar(studentInfo.getAvatar())
-                .currentModule(studentInfo.getCurrentModule().getNumber())
+                .currentModule(currentModule.getNumber())
                 .currentLesson(studentInfo.getLesson().getNumber())
                 .isLessonOver(studentInfo.getIsLessonOver())
                 .coin(studentInfo.getCoin())
