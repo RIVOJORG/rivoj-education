@@ -5,12 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.ModuleCR;
+import uz.rivoj.education.dto.response.CommentResponse;
 import uz.rivoj.education.dto.response.LessonResponse;
 import uz.rivoj.education.dto.response.ModuleResponse;
-import uz.rivoj.education.entity.LessonEntity;
-import uz.rivoj.education.entity.ModuleEntity;
-import uz.rivoj.education.entity.StudentInfo;
-import uz.rivoj.education.entity.SubjectEntity;
+import uz.rivoj.education.entity.*;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.*;
 
@@ -23,7 +21,7 @@ public class ModuleService {
     private final ModuleRepository moduleRepository;
     private final SubjectRepository subjectRepository;
     private final ModelMapper modelMapper;
-    private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
     private final StudentInfoRepository studentRepository;
     private final LessonRepository lessonRepository;
 
@@ -114,6 +112,24 @@ public class ModuleService {
             return responseList;
         }
         throw  new DataNotFoundException("There is not any accessible lesson for this user!");
+    }
+    public List<CommentResponse> getCommentsByLessonId(UUID lessonId) {
+        List<CommentEntity> comments = commentRepository.findByLessonId(lessonId);
+        return comments.stream()
+                .map(this::convertToCommentResponse)
+                .collect(Collectors.toList());
+    }
+
+    private CommentResponse convertToCommentResponse(CommentEntity comment) {
+        return CommentResponse.builder()
+                .commentId(comment.getId())
+                .ownerId(comment.getOwner().getId())
+                .lessonId(comment.getLesson().getId())
+                .name(comment.getOwner().getName())
+                .surname(comment.getOwner().getSurname())
+                .avatar(comment.getOwner().getAvatar())
+                .description(comment.getDescription())
+                .build();
     }
 
     private List<LessonResponse> getAllLessonsByModule(UUID moduleId) {
