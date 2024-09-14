@@ -48,7 +48,7 @@ public class StudentController {
     @PostMapping(value = "/upload-homework", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> uploadHomework(
             @RequestParam UUID studentId,
-            @RequestPart("HomeworkFiles") List<MultipartFile> homeworkFiles
+            @RequestPart("Homework Files") List<MultipartFile> homeworkFiles
     ) throws IOException {
         for (MultipartFile homeworkFile : homeworkFiles) {
             uploadService.uploadFile(homeworkFile, studentId.toString());
