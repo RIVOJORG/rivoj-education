@@ -70,26 +70,18 @@ public class ModuleService {
                 .build();
     }
 
-    public List<ModuleResponse> getAllModules(UUID userId) {
-        StudentInfo  studentInfo= studentRepository.findStudentInfoByStudentId(userId)
+    public List<ModuleResponse> getAllModulesOfStudent(UUID userId) {
+        StudentInfo studentInfo= studentRepository.findStudentInfoByStudentId(userId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found with this id => " + userId));
         List<ModuleEntity> modulesBySubject = moduleRepository.findAllBySubject(studentInfo.getSubject())
                 .orElseThrow(() -> new DataNotFoundException("Module not found with this subject => " + studentInfo.getSubject().getTitle()));
-        List<ModuleResponse> modules = new ArrayList<>();
-        modulesBySubject.forEach(module -> {
-            ModuleResponse moduleResponse = new ModuleResponse();
-            moduleResponse.setModule_id(module.getId());
-            moduleResponse.setModulNumber(module.getNumber());
-            moduleResponse.setSubject(module.getSubject().getTitle());
-            modules.add(moduleResponse);
-        });
-        return modules;
+        return getModuleResponses(modulesBySubject);
     }
 
     public List<LessonResponse> getAllAccessibleLessonsOfUser(UUID userId, UUID moduleId) {
         StudentInfo studentInfo = studentRepository.findStudentInfoByStudentId(userId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found with this id => " + userId));
-        List<ModuleResponse> allModules = getAllModules(userId);
+        List<ModuleResponse> allModules = getAllModulesOfStudent(userId);
         List<LessonResponse> responseList = new ArrayList<>();
         int currentLesson = studentInfo.getLesson().getNumber();
         System.out.println("Current lesson: " + currentLesson);
@@ -140,5 +132,24 @@ public class ModuleService {
         return lessonEntities.stream()
                 .map(lessonEntity -> modelMapper.map(lessonEntity, LessonResponse.class))
                 .collect(Collectors.toList());
+    }
+    public List<ModuleResponse> getAllModulesOfSubject(UUID subjectId){
+        SubjectEntity subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> new DataNotFoundException("Subject not found with this id => " + subjectId));
+        List<ModuleEntity> modulesBySubject = moduleRepository.findAllBySubject(subject)
+                .orElseThrow(() -> new DataNotFoundException("Module not found with this subject => " + subject.getTitle()));
+        return getModuleResponses(modulesBySubject);
+    }
+
+    private List<ModuleResponse> getModuleResponses(List<ModuleEntity> modulesBySubject) {
+        List<ModuleResponse> modules = new ArrayList<>();
+        modulesBySubject.forEach(module -> {
+            ModuleResponse moduleResponse = new ModuleResponse();
+            moduleResponse.setModule_id(module.getId());
+            moduleResponse.setModulNumber(module.getNumber());
+            moduleResponse.setSubject(module.getSubject().getTitle());
+            modules.add(moduleResponse);
+        });
+        return modules;
     }
 }
