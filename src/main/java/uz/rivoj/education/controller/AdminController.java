@@ -1,6 +1,5 @@
 package uz.rivoj.education.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,12 +14,10 @@ import uz.rivoj.education.entity.enums.AttendanceStatus;
 import uz.rivoj.education.entity.enums.UserStatus;
 import uz.rivoj.education.service.*;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @RestController
 @RequiredArgsConstructor
@@ -213,6 +210,11 @@ public class AdminController {
     @GetMapping("/change-passwords")
     public ResponseEntity<String> changePassword() {
         return ResponseEntity.ok(studentService.changePassword());
+    }
+
+    @GetMapping("/getAllModulesOfSubject{subjectId}")
+    public ResponseEntity<List<ModuleResponse>> getAllModulesOfSubject(@PathVariable UUID subjectId){
+        return ResponseEntity.status(200).body(moduleService.getAllModulesOfSubject(subjectId));
     }
 
 }
