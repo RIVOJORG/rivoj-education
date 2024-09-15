@@ -12,6 +12,5 @@ import java.util.UUID;
 @ToString
 public class CommentCR {
     private UUID lessonId;
-    private UUID ownerId;
     private String description;
 }

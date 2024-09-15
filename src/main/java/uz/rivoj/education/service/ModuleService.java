@@ -94,13 +94,10 @@ public class ModuleService {
         List<ModuleResponse> allModules = getAllModules(userId);
         List<LessonResponse> responseList = new ArrayList<>();
         int currentLesson = studentInfo.getLesson().getNumber();
-        System.out.println("Current lesson: " + currentLesson);
-        System.out.println("Is empty " + allModules.isEmpty());
         allModules.forEach(module -> {
             if (Objects.equals(module.getModule_id(),moduleId)) {
                 List<LessonResponse> lessonResponseList = getAllLessonsByModule(moduleId);
                 for (LessonResponse lessonResponse : lessonResponseList) {
-                    System.out.println("LessonNumber " + lessonResponse.getNumber());
                     if (currentLesson >= lessonResponse.getNumber()){
                         responseList.add(lessonResponse);
                     }else {
@@ -121,8 +118,12 @@ public class ModuleService {
                 .orElseThrow(() -> new DataNotFoundException("Module not found with this id => " + moduleId));
         List<LessonEntity> lessonEntities = lessonRepository.findAllByModule(module)
                 .orElseThrow(() -> new DataNotFoundException("Lesson not found in this module => " + moduleId));
-        return lessonEntities.stream()
-                .map(lessonEntity -> modelMapper.map(lessonEntity, LessonResponse.class))
-                .collect(Collectors.toList());
+        List<LessonResponse> lessonResponseList = new ArrayList<>();
+        lessonEntities.forEach(lessonEntity -> {
+            LessonResponse lessonResponse = modelMapper.map(lessonEntity, LessonResponse.class);
+            lessonResponse.setModuleId(lessonEntity.getModule().getId());
+            lessonResponseList.add(lessonResponse);
+        });
+        return lessonResponseList;
     }
 }

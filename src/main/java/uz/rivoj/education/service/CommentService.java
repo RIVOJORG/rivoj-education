@@ -15,10 +15,12 @@ import uz.rivoj.education.repository.LessonRepository;
 import uz.rivoj.education.repository.StudentInfoRepository;
 import uz.rivoj.education.repository.UserRepository;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,13 +31,13 @@ public class CommentService {
     private final StudentInfoRepository studentInfoRepository;
     private final ModelMapper modelMapper;
 
-    public CommentResponse create(CommentCR createRequest) {
+    public CommentResponse create(CommentCR createRequest, UUID ownerId) {
         LessonEntity lessonEntity = lessonRepository.findById(createRequest.getLessonId())
                 .orElseThrow(() -> new ClassCastException("Comment not found with ID: " + createRequest.getLessonId()));
-        UserEntity owner = userRepository.findById(createRequest.getOwnerId())
-                .orElseThrow(() -> new DataNotFoundException("user not found with this id: " + createRequest.getOwnerId()));
-        StudentInfo studentInfo = studentInfoRepository.findStudentInfoByStudentId(createRequest.getOwnerId())
-                .orElseThrow(() -> new DataNotFoundException("Student not found with this id: " + createRequest.getOwnerId()));
+        UserEntity owner = userRepository.findById(ownerId)
+                .orElseThrow(() -> new DataNotFoundException("user not found with this id: " + ownerId));
+        StudentInfo studentInfo = studentInfoRepository.findStudentInfoByStudentId(ownerId)
+                .orElseThrow(() -> new DataNotFoundException("Student not found with this id: " + ownerId));
         CommentEntity comment = new CommentEntity();
         comment.setLesson(lessonEntity);
         comment.setCreatedDate(LocalDateTime.now());
@@ -90,5 +92,6 @@ public class CommentService {
         }
         return list;
     }
+
 
 }
