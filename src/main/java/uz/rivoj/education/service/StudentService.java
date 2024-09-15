@@ -181,30 +181,40 @@ public class StudentService {
                 .orElseThrow(() -> new DataNotFoundException("Student not found!"));
         UserEntity userEntity = userRepository.findById(studentId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found!"));
-        if(studentUpdate.getBirthday() != null){
-            studentInfo.setBirthday(studentInfo.getBirthday());}
-        if(studentUpdate.getSurname() != null){
-            userEntity.setSurname(studentUpdate.getSurname());}
-        if(studentUpdate.getPhoneNumber() != null){
-            userEntity.setPhoneNumber(studentUpdate.getPhoneNumber());}
-        if(studentUpdate.getName() != null){
-            userEntity.setName(studentUpdate.getName());}
-        if(studentUpdate.getPassword() != null){
+        if (studentUpdate.getBirthday() != null) {
+            studentInfo.setBirthday(studentUpdate.getBirthday());
+        }
+        if (studentUpdate.getSurname() != null) {
+            userEntity.setSurname(studentUpdate.getSurname());
+        }
+        if (studentUpdate.getPhoneNumber() != null) {
+            System.out.println("studentUpdate.getPhoneNumber() = " + studentUpdate.getPhoneNumber());
+            System.out.println("studentUpdate.getPhoneNumber().isEmpty() = " + studentUpdate.getPhoneNumber().isEmpty());
+            userEntity.setPhoneNumber(studentUpdate.getPhoneNumber());
+        }
+        if (studentUpdate.getName() != null) {
+            userEntity.setName(studentUpdate.getName());
+        }
+        if (studentUpdate.getPassword() != null) {
             userEntity.setPassword(passwordEncoder.encode(studentUpdate.getPassword()));
         }
+
         userRepository.save(userEntity);
         studentInfoRepository.save(studentInfo);
+
         StudentResponse response = modelMapper.map(userEntity, StudentResponse.class);
         response.setBirth(studentInfo.getBirthday());
         response.setSubjectId(studentInfo.getSubject().getId());
         response.setCurrentLessonId(studentInfo.getLesson().getId());
-        return  response;
+
+        return response;
     }
 
-    public String updateProfilePicture(MultipartFile picture, UUID userId) throws IOException {
+
+    @SneakyThrows
+    public String updateProfilePicture(MultipartFile picture, UUID userId)  {
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found!"));
-
         String filename = userEntity.getName() + "_ProfilePicture";
         String avatarPath = uploadService.uploadFile(picture, filename);
         userEntity.setAvatar(avatarPath);

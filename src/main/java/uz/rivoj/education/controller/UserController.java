@@ -89,8 +89,11 @@ public class UserController {
     // COMMENT
 
     @PostMapping("/create-comment")
-    public ResponseEntity<CommentResponse> createComment(@RequestBody CommentCR createRequest){
-        return ResponseEntity.status(HttpStatus.CREATED).body(commentService.create(createRequest));
+    public ResponseEntity<CommentResponse> createComment(
+            @RequestBody CommentCR createRequest,
+            Principal principal
+    ){
+        return ResponseEntity.status(HttpStatus.CREATED).body(commentService.create(createRequest, UUID.fromString(principal.getName())));
     }
 
     // ATTENDANCE
@@ -103,9 +106,11 @@ public class UserController {
     public ResponseEntity<?> getUserDetails(Principal principal){
         return ResponseEntity.ok(userService.getUserDetails(UUID.fromString(principal.getName())));
     }
+
     @GetMapping("/{lessonId}")
     public ResponseEntity<LessonResponse> getLessonWithComments(@PathVariable UUID lessonId) {
         LessonResponse response = commentService.getLessonWithComments(lessonId);
         return ResponseEntity.ok(response);
     }
+
 }

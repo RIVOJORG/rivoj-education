@@ -5,9 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.AttendanceCR;
+import uz.rivoj.education.dto.request.LessonCR;
 import uz.rivoj.education.dto.request.StudentUpdate;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.service.*;
@@ -67,13 +69,13 @@ public class StudentController {
 
 
     @PutMapping(value = "/update-profile-picture",
-            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
-            produces = APPLICATION_JSON_VALUE)
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<String> updateProfilePicture(
             Principal principal,
-            @RequestPart("Profile Picture ") MultipartFile picture
-    ) throws IOException {
+            @RequestParam("picture") MultipartFile picture
+    ) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(studentService.updateProfilePicture(picture, UUID.fromString(principal.getName())));
     }
+
 }
