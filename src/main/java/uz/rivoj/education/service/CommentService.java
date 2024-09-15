@@ -95,14 +95,9 @@ public class CommentService {
     }
 
     public LessonResponse getLessonWithComments(UUID lessonId) {
-        // Fetch the lesson
         LessonEntity lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new DataNotFoundException("Lesson not found"));
-
-        // Fetch comments for the lesson
-        List<CommentEntity> comments = commentRepository.findByLesson(lesson);
-
-        // Convert comments to CommentResponse
+        List<CommentEntity> comments = commentRepository.findCommentEntitiesByLesson_Id(lessonId);
         List<CommentResponse> commentResponses = comments.stream()
                 .map(comment -> {
                     UserEntity owner = comment.getOwner();
@@ -118,7 +113,6 @@ public class CommentService {
                 })
                 .collect(Collectors.toList());
 
-        // Build the final response
         return LessonResponse.builder()
                         .id(lesson.getId())
                         .number(lesson.getNumber())
