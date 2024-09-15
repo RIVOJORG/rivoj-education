@@ -2,6 +2,7 @@ package uz.rivoj.education.dto.response;
 
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -18,4 +19,6 @@ public class LessonResponse {
     private String cover;
     private UUID moduleId;
     private String description;
+    private List<CommentResponse> comments;
+
 }

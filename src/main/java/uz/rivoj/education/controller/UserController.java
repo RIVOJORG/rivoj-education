@@ -25,6 +25,7 @@ public class UserController {
     private final CommentService commentService;
     private final AttendanceService attendanceService;
     private final UserService userService;
+    private final LessonService lessonService;
 
 
     @PostMapping("/create_chat")
@@ -106,5 +107,10 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserDetails(UUID.fromString(principal.getName())));
     }
 
+    @GetMapping("/{lessonId}")
+    public ResponseEntity<LessonResponse> getLessonWithComments(@PathVariable UUID lessonId) {
+        LessonResponse response = commentService.getLessonWithComments(lessonId);
+        return ResponseEntity.ok(response);
+    }
 
 }

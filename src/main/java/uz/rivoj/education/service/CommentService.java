@@ -5,6 +5,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.CommentCR;
 import uz.rivoj.education.dto.response.CommentResponse;
+import uz.rivoj.education.dto.response.LessonResponse;
 import uz.rivoj.education.entity.CommentEntity;
 import uz.rivoj.education.entity.LessonEntity;
 import uz.rivoj.education.entity.StudentInfo;
@@ -93,5 +94,41 @@ public class CommentService {
         return list;
     }
 
+    public LessonResponse getLessonWithComments(UUID lessonId) {
+        // Fetch the lesson
+        LessonEntity lesson = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new DataNotFoundException("Lesson not found"));
+
+        // Fetch comments for the lesson
+        List<CommentEntity> comments = commentRepository.findByLesson(lesson);
+
+        // Convert comments to CommentResponse
+        List<CommentResponse> commentResponses = comments.stream()
+                .map(comment -> {
+                    UserEntity owner = comment.getOwner();
+                    return CommentResponse.builder()
+                            .commentId(comment.getId())
+                            .ownerId(owner.getId())
+                            .lessonId(comment.getLesson().getId())
+                            .name(owner.getName())
+                            .surname(owner.getSurname())
+                            .avatar(owner.getAvatar())
+                            .description(comment.getDescription())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        // Build the final response
+        return LessonResponse.builder()
+                        .id(lesson.getId())
+                        .number(lesson.getNumber())
+                        .title(lesson.getTitle())
+                        .source(lesson.getSource())
+                        .cover(lesson.getCover())
+                        .moduleId(lesson.getModule().getId())
+                        .description(lesson.getDescription())
+                        .comments(commentResponses)
+                .build();
+    }
 
 }

@@ -6,6 +6,6 @@ import lombok.*;
 @NoArgsConstructor
 @Data
 public class ScoreByAttendance {
-    private int lessonNumber;
-    private int score;
+    private Integer lessonNumber;
+    private Integer score;
 }
