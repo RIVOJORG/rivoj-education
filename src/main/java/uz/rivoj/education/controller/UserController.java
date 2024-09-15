@@ -29,11 +29,11 @@ public class UserController {
 
 
     @PostMapping("/create_chat")
-    public ResponseEntity<UUID> createChat(Principal user, UUID user2){ // start chat
+    public ResponseEntity<UUID> createChat(Principal user, UUID user2){ 
         return ResponseEntity.ok(chatService.createChat(UUID.fromString(user.getName()),user2));
     }
 
-    @GetMapping("/get-my-chats") // hammada bo'ladi bu API student, admin ham o'zini chatlarini olishi mumkun
+    @GetMapping("/get-my-chats")
     public List<ChatResponse> getMyChats(Principal principal){
         return chatService.getMyChats(UUID.fromString(principal.getName()));
     }
@@ -86,8 +86,6 @@ public class UserController {
     }
 
 
-    // COMMENT
-
     @PostMapping("/create-comment")
     public ResponseEntity<CommentResponse> createComment(
             @RequestBody CommentCR createRequest,
@@ -96,7 +94,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.create(createRequest, UUID.fromString(principal.getName())));
     }
 
-    // ATTENDANCE
     @GetMapping("/get-attendances-by-lesson{lessonId}")
     public ResponseEntity<List<AttendanceResponse>> getAttendancesByLesson(@PathVariable UUID lessonId){
         return ResponseEntity.ok(attendanceService.getAttendancesByLesson(lessonId));
@@ -107,7 +104,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserDetails(UUID.fromString(principal.getName())));
     }
 
-    @GetMapping("/{lessonId}")
+    @GetMapping("/getCommentsOfLesson{lessonId}")
     public ResponseEntity<LessonResponse> getLessonWithComments(@PathVariable UUID lessonId) {
         LessonResponse response = commentService.getLessonWithComments(lessonId);
         return ResponseEntity.ok(response);

@@ -24,6 +24,7 @@ public class ModuleService {
     private final CommentRepository commentRepository;
     private final StudentInfoRepository studentRepository;
     private final LessonRepository lessonRepository;
+    private final CommentService commentService;
 
     public ModuleResponse create(ModuleCR createRequest) {
         SubjectEntity subjectEntity = subjectRepository.findById(createRequest.getSubjectId())
@@ -97,9 +98,11 @@ public class ModuleService {
                 List<LessonResponse> lessonResponseList = getAllLessonsByModule(moduleId);
                 for (LessonResponse lessonResponse : lessonResponseList) {
                     if (currentLesson >= lessonResponse.getNumber()){
+                        lessonResponse.setComments(commentService.getLessonWithComments(lessonResponse.getId()).getComments());
                         responseList.add(lessonResponse);
                     }else {
                         lessonResponse.setSource(null);
+                        lessonResponse.setComments(commentService.getLessonWithComments(lessonResponse.getId()).getComments());
                         responseList.add(lessonResponse);
                     }
                 }
