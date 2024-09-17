@@ -49,7 +49,7 @@ public class ProgressService {
         }
 
         // Fetch attendance entities for the student in the current module
-        List<AttendanceEntity> attendancesOfModule = attendanceRepository.findAttendanceEntitiesByStudent_IdAndLessonEntity_Module_Id(
+        List<AttendanceEntity> attendancesOfModule = attendanceRepository.findAttendanceEntitiesByStudent_IdAndLesson_Module_Id(
                 userEntity.getId(),
                 currentModule.getId()
         );
@@ -61,7 +61,7 @@ public class ProgressService {
         for (AttendanceEntity attendance : attendancesOfModule) {
             if (attendance.getStatus() == AttendanceStatus.CHECKED) {
                 scores.add(new ScoreByAttendance(
-                        attendance.getLessonEntity().getNumber(),
+                        attendance.getLesson().getNumber(),
                         attendance.getScore()
                 ));
             }
@@ -126,8 +126,8 @@ public class ProgressService {
     }
 
 
-    public LessonPageResponse getLessonPageResponseByLessonId(String userId, UUID lessonId) {
-        UserEntity student = userRepository.findById(UUID.fromString(userId))
+    public LessonPageResponse getLessonPageResponseByLessonId(UUID userId, UUID lessonId) {
+        UserEntity student = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
         StudentInfo studentInfo = studentInfoRepository.findByStudent(student);
@@ -159,7 +159,7 @@ public class ProgressService {
                 .toList();
 
         List<AttendanceResponse> attendances = attendanceRepository
-                .findAttendanceEntitiesByStudentIdAndLessonEntity(UUID.fromString(String.valueOf(studentInfo.getId())), lesson)
+                .findByStudent_IdAndLesson_Id(studentInfo.getId(), lesson.getId())
                 .stream().map(attendance -> modelMapper.map(attendance, AttendanceResponse.class))
                 .toList();
 
@@ -244,7 +244,7 @@ public class ProgressService {
         for (AttendanceEntity attendanceEntity : attendanceRepository.findAllByStudentId(studentInfo.getId())) {
             SpecialAttendanceResponse attendanceResponse = SpecialAttendanceResponse.builder()
                     .moduleNumber(attendanceEntity.getStudent().getCurrentModule().getNumber())
-                    .lessonNumber(attendanceEntity.getLessonEntity().getNumber())
+                    .lessonNumber(attendanceEntity.getLesson().getNumber())
                     .score(attendanceEntity.getScore())
                     .build();
             attendanceResponseList.add(attendanceResponse);

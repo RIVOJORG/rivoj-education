@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import uz.rivoj.education.dto.request.AttendanceCR;
 import uz.rivoj.education.dto.request.StudentCR;
 import uz.rivoj.education.dto.request.StudentUpdate;
 import uz.rivoj.education.dto.response.*;
@@ -20,6 +22,8 @@ import org.springframework.data.domain.Pageable;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static uz.rivoj.education.entity.enums.AttendanceStatus.UNCHECKED;
 
 @Service
 @RequiredArgsConstructor
@@ -121,7 +125,7 @@ public class StudentService {
                     List<SpecialAttendanceResponse> attendanceResponses = new ArrayList<>();
 
                     for (LessonEntity lesson : lessons) {
-                        attendanceRepository.findByStudentAndLessonEntity(studentInfo, lesson)
+                        attendanceRepository.findByStudentAndLesson(studentInfo, lesson)
                                 .ifPresent(attendance -> {
                                     SpecialAttendanceResponse response = new SpecialAttendanceResponse();
                                     response.setModuleNumber(moduleNumber);
@@ -261,5 +265,32 @@ public class StudentService {
                 studentInfo.getSubject() != null ? studentInfo.getSubject().getId() : null,
                 studentInfo.getLesson() != null ? studentInfo.getLesson().getId() : null
         );
+    }
+
+    public String uploadHomework(AttendanceCR attendanceCR, UUID userId,List<MultipartFile> files) {
+        StudentInfo student = studentInfoRepository.findStudentInfoByStudentId(userId)
+                .orElseThrow(() -> new DataNotFoundException("Student not found!"));
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("Student not found!"));
+        LessonEntity lesson = lessonRepository.findById(attendanceCR.getLessonId())
+                .orElseThrow(() -> new DataNotFoundException("Lesson not found!"));
+        List<String> homeworkPaths = new ArrayList<>();
+        for (MultipartFile multipartFile : files) {
+            String fileName = user.getName() + "'s_homework";
+            try {
+                homeworkPaths.add(uploadService.uploadFile(multipartFile, fileName));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        AttendanceEntity attendanceEntity = AttendanceEntity.builder()
+                .answers(homeworkPaths)
+                .coin(0)
+                .lesson(lesson)
+                .student(student)
+                .status(UNCHECKED)
+                .build();
+        attendanceRepository.save(attendanceEntity);
+        return "Uploaded!";
     }
 }

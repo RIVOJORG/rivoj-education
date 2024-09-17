@@ -1,6 +1,7 @@
 package uz.rivoj.education.dto.request;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -10,7 +11,6 @@ import java.util.UUID;
 @Setter
 @Builder
 public class AttendanceCR {
-    private UUID teacherId;
     private UUID lessonId;
-    private List<String> answer;
+    private String description;
 }

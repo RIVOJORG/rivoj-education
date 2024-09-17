@@ -2,6 +2,7 @@ package uz.rivoj.education.dto.request;
 
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -11,8 +12,8 @@ import java.util.UUID;
 @Builder
 @ToString
 public class LessonCR {
-    private Integer number;
     private String title;
     private UUID moduleId;
     private String description;
+    private List<String> additionalLinks;
 }
