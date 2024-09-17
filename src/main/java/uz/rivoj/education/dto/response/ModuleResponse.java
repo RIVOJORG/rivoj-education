@@ -12,6 +12,6 @@ import java.util.UUID;
 @ToString
 public class ModuleResponse {
     private UUID module_id;
-    private Integer modulNumber;
+    private Integer moduleNumber;
     private String subject;
 }
