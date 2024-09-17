@@ -13,7 +13,6 @@ import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.AttendanceStatus;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
