@@ -4,7 +4,6 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import uz.rivoj.education.dto.request.ModuleCR;
 import uz.rivoj.education.dto.response.CommentResponse;
 import uz.rivoj.education.dto.response.LessonResponse;
 import uz.rivoj.education.dto.response.ModuleResponse;
@@ -25,15 +24,28 @@ public class ModuleService {
     private final StudentInfoRepository studentRepository;
     private final LessonRepository lessonRepository;
     private final CommentService commentService;
+    private final UserRepository userRepository;
+    private final TeacherInfoRepository teacherInfoRepository;
 
-    public ModuleResponse create(ModuleCR createRequest) {
-        SubjectEntity subjectEntity = subjectRepository.findById(createRequest.getSubjectId())
-                .orElseThrow(() -> new EntityNotFoundException("Subject not found with this id " + createRequest.getSubjectId()));
+    public ModuleResponse create(Integer moduleNumber, UUID teacherId) {
+        UserEntity teacher = userRepository.findById(UUID.fromString(String.valueOf(teacherId)))
+                .orElseThrow(() -> new DataNotFoundException("Teacher not found"));
 
-        ModuleEntity module = modelMapper.map(createRequest, ModuleEntity.class);
+        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher(teacher);
+        if (teacherInfo == null) {
+            throw new DataNotFoundException("Teacher information not found");
+        }
+        SubjectEntity subjectEntity = subjectRepository.findById(teacherInfo.getSubject().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Subject not found with this id " + teacherInfo.getSubject().getId()));
+
+        ModuleEntity module = new ModuleEntity();
+        module.setNumber(moduleNumber);
         module.setSubject(subjectEntity);
         moduleRepository.save(module);
-        return modelMapper.map(createRequest, ModuleResponse.class);
+        return ModuleResponse.builder()
+                .module_id(module.getId())
+                .moduleNumber(module.getNumber())
+                .subject(module.getSubject().getTitle()).build();
     }
 
     public String delete(UUID moduleId){
@@ -66,31 +78,23 @@ public class ModuleService {
         ModuleEntity moduleEntity = moduleRepository.findById(moduleId)
                 .orElseThrow(() -> new DataNotFoundException("Module not found with this id: " + moduleId));
         return ModuleResponse.builder()
-                .modulNumber(moduleEntity.getNumber())
+                .moduleNumber(moduleEntity.getNumber())
                 .subject(moduleEntity.getSubject().getTitle())
                 .build();
     }
 
-    public List<ModuleResponse> getAllModules(UUID userId) {
-        StudentInfo  studentInfo= studentRepository.findStudentInfoByStudentId(userId)
+    public List<ModuleResponse> getAllModulesOfStudent(UUID userId) {
+        StudentInfo studentInfo= studentRepository.findStudentInfoByStudentId(userId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found with this id => " + userId));
         List<ModuleEntity> modulesBySubject = moduleRepository.findAllBySubject(studentInfo.getSubject())
                 .orElseThrow(() -> new DataNotFoundException("Module not found with this subject => " + studentInfo.getSubject().getTitle()));
-        List<ModuleResponse> modules = new ArrayList<>();
-        modulesBySubject.forEach(module -> {
-            ModuleResponse moduleResponse = new ModuleResponse();
-            moduleResponse.setModule_id(module.getId());
-            moduleResponse.setModulNumber(module.getNumber());
-            moduleResponse.setSubject(module.getSubject().getTitle());
-            modules.add(moduleResponse);
-        });
-        return modules;
+        return getModuleResponses(modulesBySubject);
     }
 
     public List<LessonResponse> getAllAccessibleLessonsOfUser(UUID userId, UUID moduleId) {
         StudentInfo studentInfo = studentRepository.findStudentInfoByStudentId(userId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found with this id => " + userId));
-        List<ModuleResponse> allModules = getAllModules(userId);
+        List<ModuleResponse> allModules = getAllModulesOfStudent(userId);
         List<LessonResponse> responseList = new ArrayList<>();
         int currentLesson = studentInfo.getLesson().getNumber();
         allModules.forEach(module -> {
@@ -132,7 +136,7 @@ public class ModuleService {
                 .build();
     }
 
-    private List<LessonResponse> getAllLessonsByModule(UUID moduleId) {
+    public List<LessonResponse> getAllLessonsByModule(UUID moduleId) {
         ModuleEntity module = moduleRepository.findById(moduleId)
                 .orElseThrow(() -> new DataNotFoundException("Module not found with this id => " + moduleId));
         List<LessonEntity> lessonEntities = lessonRepository.findAllByModule(module)
@@ -144,5 +148,24 @@ public class ModuleService {
             lessonResponseList.add(lessonResponse);
         });
         return lessonResponseList;
+    }
+    public List<ModuleResponse> getAllModulesOfSubject(UUID subjectId){
+        SubjectEntity subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> new DataNotFoundException("Subject not found with this id => " + subjectId));
+        List<ModuleEntity> modulesBySubject = moduleRepository.findAllBySubject(subject)
+                .orElseThrow(() -> new DataNotFoundException("Module not found with this subject => " + subject.getTitle()));
+        return getModuleResponses(modulesBySubject);
+    }
+
+    private List<ModuleResponse> getModuleResponses(List<ModuleEntity> modulesBySubject) {
+        List<ModuleResponse> modules = new ArrayList<>();
+        modulesBySubject.forEach(module -> {
+            ModuleResponse moduleResponse = new ModuleResponse();
+            moduleResponse.setModule_id(module.getId());
+            moduleResponse.setModuleNumber(module.getNumber());
+            moduleResponse.setSubject(module.getSubject().getTitle());
+            modules.add(moduleResponse);
+        });
+        return modules;
     }
 }

@@ -1,6 +1,5 @@
 package uz.rivoj.education.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,12 +14,11 @@ import uz.rivoj.education.entity.enums.AttendanceStatus;
 import uz.rivoj.education.entity.enums.UserStatus;
 import uz.rivoj.education.service.*;
 
-import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @RestController
 @RequiredArgsConstructor
@@ -52,10 +50,7 @@ public class AdminController {
     public ResponseEntity<String> addAdmin(@RequestBody UserCR adminDto){
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.addAdmin(adminDto));
     }
-    @PostMapping("/create-module")
-    public ResponseEntity<ModuleResponse> createModule(@RequestBody ModuleCR createRequest){
-        return ResponseEntity.status(HttpStatus.CREATED).body(moduleService.create(createRequest));
-    }
+
     @PostMapping("/create-subject")
     public ResponseEntity<SubjectResponse> createSubject(@RequestBody SubjectCR createRequest){
         return ResponseEntity.status(HttpStatus.CREATED).body(subjectService.create(createRequest));
@@ -64,7 +59,11 @@ public class AdminController {
     public ResponseEntity<NotificationResponse> createNotification(@RequestBody NotificationCR notificationCR){
         return ResponseEntity.status(HttpStatus.CREATED).body(notificationService.create(notificationCR));
     }
-    @PostMapping(value = "/create-lesson", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = {APPLICATION_JSON_VALUE})
+    @PostMapping("/create-module")
+    public ResponseEntity<ModuleResponse> createModule(@RequestBody Integer moduleNumber, Principal principal){
+        return ResponseEntity.status(HttpStatus.CREATED).body(moduleService.create(moduleNumber, UUID.fromString(principal.getName())));
+    }
+    @PostMapping(value = "/create-lesson", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<LessonResponse> createLesson(
             @ModelAttribute LessonCR createRequest,
             @RequestPart("lessonVideo") MultipartFile lessonVideo,
@@ -214,5 +213,11 @@ public class AdminController {
     public ResponseEntity<String> changePassword() {
         return ResponseEntity.ok(studentService.changePassword());
     }
+
+    @GetMapping("/getAllModulesOfSubject{subjectId}")
+    public ResponseEntity<List<ModuleResponse>> getAllModulesOfSubject(@PathVariable UUID subjectId){
+        return ResponseEntity.status(200).body(moduleService.getAllModulesOfSubject(subjectId));
+    }
+
 
 }
