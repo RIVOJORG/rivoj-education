@@ -39,7 +39,7 @@ public class UploadService {
 
         List<PartETag> partETags = new ArrayList<>();
         long contentLength = file.getSize();
-        long partSize = 100 * 1024 * 1024; // Set part size to 100 MB
+        long partSize = 100 * 1024 * 1024;
 
         try {
             long filePosition = 0;

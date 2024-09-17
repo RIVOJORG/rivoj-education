@@ -6,6 +6,7 @@ import lombok.*;
 import uz.rivoj.education.entity.enums.AttendanceStatus;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity(name = "attendance")
 @AllArgsConstructor
@@ -22,14 +23,16 @@ public class AttendanceEntity extends BaseEntity {
     private StudentInfo student;
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "lesson_id", referencedColumnName = "id")
-    private LessonEntity lessonEntity;
+    private LessonEntity lesson;
     @ElementCollection
     @CollectionTable(name = "attendance_answers", joinColumns = @JoinColumn(name = "attendance_id"))
     @Column(name = "answer")
-    private List<String> answer;
+    private List<String> answers;
     private Integer score;
     private String feedBack;
     private Integer coin;
     @Enumerated(EnumType.STRING)
     private AttendanceStatus status;
 }
+
+

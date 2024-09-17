@@ -38,13 +38,22 @@ public class LessonService {
     public LessonResponse create(LessonCR createRequest, MultipartFile lessonVideo, MultipartFile coverOfLesson)  {
         ModuleEntity moduleEntity = moduleRepository.findById(createRequest.getModuleId())
                 .orElseThrow(() -> new DataNotFoundException("Module not found with this id " + createRequest.getModuleId()));
-        if (lessonRepository.existsByModuleAndNumber(moduleEntity, createRequest.getNumber())) {
-            throw new DataAlreadyExistsException("Lesson already exists with number : " + createRequest.getNumber() + " in module id : " + createRequest.getModuleId());
-        }
         if (lessonRepository.existsByModuleAndTitle(moduleEntity, createRequest.getTitle())) {
-            throw new DataAlreadyExistsException("Lesson already exists with title : " + createRequest.getTitle() + " in module id : " + createRequest.getModuleId());
+            throw new DataAlreadyExistsException("Lesson already exists with this title : " + createRequest.getTitle() + " in module id : " + createRequest.getModuleId());
         }
+        Optional<List<LessonEntity>> lessonEntities = lessonRepository.findAllByModule(moduleEntity);
         LessonEntity lesson = modelMapper.map(createRequest, LessonEntity.class);
+        if (lessonEntities.isEmpty()) {
+            lesson.setNumber(1);
+        }else {
+            List<LessonEntity> lessonEntityList = lessonEntities.get();
+            int maxNumber = lessonEntityList.stream()
+                    .mapToInt(LessonEntity::getNumber)
+                    .max()
+                    .orElse(0);
+            lesson.setNumber(maxNumber + 1);
+        }
+
         lesson.setModule(moduleEntity);
         LessonEntity savedLesson = lessonRepository.save(lesson);
         String lessonVideoContentType = lessonVideo.getContentType();

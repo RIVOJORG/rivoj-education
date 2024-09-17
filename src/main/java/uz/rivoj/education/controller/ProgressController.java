@@ -25,7 +25,7 @@ public class ProgressController {
 
     @GetMapping("get-lesson/{lessonId}")
     public LessonPageResponse getLessonPageResponseByLessonId(Principal principal, @PathVariable UUID lessonId) {
-        return progressService.getLessonPageResponseByLessonId(principal.getName(), lessonId);
+        return progressService.getLessonPageResponseByLessonId(UUID.fromString(principal.getName()), lessonId);
     }
 
     @GetMapping("/get-top10")

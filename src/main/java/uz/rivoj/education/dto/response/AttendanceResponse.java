@@ -1,5 +1,6 @@
 package uz.rivoj.education.dto.response;
 import lombok.*;
+import uz.rivoj.education.entity.enums.AttendanceStatus;
 
 import java.util.List;
 import java.util.UUID;
@@ -9,14 +10,13 @@ import java.util.UUID;
 @Setter
 @Builder
 public class AttendanceResponse {
-    private UUID attendanceId;
-    private UUID lessonId;
-    private UUID studentId;
-    private UUID teacherId;
-    private String video;
+    private UUID Id;
+    private UUID lesson_id;
+    private UUID student_id;
+    private UUID teacher_id;
     private List<String> answers;
     private String feedBack;
     private Integer score;
     private Integer coin;
-    private Boolean isCorrect;
+    private AttendanceStatus status;
 }

@@ -59,8 +59,8 @@ public class TeacherController {
     }
 
     @PutMapping("/check-attendance")
-    public ResponseEntity<String> checkAttendance(@RequestBody CheckAttendanceDTO checkAttendanceDTO) {
-        return ResponseEntity.status(200).body(attendanceService.checkAttendance(checkAttendanceDTO));
+    public ResponseEntity<String> checkAttendance(@RequestBody CheckAttendanceDTO checkAttendanceDTO,Principal principal) {
+        return ResponseEntity.status(200).body(attendanceService.checkAttendance(checkAttendanceDTO,UUID.fromString(principal.getName())));
     }
 
     @GetMapping("/get-all-attendance-by-userId{userId}")

@@ -4,6 +4,8 @@ package uz.rivoj.education.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity(name = "lesson")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,4 +21,5 @@ public class LessonEntity extends BaseEntity {
     private String source;
     private String cover; // content abloshkasi
     private String description;
+    private List<String> additionalLinks;
 }

@@ -64,7 +64,7 @@ public class AdminController {
     public ResponseEntity<NotificationResponse> createNotification(@RequestBody NotificationCR notificationCR){
         return ResponseEntity.status(HttpStatus.CREATED).body(notificationService.create(notificationCR));
     }
-    @PostMapping(value = "/create-lesson", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/create-lesson", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = {APPLICATION_JSON_VALUE})
     public ResponseEntity<LessonResponse> createLesson(
             @ModelAttribute LessonCR createRequest,
             @RequestPart("lessonVideo") MultipartFile lessonVideo,
