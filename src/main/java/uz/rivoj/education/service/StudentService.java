@@ -43,7 +43,7 @@ public class StudentService {
             StudentResponse studentResponse = modelMapper.map(userEntity, StudentResponse.class);
             Optional<StudentInfo> studentInfo = studentInfoRepository.findStudentInfoByStudentId(userEntity.getId());
             if (studentInfo.isPresent()) {
-                studentResponse.setId(String.valueOf(studentInfo.get().getId()));
+                studentResponse.setId((studentInfo.get().getId()));
                 studentResponse.setAvatar(studentInfo.get().getAvatar());
                 studentResponse.setBirth(studentInfo.get().getBirthday());
                 studentResponse.setSubjectId(studentInfo.get().getSubject().getId());
@@ -252,7 +252,7 @@ public class StudentService {
 
     private StudentResponse convertToStudentResponse(StudentInfo studentInfo) {
         return new StudentResponse(
-                studentInfo.getStudent().getId().toString(),
+                studentInfo.getStudent().getId(),
                 studentInfo.getStudent().getName(),
                 studentInfo.getStudent().getSurname(),
                 studentInfo.getAvatar(),
