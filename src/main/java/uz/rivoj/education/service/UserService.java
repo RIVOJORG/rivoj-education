@@ -126,6 +126,7 @@ public class UserService {
             teacherResponse.setSubject(modelMapper.map(teacherInfo.getSubject(),SubjectResponse.class));
             teacherResponse.setAbout(teacherInfo.getAbout());
             teacherResponse.setId(teacherInfo.getId());
+            teacherResponse.setBirthday(teacherInfo.getBirthday());
             return teacherResponse;
         } else {
             StudentInfo studentInfo = studentInfoRepository.findStudentInfoByStudentId(userId)
