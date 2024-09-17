@@ -93,16 +93,16 @@ public class StudentService {
 
     public List<StudentStatisticsDTO> getStudentStatistics(String teacherId, Integer moduleNumber) {
         UserEntity teacher = userRepository.findById(UUID.fromString(teacherId))
-                .orElseThrow(() -> new RuntimeException("Teacher not found"));
+                .orElseThrow(() -> new DataNotFoundException("Teacher not found"));
 
         TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher(teacher);
         if (teacherInfo == null) {
-            throw new RuntimeException("Teacher information not found");
+            throw new DataNotFoundException("Teacher information not found");
         }
         ModuleEntity module = moduleRepository.findBySubjectAndNumber(teacherInfo.getSubject(), moduleNumber);
 
         if (module == null) {
-            throw new RuntimeException("Module not found for the given module number");
+            throw new DataNotFoundException("Module not found for the given module number");
         }
 
         List<LessonEntity> lessons = lessonRepository.findByModule(module);
@@ -226,18 +226,18 @@ public class StudentService {
 
     public List<StudentResponse> getAllMyStudent(int page, int size, UUID userId) {
         UserEntity teacher = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Teacher not found"));
+                .orElseThrow(() -> new DataNotFoundException("Teacher not found"));
 
         TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher(teacher);
         if (teacherInfo == null) {
-            throw new RuntimeException("Teacher information not found");
+            throw new DataNotFoundException("Teacher information not found");
         }
 
         List<SubjectEntity> subjects = subjectRepository.findAllByTeachersTeacherId(teacherInfo.getTeacher().getId());
         System.out.println("Fetched subjects: " + subjects);
 
         if (subjects.isEmpty()) {
-            throw new RuntimeException("No subjects found for the teacher");
+            throw new DataNotFoundException("No subjects found for the teacher");
         }
 
         Pageable pageable = PageRequest.of(page, size);
