@@ -4,10 +4,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import uz.rivoj.education.dto.response.AttendanceResponse;
 import uz.rivoj.education.entity.AttendanceEntity;
 import uz.rivoj.education.entity.LessonEntity;
-import uz.rivoj.education.entity.ModuleEntity;
 import uz.rivoj.education.entity.StudentInfo;
 import uz.rivoj.education.entity.enums.AttendanceStatus;
 
@@ -18,18 +16,21 @@ import java.util.UUID;
 @Repository
 public interface AttendanceRepository extends JpaRepository<AttendanceEntity, UUID> {
 
-    List<AttendanceEntity> findAttendanceEntitiesByStudent_IdAndLessonEntity_Module_Id(
+    List<AttendanceEntity> findAttendanceEntitiesByStudent_IdAndLesson_Module_Id(
             UUID studentId,
             UUID moduleId
     );
 
 
-    List<AttendanceEntity> findAttendanceEntitiesByStudentIdAndLessonEntity(UUID studentId, LessonEntity lesson);
+    Optional<List<AttendanceEntity>> findByStudent_IdAndLesson_Id(UUID student_id, UUID lesson_id);
     List<AttendanceEntity> findAllByStudentId(UUID userId);
 
     Page<AttendanceEntity> findAllByStatus(Pageable pageable, AttendanceStatus status);
 
-    List<AttendanceEntity> findAttendanceByLessonEntity(LessonEntity lessonEntity);
+    List<AttendanceEntity> findAttendanceByLesson_Id(UUID lesson_Id);
 
-    Optional<AttendanceEntity> findByStudentAndLessonEntity(StudentInfo student, LessonEntity lessonEntity);
+    Optional<AttendanceEntity> findByStudentAndLesson(StudentInfo student, LessonEntity lessonEntity);
+    List<AttendanceEntity> findByStudent_Id(UUID studentId);
+
+
 }

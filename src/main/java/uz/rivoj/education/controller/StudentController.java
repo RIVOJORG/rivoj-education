@@ -30,10 +30,6 @@ public class StudentController {
     private final ModuleService moduleService;
     private  final StudentService studentService;
 
-    @PostMapping("/create-attendance")
-    public ResponseEntity<AttendanceResponse> createAttendance(@RequestBody AttendanceCR attendance, Principal principal){
-        return ResponseEntity.status(HttpStatus.CREATED).body(attendanceService.create(attendance, UUID.fromString(principal.getName())));
-    }
     @GetMapping("/getAllAttendance")
     public ResponseEntity<AttendanceResponse> getAttendanceById(Principal principal) {
         return ResponseEntity.ok(attendanceService.findByAttendanceId(UUID.fromString(principal.getName())));
@@ -47,15 +43,15 @@ public class StudentController {
         return  ResponseEntity.ok(moduleService.getAllModulesOfStudent(UUID.fromString(principal.getName())));
     }
 
-    @PostMapping(value = "/upload-homework", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/upload-homework",
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
+            produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> uploadHomework(
-            @RequestParam UUID studentId,
-            @RequestPart("Homework Files") List<MultipartFile> homeworkFiles
-    ) throws IOException {
-        for (MultipartFile homeworkFile : homeworkFiles) {
-            uploadService.uploadFile(homeworkFile, studentId.toString());
-        }
-        return ResponseEntity.status(HttpStatus.CREATED).body("Files uploaded successfully!");
+            Principal principal,
+            @ModelAttribute AttendanceCR attendanceCR,
+            @RequestPart List<MultipartFile> files
+    ){
+        return ResponseEntity.ok(studentService.uploadHomework(attendanceCR, UUID.fromString(principal.getName()), files));
     }
 
     @PutMapping(value = "/update-profile")
@@ -69,7 +65,8 @@ public class StudentController {
 
 
     @PutMapping(value = "/update-profile-picture",
-            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
+    )
     public ResponseEntity<String> updateProfilePicture(
             Principal principal,
             @RequestParam("picture") MultipartFile picture
@@ -77,5 +74,11 @@ public class StudentController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(studentService.updateProfilePicture(picture, UUID.fromString(principal.getName())));
     }
+
+    @GetMapping("/get-homework-by-lesson-id")
+    public  ResponseEntity<List<AttendanceResponse>>  getHomeworkByLessonId(Principal principal,@RequestParam UUID lessonId){
+        return ResponseEntity.ok(attendanceService.getAttendanceByLessonId(UUID.fromString(principal.getName()),lessonId));
+    }
+
 
 }
