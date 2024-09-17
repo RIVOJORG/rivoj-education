@@ -14,6 +14,7 @@ import uz.rivoj.education.entity.enums.AttendanceStatus;
 import uz.rivoj.education.entity.enums.UserStatus;
 import uz.rivoj.education.service.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,10 +50,7 @@ public class AdminController {
     public ResponseEntity<String> addAdmin(@RequestBody UserCR adminDto){
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.addAdmin(adminDto));
     }
-    @PostMapping("/create-module")
-    public ResponseEntity<ModuleResponse> createModule(@RequestBody ModuleCR createRequest){
-        return ResponseEntity.status(HttpStatus.CREATED).body(moduleService.create(createRequest));
-    }
+
     @PostMapping("/create-subject")
     public ResponseEntity<SubjectResponse> createSubject(@RequestBody SubjectCR createRequest){
         return ResponseEntity.status(HttpStatus.CREATED).body(subjectService.create(createRequest));
@@ -60,6 +58,10 @@ public class AdminController {
     @PostMapping("/create-notification")
     public ResponseEntity<NotificationResponse> createNotification(@RequestBody NotificationCR notificationCR){
         return ResponseEntity.status(HttpStatus.CREATED).body(notificationService.create(notificationCR));
+    }
+    @PostMapping("/create-module")
+    public ResponseEntity<ModuleResponse> createModule(@RequestBody Integer moduleNumber, Principal principal){
+        return ResponseEntity.status(HttpStatus.CREATED).body(moduleService.create(moduleNumber, UUID.fromString(principal.getName())));
     }
     @PostMapping(value = "/create-lesson", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<LessonResponse> createLesson(
