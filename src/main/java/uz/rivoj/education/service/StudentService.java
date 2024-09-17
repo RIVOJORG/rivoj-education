@@ -46,8 +46,10 @@ public class StudentService {
                 studentResponse.setId(String.valueOf(studentInfo.get().getId()));
                 studentResponse.setAvatar(studentInfo.get().getAvatar());
                 studentResponse.setBirth(studentInfo.get().getBirthday());
+                studentResponse.setSubjectId(studentInfo.get().getSubject().getId());
+                studentResponse.setCurrentLessonId(studentInfo.get().getLesson().getId());
                 responses.add(studentResponse);
-                responses.add(studentResponse); }
+            }
 
             }
         return responses;
