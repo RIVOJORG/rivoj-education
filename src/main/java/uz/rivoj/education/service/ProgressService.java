@@ -152,6 +152,7 @@ public class ProgressService {
                 .avatar(teacherInfo.getAvatar())
                 .subject(modelMapper.map(teacherInfo.getSubject(), SubjectResponse.class))
                 .about(teacherInfo.getAbout())
+                .id(teacherInfo.getId())
                 .build();
 
         List<CommentResponse> comments = commentRepository.findCommentEntitiesByLesson_Id(lessonId)
