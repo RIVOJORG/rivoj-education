@@ -9,13 +9,12 @@ import uz.rivoj.education.entity.ChatEntity;
 import uz.rivoj.education.entity.UserEntity;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface ChatRepository extends JpaRepository<ChatEntity,UUID> {
-//    @Query("SELECT c FROM chat c WHERE SIZE(c.members) = :userCount AND c.members = :userIds")
-//    ChatEntity findChatByUserId(@Param("userIds") List<UUID> userIds, @Param("userCount") int userCount);
 
 
-    List<ChatEntity> findByMembersContaining(UserEntity user);
+    Optional<List<ChatEntity>> findByMembersContaining(UserEntity user);
 }

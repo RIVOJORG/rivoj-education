@@ -15,6 +15,7 @@ import uz.rivoj.education.repository.NotificationRepository;
 import uz.rivoj.education.repository.StudentInfoRepository;
 import uz.rivoj.education.repository.UserRepository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -59,7 +60,11 @@ public class NotificationService {
 
     public List<NotificationResponse> getMyNotifications(UUID id){
         List<NotificationResponse> notificationsById = new ArrayList<>();
-        for (NotificationEntity e : notificationRepository.findAllByUserId(id)){
+        Optional<List<NotificationEntity>> notificationList = notificationRepository.findAllByUserId(id);
+        if(notificationList.isEmpty()){
+            throw new DataNotFoundException("notification not found");
+        }
+        for (NotificationEntity e :notificationList.get() ){
             notificationsById.add(modelMapper.map(e, NotificationResponse.class));
         }
         return notificationsById;

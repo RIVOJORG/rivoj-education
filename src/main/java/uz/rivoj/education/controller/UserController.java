@@ -95,7 +95,7 @@ public class UserController {
     }
 
     @GetMapping("/get-attendances-by-lesson{lessonId}")
-    public ResponseEntity<List<AttendanceResponse>> getAttendancesByLesson(@PathVariable UUID lessonId){
+    public ResponseEntity<AttendanceResponse> getAttendancesByLesson(@PathVariable UUID lessonId){
         return ResponseEntity.ok(attendanceService.getAttendancesByLesson(lessonId));
     }
 

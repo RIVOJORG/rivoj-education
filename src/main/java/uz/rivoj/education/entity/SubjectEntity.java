@@ -12,10 +12,8 @@ import java.util.List;
 @Setter
 @Builder
 public class SubjectEntity extends BaseEntity {
-    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
     private List<ModuleEntity> modules;
-    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TeacherInfo> teachers;
     private String title;
 
 }

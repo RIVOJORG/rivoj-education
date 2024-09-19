@@ -16,10 +16,10 @@ import uz.rivoj.education.repository.LessonRepository;
 import uz.rivoj.education.repository.StudentInfoRepository;
 import uz.rivoj.education.repository.UserRepository;
 
-import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -37,7 +37,7 @@ public class CommentService {
                 .orElseThrow(() -> new ClassCastException("Comment not found with ID: " + createRequest.getLessonId()));
         UserEntity owner = userRepository.findById(ownerId)
                 .orElseThrow(() -> new DataNotFoundException("user not found with this id: " + ownerId));
-        StudentInfo studentInfo = studentInfoRepository.findStudentInfoByStudentId(ownerId)
+        StudentInfo studentInfo = studentInfoRepository.findByStudentId(ownerId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found with this id: " + ownerId));
         CommentEntity comment = new CommentEntity();
         comment.setLesson(lessonEntity);
@@ -67,7 +67,7 @@ public class CommentService {
                 .orElseThrow(() -> new DataNotFoundException("Comment not found with this id: " + commentId));
         UserEntity user = userRepository.findById(commentEntity.getOwner().getId())
                 .orElseThrow(() -> new DataNotFoundException("User not found with this id: " + commentEntity.getOwner().getId()));
-        StudentInfo studentInfo = studentInfoRepository.findStudentInfoByStudentId(user.getId())
+        StudentInfo studentInfo = studentInfoRepository.findByStudentId(user.getId())
                 .orElseThrow(() -> new DataNotFoundException("Student not found with this id: " + user.getId()));
         return CommentResponse.builder()
                 .avatar(studentInfo.getAvatar())
@@ -97,21 +97,25 @@ public class CommentService {
     public LessonResponse getLessonWithComments(UUID lessonId) {
         LessonEntity lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new DataNotFoundException("Lesson not found"));
-        List<CommentEntity> comments = commentRepository.findCommentEntitiesByLesson_Id(lessonId);
-        List<CommentResponse> commentResponses = comments.stream()
-                .map(comment -> {
-                    UserEntity owner = comment.getOwner();
-                    return CommentResponse.builder()
-                            .commentId(comment.getId())
-                            .ownerId(owner.getId())
-                            .lessonId(comment.getLesson().getId())
-                            .name(owner.getName())
-                            .surname(owner.getSurname())
-                            .avatar(owner.getAvatar())
-                            .description(comment.getDescription())
-                            .build();
-                })
-                .collect(Collectors.toList());
+        Optional<List<CommentEntity>> comments = commentRepository.findByLessonId(lessonId);
+        List<CommentResponse> commentResponses = new ArrayList<>();
+        if(comments.isPresent()){
+            List<CommentEntity> commentEntities = comments.get();
+            commentResponses = commentEntities.stream()
+                    .map(comment -> {
+                        UserEntity owner = comment.getOwner();
+                        return CommentResponse.builder()
+                                .commentId(comment.getId())
+                                .ownerId(owner.getId())
+                                .lessonId(comment.getLesson().getId())
+                                .name(owner.getName())
+                                .surname(owner.getSurname())
+                                .avatar(owner.getAvatar())
+                                .description(comment.getDescription())
+                                .build();
+                    })
+                    .collect(Collectors.toList());
+        }
 
         return LessonResponse.builder()
                         .id(lesson.getId())
@@ -122,7 +126,7 @@ public class CommentService {
                         .moduleId(lesson.getModule().getId())
                         .description(lesson.getDescription())
                         .comments(commentResponses)
-                .build();
+                        .build();
     }
 
 }

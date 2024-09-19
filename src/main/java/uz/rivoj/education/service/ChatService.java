@@ -2,10 +2,8 @@ package uz.rivoj.education.service;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.response.ChatResponse;
-import uz.rivoj.education.dto.response.LessonResponse;
 import uz.rivoj.education.entity.ChatEntity;
 import uz.rivoj.education.entity.Message;
 import uz.rivoj.education.entity.StudentInfo;
@@ -17,6 +15,7 @@ import uz.rivoj.education.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -55,22 +54,27 @@ public class ChatService {
     public List<ChatResponse> getMyChats(UUID memberId) {
         UserEntity user = userRepository.findById(memberId)
                 .orElseThrow(() -> new DataNotFoundException("User not found with this id: " + memberId));
-        StudentInfo studentInfo = studentInfoRepository.findStudentInfoByStudentId(memberId)
+        StudentInfo studentInfo = studentInfoRepository.findByStudentId(memberId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found with this id: " + memberId));
-        List<ChatEntity> chatEntityList = chatRepository.findByMembersContaining(user);
-        List<ChatResponse> chatResponseList = new ArrayList<>();
-        for (ChatEntity chatEntity : chatEntityList) {
-            ChatResponse chatResponse = ChatResponse.builder()
-                    .chatId(chatEntity.getId())
-                    .lastMessage(getLastMessageFromChat(chatEntity.getId()))
-                    .name(user.getName())
-                    .studentAvatar(studentInfo.getAvatar())
-                    .surname(user.getSurname())
-                    .build();
-            chatResponseList.add(chatResponse);
+        Optional<List<ChatEntity>> chatEntityList = chatRepository.findByMembersContaining(user);
+        if (chatEntityList.isPresent()) {
+            List<ChatEntity> chatEntities = chatEntityList.get();
+            List<ChatResponse> chatResponseList = new ArrayList<>();
+            for (ChatEntity chatEntity : chatEntities) {
+                ChatResponse chatResponse = ChatResponse.builder()
+                        .chatId(chatEntity.getId())
+                        .lastMessage(getLastMessageFromChat(chatEntity.getId()))
+                        .name(user.getName())
+                        .studentAvatar(studentInfo.getAvatar())
+                        .surname(user.getSurname())
+                        .build();
+                chatResponseList.add(chatResponse);
+            }
+            return chatResponseList;
+        }else {
+            throw new DataNotFoundException("Chat not found with this id: " + memberId);
         }
 
-        return chatResponseList;
     }
 
 

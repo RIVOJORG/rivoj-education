@@ -12,20 +12,10 @@ import java.util.Optional;
 import java.util.UUID;
 @Repository
 public interface LessonRepository extends JpaRepository<LessonEntity, UUID> {
-    boolean existsByNumber(Integer number);
-
-    boolean existsByTitle(String title);
-    boolean existsByModuleAndNumber(ModuleEntity module, Integer number);
     boolean existsByModuleAndTitle(ModuleEntity module, String title);
-
-    Page<LessonEntity> findLessonsByModule(Pageable pageable, ModuleEntity moduleEntity);
-
-    LessonEntity findFirstByModuleOrderByNumberAsc(ModuleEntity nextModule);
-
-    List<LessonEntity> findByModuleNumber(int moduleNumber);
-
-    List<LessonEntity> findByModule(ModuleEntity module);
-    Optional<List<LessonEntity>> findAllByModule(ModuleEntity module);
-
+    Optional<Page<LessonEntity>> findByModule_Id(Pageable pageable, UUID moduleId);
+    Optional<LessonEntity>findFirstByModule_IdOrderByNumberAsc(UUID moduleId);;
+    Optional<List<LessonEntity>> findAllByModule_Id(UUID moduleId);
+    Optional<List<LessonEntity>> findAllByModule_IdOrderByNumberAsc(UUID moduleId);
 
 }
