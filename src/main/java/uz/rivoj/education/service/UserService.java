@@ -125,6 +125,8 @@ public class UserService {
             TeacherResponse teacherResponse = modelMapper.map(user, TeacherResponse.class);
             teacherResponse.setSubject(modelMapper.map(teacherInfo.getSubject(),SubjectResponse.class));
             teacherResponse.setAbout(teacherInfo.getAbout());
+            teacherResponse.setId(teacherInfo.getId());
+            teacherResponse.setBirthday(teacherInfo.getBirthday());
             return teacherResponse;
         } else {
             StudentInfo studentInfo = studentInfoRepository.findByStudentId(userId)
@@ -133,6 +135,7 @@ public class UserService {
             studentResponse.setBirth(studentInfo.getBirthday());
             studentResponse.setSubjectId(studentInfo.getSubject().getId());
             studentResponse.setCurrentLessonId(studentInfo.getLesson().getId());
+            studentResponse.setId(studentInfo.getId());
             return studentResponse;
         }
 

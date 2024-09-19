@@ -115,4 +115,16 @@ public class TeacherController {
             @RequestPart(value = "ProfilePicture",required = false) MultipartFile picture){
         return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.updateProfile(teacherUpdate,picture, UUID.fromString(principal.getName())));
     }
+    @PostMapping("/create-module")
+    public ResponseEntity<ModuleResponse> createModule(@RequestBody Integer moduleNumber, Principal principal){
+        return ResponseEntity.status(HttpStatus.CREATED).body(moduleService.create(moduleNumber, UUID.fromString(principal.getName())));
+    }
+    @GetMapping("/getAllModulesOfSubject{subjectId}")
+    public ResponseEntity<List<ModuleResponse>> getAllModulesOfSubject(@PathVariable UUID subjectId){
+        return ResponseEntity.status(200).body(moduleService.getAllModulesOfSubject(subjectId));
+    }
+    @GetMapping("/getAllLessonsByModule{moduleId}")
+    public ResponseEntity<List<LessonResponse>> getAllLessonsByModule(@PathVariable UUID moduleId){
+        return ResponseEntity.status(200).body(moduleService.getAllLessonsByModule(moduleId));
+    }
 }

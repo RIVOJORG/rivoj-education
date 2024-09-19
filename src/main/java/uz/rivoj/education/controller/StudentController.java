@@ -27,9 +27,9 @@ public class StudentController {
     public ResponseEntity<List<LessonResponse>> getAllLessons(Principal principal,@RequestParam UUID moduleId){
         return ResponseEntity.ok(moduleService.getAllAccessibleLessonsOfUser(UUID.fromString(principal.getName()),moduleId));
     }
-    @GetMapping("/getAllModules")
-    public ResponseEntity<List<ModuleResponse>> getAllModules(Principal principal) {
-        return  ResponseEntity.ok(moduleService.getAllModules(UUID.fromString(principal.getName())));
+    @GetMapping("/getAllModulesOfStudent")
+    public ResponseEntity<List<ModuleResponse>> getAllModulesOfStudent(Principal principal) {
+        return  ResponseEntity.ok(moduleService.getAllModulesOfStudent(UUID.fromString(principal.getName())));
     }
 
     @PostMapping(value = "/upload-homework",
