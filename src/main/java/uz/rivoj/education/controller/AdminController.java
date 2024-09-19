@@ -16,6 +16,7 @@ import uz.rivoj.education.entity.enums.UserStatus;
 import uz.rivoj.education.service.*;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,7 +31,7 @@ public class AdminController {
     private final LessonService lessonService;
     private final UserService userService;
     private final TeacherService teacherService;
-    private final ProgressService progressService;
+//    private final ProgressService progressService;
     private final AttendanceService attendanceService;
     private final ChatService chatService;
     private final CommentService commentService;
@@ -76,11 +77,17 @@ public class AdminController {
     public ResponseEntity<String> updateRole(@PathVariable String userPhoneNumber, @RequestParam UserRole userRole){
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userPhoneNumber, userRole));
     }
-    @PutMapping("/update-lesson{lessonId}")
-    public ResponseEntity<String> updateLesson(@PathVariable UUID lessonId,
-                                               @RequestBody LessonUpdateDTO updateDTO) {
-        return ResponseEntity.status(HttpStatus.OK).body(lessonService.updateLesson(lessonId, updateDTO));
+    @PutMapping(value = "/update-lesson",
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
+            produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> updateLesson(
+            @ModelAttribute LessonUpdateDTO updateDTO,
+            @RequestPart(required = false) MultipartFile videoFile,
+            @RequestPart(required = false) MultipartFile cover){
+        return ResponseEntity.status(HttpStatus.OK).body(lessonService.updateLesson(updateDTO, videoFile, cover));
     }
+
+
     @PutMapping("/change-phoneNumber/{oldPhoneNumber}/{newPhoneNumber}")
     public ResponseEntity<String> changePhoneNumber(
             @PathVariable String oldPhoneNumber,
@@ -106,10 +113,10 @@ public class AdminController {
         return lessonService.findByLessonId(id);
     }
 
-    @GetMapping("/get-student-full-info{phoneNumber}")
-    public ResponseEntity<GetStudentFullInfoResponse> getStudentFullInfoResponse(@PathVariable String phoneNumber){
-        return ResponseEntity.status(200).body(progressService.getStudentFullInfoResponse(phoneNumber));
-    }
+//    @GetMapping("/get-student-full-info{phoneNumber}")
+//    public ResponseEntity<GetStudentFullInfoResponse> getStudentFullInfoResponse(@PathVariable String phoneNumber){
+//        return ResponseEntity.status(200).body(progressService.getStudentFullInfoResponse(phoneNumber));
+//    }
 
     @GetMapping("/get-all-attendance{userId}")
     public ResponseEntity<List<AttendanceResponse>> getAllUserAttendance(@PathVariable UUID userId){
@@ -204,11 +211,11 @@ public class AdminController {
         return ResponseEntity.status(200).body(lessonService.delete(lessonId));
     }
 
-    @GetMapping("/student-progress")
-    public ResponseEntity<List<AdminHomePageResponse>> getStudentProgress(
-            @RequestParam UUID subjectId) {
-        return ResponseEntity.ok(studentService.getStudentProgress(subjectId));
-    }
+//    @GetMapping("/student-progress")
+//    public ResponseEntity<List<AdminHomePageResponse>> getStudentProgress(
+//            @RequestParam UUID subjectId) {
+//        return ResponseEntity.ok(studentService.getStudentProgress(subjectId));
+//    }
 
     @GetMapping("/change-passwords")
     public ResponseEntity<String> changePassword() {

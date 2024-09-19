@@ -14,7 +14,7 @@ public class EducationPageResponse {
 
     private Integer countModules;
     private Integer currentModule;
-    private List<Integer> countLessons; // har bir modulni barcha lessonlari bo'yicha statistikasi keladi. shuning uchun list bolish kerak. Figmada shunday ekan
+    private List<Integer> countLessons;
     private Integer currentLesson;
     private Boolean isLessonOver;
     private Integer coin;

@@ -1,6 +1,5 @@
 package uz.rivoj.education.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
@@ -21,7 +20,6 @@ import uz.rivoj.education.repository.CommentRepository;
 import uz.rivoj.education.repository.LessonRepository;
 import uz.rivoj.education.repository.ModuleRepository;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,7 +39,7 @@ public class LessonService {
         if (lessonRepository.existsByModuleAndTitle(moduleEntity, createRequest.getTitle())) {
             throw new DataAlreadyExistsException("Lesson already exists with this title : " + createRequest.getTitle() + " in module id : " + createRequest.getModuleId());
         }
-        Optional<List<LessonEntity>> lessonEntities = lessonRepository.findAllByModule(moduleEntity);
+        Optional<List<LessonEntity>> lessonEntities = lessonRepository.findAllByModule_Id(moduleEntity.getId());
         LessonEntity lesson = modelMapper.map(createRequest, LessonEntity.class);
         if (lessonEntities.isEmpty()) {
             lesson.setNumber(1);
@@ -56,12 +54,8 @@ public class LessonService {
 
         lesson.setModule(moduleEntity);
         LessonEntity savedLesson = lessonRepository.save(lesson);
-        String lessonVideoContentType = lessonVideo.getContentType();
-        String lessonSuffix = Objects.requireNonNull(lessonVideoContentType).substring(lessonVideoContentType.indexOf("/") + 1);
-        String source = uploadService.uploadFile(lessonVideo,"Lesson"+savedLesson.getNumber()+"."+lessonSuffix);
-        String coverContentType = coverOfLesson.getContentType();
-        String coverSuffix = Objects.requireNonNull(coverContentType).substring(coverContentType.indexOf("/")+1);
-        String cover = uploadService.uploadFile(coverOfLesson,"CoverOfLesson"+savedLesson.getNumber()+"."+coverSuffix);
+        String source = uploadService.uploadFile(lessonVideo,"Lesson"+savedLesson.getNumber()+"Content");
+        String cover = uploadService.uploadFile(coverOfLesson,"CoverOfLesson"+savedLesson.getNumber());
         savedLesson.setSource(source);
         savedLesson.setCover(cover);
         lessonRepository.save(savedLesson);
@@ -101,8 +95,11 @@ public class LessonService {
 
 
     public List<CommentResponse> getCommentsByLessonId(UUID lessonId) {
-        List<CommentEntity> comments = commentRepository.findByLessonId(lessonId);
-        return comments.stream()
+        Optional<List<CommentEntity>> comments = commentRepository.findByLessonId(lessonId);
+        if (comments.isEmpty()) {
+            throw new DataNotFoundException("Comment not found with this id: " + lessonId);
+        }
+        return comments.get().stream()
                 .map(this::convertToCommentResponse)
                 .collect(Collectors.toList());
     }
@@ -130,47 +127,52 @@ public class LessonService {
         return list;
     }
 
-    public String updateLesson(UUID lessonId, LessonUpdateDTO updateDTO) {
-        LessonEntity lesson = lessonRepository.findById(lessonId)
-                .orElseThrow(() -> new DataNotFoundException("Lesson not found with this id: " + lessonId));
+    @SneakyThrows
+    public String updateLesson(LessonUpdateDTO updateDTO, MultipartFile videoFile,MultipartFile cover) {
+        LessonEntity lesson = lessonRepository.findById(updateDTO.getId())
+                .orElseThrow(() -> new DataNotFoundException("Lesson not found with this id: " + updateDTO.getId()));
+        if(videoFile != null){
+            String fileName = "Lesson"+lesson.getNumber()+"Content";
+            lesson.setSource(uploadService.uploadFile(videoFile,fileName));
+        }
+        if(cover != null){
+            String fileName = "coverOfLesson"+lesson.getNumber();
+            lesson.setCover(uploadService.uploadFile(cover,fileName));
+        }
+        if(updateDTO.getTitle() != null){
+            lesson.setTitle(updateDTO.getTitle());
+        }
+        if(updateDTO.getAdditionalLinks() != null){
+            lesson.setAdditionalLinks(updateDTO.getAdditionalLinks());
+        }
+        if(updateDTO.getDescription() != null){
+            lesson.setDescription(updateDTO.getDescription());
+        }
+        lessonRepository.save(lesson);
+        return "Successfully updated: ";
 
-        if (updateDTO.getModuleId() != null) {
-            ModuleEntity moduleEntity = moduleRepository.findById(updateDTO.getModuleId())
-                    .orElseThrow(() -> new DataNotFoundException("Module not found with this id: " + updateDTO.getModuleId()));
-            lesson.setModule(moduleEntity);}
-        if (updateDTO.getNumber() != null) {
-            lesson.setNumber(updateDTO.getNumber());}
-        if (updateDTO.getTitle() != null) {
-            lesson.setTitle(updateDTO.getTitle());}
-        if (updateDTO.getSource() != null) {
-            lesson.setSource(updateDTO.getSource());}
-         lessonRepository.save(lesson);
-        return "Successfully updated";
     }
 
     public List<LessonResponse> getLessonsByModule(int page, int size, UUID moduleId) {
         Pageable pageable = PageRequest.of(page, size);
         ModuleEntity moduleEntity = moduleRepository.findById(moduleId).orElseThrow(() -> new DataNotFoundException("Module not found with this id: " + moduleId));
-        List<LessonEntity> lessonEntityList = lessonRepository.findLessonsByModule(pageable, moduleEntity).getContent();
+        Optional<List<LessonEntity>> lessonEntityList = lessonRepository.findAllByModule_Id(moduleEntity.getId());
+        if(lessonEntityList.isEmpty()){
+            throw new DataNotFoundException("Lessons not found with this id: " + moduleId);
+        }
         List<LessonResponse> list = new ArrayList<>();
-        for (LessonEntity lessonEntity : lessonEntityList) {
+        for (LessonEntity lessonEntity : lessonEntityList.get()) {
             LessonResponse response = modelMapper.map(lessonEntity, LessonResponse.class);
             response.setModuleId(moduleId);
+            Optional<List<CommentEntity>> commentEntities = commentRepository.findByLessonId(lessonEntity.getId());
+            if(commentEntities.isPresent()){
+                response.setComments(Collections.singletonList(modelMapper.map(commentEntities, CommentResponse.class)));
+            }
             list.add(response);
         }
         return list;
     }
 
-    public LessonEntity findFirstLessonOfNextModule(ModuleEntity module) {
-        Integer nextModuleNumber = module.getNumber() + 1;
-        ModuleEntity nextModule = moduleRepository.findBySubjectAndNumber(module.getSubject(), nextModuleNumber);
-
-        if (nextModule != null) {
-            return lessonRepository.findFirstByModuleOrderByNumberAsc(nextModule);
-        }
-
-        return null;
-    }
 
 
 }

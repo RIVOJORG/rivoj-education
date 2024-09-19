@@ -2,6 +2,7 @@ package uz.rivoj.education.dto.update;
 
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -11,9 +12,8 @@ import java.util.UUID;
 @Builder
 @ToString
 public class LessonUpdateDTO {
-    private Integer number;
+    private UUID id;
     private String title;
-    private String source;
-    private String cover;
-    private UUID moduleId;
+    private String description;
+    private List<String> additionalLinks;
 }

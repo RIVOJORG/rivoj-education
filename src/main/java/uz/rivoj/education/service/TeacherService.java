@@ -3,13 +3,11 @@ package uz.rivoj.education.service;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.TeacherCR;
 import uz.rivoj.education.dto.request.TeacherUpdate;
-import uz.rivoj.education.dto.response.StudentResponse;
 import uz.rivoj.education.dto.response.SubjectResponse;
 import uz.rivoj.education.dto.response.TeacherResponse;
 import uz.rivoj.education.entity.*;
@@ -39,7 +37,8 @@ public class TeacherService {
         }
         if (!subjectRepository.existsByTitle(teacherCr.getSubject())){
             throw new DataNotFoundException("Subject not found with this title: " + teacherCr.getSubject());}
-        SubjectEntity subject = subjectRepository.findByTitle(teacherCr.getSubject());
+        SubjectEntity subject = subjectRepository.findByTitle(teacherCr.getSubject())
+                .orElseThrow(() -> new DataNotFoundException("Subject not found with this title: " + teacherCr.getSubject()));
         UserEntity user = modelMapper.map(teacherCr, UserEntity.class);
         user.setRole(UserRole.TEACHER);
         user.setUserStatus(UserStatus.UNBLOCK);
@@ -57,7 +56,7 @@ public class TeacherService {
 
     @SneakyThrows
     public TeacherResponse updateProfile(TeacherUpdate teacherUpdate, MultipartFile picture, UUID teacherId) {
-        TeacherInfo teacherInfo = teacherInfoRepository.findTeacherInfoByTeacherId(teacherId)
+        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(teacherId)
                 .orElseThrow(() -> new DataNotFoundException("Teacher not found!"));
         UserEntity userEntity = userRepository.findById(teacherId)
                 .orElseThrow(() -> new DataNotFoundException("Teacher not found!"));

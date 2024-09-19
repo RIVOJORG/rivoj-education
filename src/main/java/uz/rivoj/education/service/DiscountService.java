@@ -14,6 +14,7 @@ import uz.rivoj.education.repository.StudentInfoRepository;
 import uz.rivoj.education.repository.UserRepository;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.List;
 
@@ -29,12 +30,12 @@ public class DiscountService {
         UserEntity student = userRepository.findById(UUID.fromString(String.valueOf(userId)))
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        StudentInfo studentInfo = studentInfoRepository.findByStudent(student);
-        if (studentInfo == null) {
+        Optional<StudentInfo> studentInfo = studentInfoRepository.findByStudentId(student.getId());
+        if (studentInfo.isEmpty()) {
             throw new RuntimeException("Student information not found");
         }
         DiscountEntity discountEntity = modelMapper.map(discountCR, DiscountEntity.class);
-        discountEntity.setStudent(studentInfo);
+        discountEntity.setStudent(studentInfo.get());
         discountRepository.save(discountEntity);
         return modelMapper.map(discountEntity, DiscountResponse.class);
     }
@@ -43,12 +44,16 @@ public class DiscountService {
         UserEntity student = userRepository.findById(UUID.fromString(String.valueOf(userId)))
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        StudentInfo studentInfo = studentInfoRepository.findByStudent(student);
-        if (studentInfo == null) {
+        Optional<StudentInfo> studentInfo = studentInfoRepository.findByStudentId(student.getId());
+        if (studentInfo.isEmpty()) {
             throw new RuntimeException("Student information not found");
         }
         List<DiscountResponse> list = new ArrayList<>();
-        for (DiscountEntity discount : discountRepository.findDiscountEntitiesByStudentId(studentInfo.getId())) {
+        Optional<List<DiscountEntity>> discountsOfStudent = discountRepository.findDiscountEntitiesByStudentId(studentInfo.get().getId());
+        if (discountsOfStudent.isEmpty()) {
+            throw new RuntimeException("Student discounts not found");
+        }
+        for (DiscountEntity discount : discountsOfStudent.get()) {
             list.add(modelMapper.map(discount, DiscountResponse.class));
         }
         return list;

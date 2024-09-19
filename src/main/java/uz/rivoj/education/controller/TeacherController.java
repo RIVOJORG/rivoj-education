@@ -6,7 +6,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import uz.rivoj.education.dto.request.StudentUpdate;
 import uz.rivoj.education.dto.request.TeacherUpdate;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.dto.update.CheckAttendanceDTO;
@@ -28,12 +27,9 @@ public class TeacherController {
     private final StudentService studentService;
     private final LessonService lessonService;
     private final ChatService chatService;
-    private final MessageService messageService;
-    private final CommentService commentService;
     private final ModuleService moduleService;
     private final TeacherService teacherService;
 
-    //  @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     @GetMapping("/get-my-all-student")
     public ResponseEntity<List<StudentResponse>> getAllStudent(
             @RequestParam(defaultValue = "0") int page,
@@ -44,7 +40,6 @@ public class TeacherController {
     }
 
 
-    // ATTENDANCE
     @DeleteMapping("/delete-attendance{id}")
     public ResponseEntity<String> deleteAttendance(@PathVariable UUID id){
         return ResponseEntity.status(200).body(attendanceService.delete(id));
@@ -73,15 +68,12 @@ public class TeacherController {
     }
 
 
-    // CHAT
-
     @GetMapping("get-chat/{id}")
     public ChatEntity getChatById(@PathVariable UUID id) {
         return chatService.getChat(id);
     }
 
-    // LESSON
-    //    @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
+
     @GetMapping("/get-lessons-by-module{moduleId}") // for mentor and admin
     public List<LessonResponse> getLessonsByModule(
             @RequestParam(defaultValue = "0") int page,
@@ -94,7 +86,6 @@ public class TeacherController {
         return lessonService.findByLessonId(id);
     }
 
-    // MODULE
 
     @GetMapping("get-module/{id}")
     public ModuleResponse getModuleById(@PathVariable UUID id) {
@@ -102,12 +93,21 @@ public class TeacherController {
     }
 
 
-    @GetMapping("/statistics")
-    public ResponseEntity<List<StudentStatisticsDTO>> getStudentStatistics(
+    @GetMapping("/getStatisticsByModule")
+    public ResponseEntity<List<StudentStatisticsDTO>> getStudentStatisticsByModuleAndStatus(
             Principal principal,
-            @RequestParam Integer moduleNumber) {
-        return ResponseEntity.ok(studentService.getStudentStatistics(principal.getName(), moduleNumber));
+            @RequestParam UUID moduleId
+    ) {
+        return ResponseEntity.ok(studentService.getStudentStatisticsByModuleAndStatus(principal.getName(), moduleId));
     }
+
+    @GetMapping("/getAllStatisticsOnCurrentModule")
+    public ResponseEntity<List<StudentStatisticsDTO>> getAllStudentStatisticsOnCurrentModule(
+            Principal principal
+    ) {
+        return ResponseEntity.ok(studentService.getAllStudentStatisticsOnCurrentModule(UUID.fromString(principal.getName())));
+    }
+
     @PutMapping(value = "/update_profile", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<TeacherResponse> createComment(
             @ModelAttribute TeacherUpdate teacherUpdate,

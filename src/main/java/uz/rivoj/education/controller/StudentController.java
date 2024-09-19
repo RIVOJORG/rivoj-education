@@ -4,36 +4,25 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.AttendanceCR;
-import uz.rivoj.education.dto.request.LessonCR;
 import uz.rivoj.education.dto.request.StudentUpdate;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.service.*;
-
-import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/student")
 public class StudentController {
     private final AttendanceService attendanceService;
-    private final UploadService uploadService;
     private final ModuleService moduleService;
     private  final StudentService studentService;
 
-    @GetMapping("/getAllAttendance")
-    public ResponseEntity<AttendanceResponse> getAttendanceById(Principal principal) {
-        return ResponseEntity.ok(attendanceService.findByAttendanceId(UUID.fromString(principal.getName())));
-    }
+
     @GetMapping("/getAllLessonsOfModule")
     public ResponseEntity<List<LessonResponse>> getAllLessons(Principal principal,@RequestParam UUID moduleId){
         return ResponseEntity.ok(moduleService.getAllAccessibleLessonsOfUser(UUID.fromString(principal.getName()),moduleId));
@@ -76,8 +65,13 @@ public class StudentController {
     }
 
     @GetMapping("/get-homework-by-lesson-id")
-    public  ResponseEntity<List<AttendanceResponse>>  getHomeworkByLessonId(Principal principal,@RequestParam UUID lessonId){
+    public  ResponseEntity<AttendanceResponse>  getHomeworkByLessonId(Principal principal,@RequestParam UUID lessonId){
         return ResponseEntity.ok(attendanceService.getAttendanceByLessonId(UUID.fromString(principal.getName()),lessonId));
+    }
+
+    @GetMapping("/getProgressByModule")
+    public ResponseEntity<ProgressResponse>  getProgressByModule(Principal principal,@RequestParam UUID moduleId){
+        return ResponseEntity.ok(studentService.getStudentProgress(moduleId, UUID.fromString(principal.getName())));
     }
 
 
