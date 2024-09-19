@@ -3,7 +3,6 @@ package uz.rivoj.education.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uz.rivoj.education.dto.request.CommentCR;
 import uz.rivoj.education.dto.request.MessageCR;
@@ -25,8 +24,6 @@ public class UserController {
     private final CommentService commentService;
     private final AttendanceService attendanceService;
     private final UserService userService;
-    private final LessonService lessonService;
-
 
     @PostMapping("/create_chat")
     public ResponseEntity<UUID> createChat(Principal user, UUID user2){ 
@@ -37,10 +34,6 @@ public class UserController {
     public List<ChatResponse> getMyChats(Principal principal){
         return chatService.getMyChats(UUID.fromString(principal.getName()));
     }
-//    @GetMapping("/get-messages{chatId}") // hammada bo'ladi bu API student, admin ham o'zini message larini olishi mumkun
-//    public List<MessageResponse> getMessages(@PathVariable UUID chatId){
-//        return messageService.getMessages(chatId);
-//    }
 
     @GetMapping("get-chat/{id}")
     public ChatEntity getChatById(@PathVariable UUID id) {

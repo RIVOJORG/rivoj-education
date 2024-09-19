@@ -94,11 +94,11 @@ public class TeacherController {
 
 
     @GetMapping("/getStatisticsByModule")
-    public ResponseEntity<List<StudentStatisticsDTO>> getStudentStatisticsByModuleAndStatus(
+    public ResponseEntity<List<StudentStatisticsDTO>> getStudentStatisticsByModule(
             Principal principal,
             @RequestParam UUID moduleId
     ) {
-        return ResponseEntity.ok(studentService.getStudentStatisticsByModuleAndStatus(principal.getName(), moduleId));
+        return ResponseEntity.ok(studentService.getStudentStatisticsByModule(UUID.fromString(principal.getName()), moduleId));
     }
 
     @GetMapping("/getAllStatisticsOnCurrentModule")

@@ -121,7 +121,7 @@ public class AttendanceService {
         int totalScore = studentInfo.getTotalScore() != null ? studentInfo.getTotalScore() : 0;
 
         if (score < 70) {
-            attendanceEntity.setStatus(REJECTED);
+            attendanceEntity.setStatus(CHECKED);
             attendanceEntity.setCoin(attendanceEntity.getCoin() - ((70 - score) / 10));
             currentCoin -= (70 - score) / 10;
         } else {
@@ -151,6 +151,9 @@ public class AttendanceService {
         AttendanceResponse attendanceResponse = modelMapper.map(attendanceEntity, AttendanceResponse.class);
         attendanceResponse.setLesson_id(attendanceEntity.getLesson().getId());
         attendanceResponse.setStudent_id(attendanceEntity.getStudent().getId());
+        if(attendanceEntity.getTeacher() != null){
+            attendanceResponse.setTeacher_id(attendanceEntity.getTeacher().getId());
+        }
         return attendanceResponse;
     }
 }

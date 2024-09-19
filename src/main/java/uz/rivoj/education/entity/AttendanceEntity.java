@@ -6,7 +6,6 @@ import lombok.*;
 import uz.rivoj.education.entity.enums.AttendanceStatus;
 
 import java.util.List;
-import java.util.UUID;
 
 @Entity(name = "attendance")
 @AllArgsConstructor
