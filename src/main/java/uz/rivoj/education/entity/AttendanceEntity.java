@@ -6,7 +6,6 @@ import lombok.*;
 import uz.rivoj.education.entity.enums.AttendanceStatus;
 
 import java.util.List;
-import java.util.UUID;
 
 @Entity(name = "attendance")
 @AllArgsConstructor
@@ -31,6 +30,7 @@ public class AttendanceEntity extends BaseEntity {
     private Integer score;
     private String feedBack;
     private Integer coin;
+    private Integer attemptsNumber;
     @Enumerated(EnumType.STRING)
     private AttendanceStatus status;
 }

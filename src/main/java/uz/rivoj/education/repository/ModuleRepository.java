@@ -10,16 +10,8 @@ import java.util.Optional;
 import java.util.UUID;
 @Repository
 public interface ModuleRepository extends JpaRepository<ModuleEntity, UUID> {
-
-    ModuleEntity findBySubject(SubjectEntity subject);
-
-    ModuleEntity findFirstBySubjectOrderByNumber(SubjectEntity subject);
-
-//    ModuleEntity findBySubjectAndNumber(SubjectEntity subject, Integer nextModuleNumber);
-
-    Integer countBySubject(SubjectEntity subject);
-    ModuleEntity findBySubjectAndNumber(SubjectEntity subject, Integer number);
-
-    Optional<ModuleEntity> findByNumberAndSubjectId(Integer moduleNumber, UUID subjectId);
+    ModuleEntity findFirstBySubject_IdOrderByNumber(UUID subjectId);
+    Integer countBySubject_Id(UUID subjectId);
+    Optional<ModuleEntity> findBySubject_IdAndNumber(UUID subjectId, Integer number);
     Optional<List<ModuleEntity>> findAllBySubject(SubjectEntity subject);
 }

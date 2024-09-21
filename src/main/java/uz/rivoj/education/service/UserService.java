@@ -29,7 +29,7 @@ public class UserService {
 
 
     public String add(UserCR dto) {
-        Optional<UserEntity> userEntity = userRepository.findUserEntityByPhoneNumber(dto.getPhoneNumber());
+        Optional<UserEntity> userEntity = userRepository.findByPhoneNumber(dto.getPhoneNumber());
         if (userEntity.isPresent()) {
             throw new DataAlreadyExistsException("User already exists");
         }
@@ -40,7 +40,7 @@ public class UserService {
     }
 
     public JwtResponse signIn(AuthDto dto) {
-        UserEntity user = userRepository.findUserEntityByPhoneNumber(dto.getPhoneNumber())
+        UserEntity user = userRepository.findByPhoneNumber(dto.getPhoneNumber())
                 .orElseThrow(() -> new DataNotFoundException("user not found"));
       if (passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             return new JwtResponse(jwtUtil.generateToken(user));
@@ -120,7 +120,7 @@ public class UserService {
         if(user.getRole().equals(UserRole.ADMIN)){
             return modelMapper.map(user, AdminResponse.class);
         } else if (user.getRole().equals(UserRole.TEACHER)) {
-            TeacherInfo teacherInfo = teacherInfoRepository.findTeacherInfoByTeacherId(userId)
+            TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(userId)
                     .orElseThrow(() -> new DataNotFoundException("User not found"));
             TeacherResponse teacherResponse = modelMapper.map(user, TeacherResponse.class);
             teacherResponse.setSubject(modelMapper.map(teacherInfo.getSubject(),SubjectResponse.class));
@@ -129,7 +129,7 @@ public class UserService {
             teacherResponse.setBirthday(teacherInfo.getBirthday());
             return teacherResponse;
         } else {
-            StudentInfo studentInfo = studentInfoRepository.findStudentInfoByStudentId(userId)
+            StudentInfo studentInfo = studentInfoRepository.findByStudentId(userId)
                     .orElseThrow(() -> new DataNotFoundException("User not found"));
             StudentResponse studentResponse = modelMapper.map(user, StudentResponse.class);
             studentResponse.setBirth(studentInfo.getBirthday());

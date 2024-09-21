@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +22,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static uz.rivoj.education.entity.enums.AttendanceStatus.CHECKED;
 import static uz.rivoj.education.entity.enums.AttendanceStatus.UNCHECKED;
 
 @Service
@@ -45,7 +45,7 @@ public class StudentService {
         List<StudentResponse> responses = new ArrayList<>();
         for (UserEntity userEntity : all) {
             StudentResponse studentResponse = modelMapper.map(userEntity, StudentResponse.class);
-            Optional<StudentInfo> studentInfo = studentInfoRepository.findStudentInfoByStudentId(userEntity.getId());
+            Optional<StudentInfo> studentInfo = studentInfoRepository.findByStudentId(userEntity.getId());
             if (studentInfo.isPresent()) {
                 studentResponse.setId((studentInfo.get().getId()));
                 studentResponse.setAvatar(studentInfo.get().getAvatar());
@@ -59,7 +59,7 @@ public class StudentService {
         return responses;
     }
     public String addStudent(StudentCR studentCR) {
-        if (userRepository.findUserEntityByPhoneNumber(studentCR.getPhoneNumber()).isPresent()){
+        if (userRepository.findByPhoneNumber(studentCR.getPhoneNumber()).isPresent()){
             throw new DataAlreadyExistsException("Student already exists with this phone number: " + studentCR.getPhoneNumber());}
         UserEntity userEntity = UserEntity.builder()
                 .name(studentCR.getName())
@@ -69,18 +69,12 @@ public class StudentService {
                 .userStatus(UserStatus.UNBLOCK)
                 .surname(studentCR.getSurname())
                 .build();
-        if (!subjectRepository.existsByTitle(studentCR.getSubject())){
-            throw new DataNotFoundException("Subject not found with this title: " + studentCR.getSubject());}
-        SubjectEntity subject = subjectRepository.findByTitle(studentCR.getSubject());
+        SubjectEntity subject = subjectRepository.findByTitle(studentCR.getSubject())
+                .orElseThrow(() -> new DataNotFoundException("Subject not found with this title: " + studentCR.getSubject()));
 
-        if (moduleRepository.findFirstBySubjectOrderByNumber(subject) == null){
-            throw new DataNotFoundException("Module not found ");}
-        ModuleEntity moduleEntity = moduleRepository.findFirstBySubjectOrderByNumber(subject);
-
-        if (lessonRepository.findFirstByModuleOrderByNumberAsc(moduleEntity) == null) {
-            throw new DataNotFoundException("Lesson not found ");}
-        LessonEntity lesson = lessonRepository.findFirstByModuleOrderByNumberAsc(moduleEntity);
-
+        ModuleEntity moduleEntity = moduleRepository.findFirstBySubject_IdOrderByNumber(subject.getId());
+        LessonEntity lesson = lessonRepository.findFirstByModule_IdOrderByNumberAsc(moduleEntity.getId())
+                .orElseThrow(() -> new DataNotFoundException("Lesson not found with this id: " + moduleEntity.getId()));
         StudentInfo student = StudentInfo.builder()
                 .birthday(studentCR.getBirthday())
                 .coin(0)
@@ -95,84 +89,6 @@ public class StudentService {
         return "Created";
     }
 
-    public List<StudentStatisticsDTO> getStudentStatistics(String teacherId, Integer moduleNumber) {
-        UserEntity teacher = userRepository.findById(UUID.fromString(teacherId))
-                .orElseThrow(() -> new DataNotFoundException("Teacher not found"));
-
-        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher(teacher);
-        if (teacherInfo == null) {
-            throw new DataNotFoundException("Teacher information not found");
-        }
-        ModuleEntity module = moduleRepository.findBySubjectAndNumber(teacherInfo.getSubject(), moduleNumber);
-
-        if (module == null) {
-            throw new DataNotFoundException("Module not found for the given module number");
-        }
-
-        List<LessonEntity> lessons = lessonRepository.findByModule(module);
-
-        return studentInfoRepository.findByCurrentModule(module).stream()
-                .map(studentInfo -> {
-                    UserEntity student = studentInfo.getStudent();
-
-                    StudentStatisticsDTO dto = new StudentStatisticsDTO();
-                    dto.setStudentName(student.getName());
-                    dto.setStudentSurname(student.getSurname());
-                    dto.setAvatar(studentInfo.getAvatar());
-                    dto.setScore(studentInfo.getTotalScore());
-                    dto.setIsLessonOver(studentInfo.getIsLessonOver());
-
-                    List<SpecialAttendanceResponse> attendanceResponses = new ArrayList<>();
-
-                    for (LessonEntity lesson : lessons) {
-                        attendanceRepository.findByStudentAndLesson(studentInfo, lesson)
-                                .ifPresent(attendance -> {
-                                    SpecialAttendanceResponse response = new SpecialAttendanceResponse();
-                                    response.setModuleNumber(moduleNumber);
-                                    response.setLessonNumber(lesson.getNumber());
-                                    response.setScore(attendance.getScore());
-                                    attendanceResponses.add(response);
-                                });
-                    }
-
-                    dto.setAttendanceList(attendanceResponses);
-                    return dto;
-                })
-                .collect(Collectors.toList());
-    }
-
-
-    public List<AdminHomePageResponse> getStudentProgress(UUID subjectId) {
-        SubjectEntity subject = subjectRepository.findById(subjectId)
-                .orElseThrow(() -> new DataNotFoundException("Subject not found"));
-
-        List<ModuleEntity> modules = moduleRepository.findAllBySubject(subject)
-                .orElseThrow(() -> new DataNotFoundException("Modules not found"));
-
-        List<TeacherInfo> teachers = teacherInfoRepository.findBySubject(subject);
-
-        List<Integer> moduleCounts = new ArrayList<>();
-        for (ModuleEntity module : modules) {
-            moduleCounts.add(module.getNumber());
-        }
-
-        List<StudentStatisticsDTO> studentStatistics = new ArrayList<>();
-        for (TeacherInfo teacher : teachers) {
-            for (ModuleEntity module : modules) {
-                studentStatistics.addAll(getStudentStatistics(teacher.getTeacher().getId().toString(), module.getNumber()));
-            }
-        }
-
-        AdminHomePageResponse adminHomePageResponse = AdminHomePageResponse.builder()
-                .modulesCounts(moduleCounts)
-                .studentsCount(studentStatistics.size())
-                .students(studentStatistics)
-                .build();
-
-        return Collections.singletonList(adminHomePageResponse);
-    }
-
-
     public String changePassword() {
         List<UserEntity> all = userRepository.findAll();
         for (UserEntity user : all) {
@@ -183,7 +99,7 @@ public class StudentService {
     }
 
     public StudentResponse updateProfile(StudentUpdate studentUpdate, UUID studentId) {
-        StudentInfo studentInfo = studentInfoRepository.findStudentInfoByStudentId(studentId)
+        StudentInfo studentInfo = studentInfoRepository.findByStudentId(studentId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found!"));
         UserEntity userEntity = userRepository.findById(studentId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found!"));
@@ -228,26 +144,13 @@ public class StudentService {
         return "Profile picture changed";
     }
 
-    public List<StudentResponse> getAllMyStudent(int page, int size, UUID userId) {
-        UserEntity teacher = userRepository.findById(userId)
-                .orElseThrow(() -> new DataNotFoundException("Teacher not found"));
-
-        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher(teacher);
-        if (teacherInfo == null) {
-            throw new DataNotFoundException("Teacher information not found");
-        }
-
-        List<SubjectEntity> subjects = subjectRepository.findAllByTeachersTeacherId(teacherInfo.getTeacher().getId());
-        System.out.println("Fetched subjects: " + subjects);
-
-        if (subjects.isEmpty()) {
-            throw new DataNotFoundException("No subjects found for the teacher");
-        }
-
+    public List<StudentResponse> getAllMyStudent(int page, int size, UUID teacherId) {
+        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(teacherId)
+                .orElseThrow(() -> new DataNotFoundException("Teacher not found!"));
         Pageable pageable = PageRequest.of(page, size);
-        List<StudentInfo> students = studentInfoRepository.findAllBySubjectIn(subjects, pageable);
+        List<StudentInfo> students = studentInfoRepository.findBySubject_Id(teacherInfo.getSubject().getId(), pageable)
+                .orElseThrow(() -> new DataNotFoundException("Students not found!"));
         System.out.println("Fetched students: " + students);
-
         return students.stream()
                 .map(this::convertToStudentResponse)
                 .collect(Collectors.toList());
@@ -268,7 +171,7 @@ public class StudentService {
     }
 
     public String uploadHomework(AttendanceCR attendanceCR, UUID userId,List<MultipartFile> files) {
-        StudentInfo student = studentInfoRepository.findStudentInfoByStudentId(userId)
+        StudentInfo student = studentInfoRepository.findByStudentId(userId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found!"));
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found!"));
@@ -292,5 +195,53 @@ public class StudentService {
                 .build();
         attendanceRepository.save(attendanceEntity);
         return "Uploaded!";
+    }
+
+    public List<StudentStatisticsDTO> getStudentStatisticsByModule(UUID teacherId, UUID moduleId) {
+
+        return null;
+    }
+
+    public List<StudentStatisticsDTO> getAllStudentStatisticsOnCurrentModule(UUID teacherId) {
+        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(teacherId)
+                .orElseThrow(() -> new DataNotFoundException("Teacher not found!"));
+        List<StudentInfo> studentInfoList = studentInfoRepository.findBySubjectId(teacherInfo.getSubject().getId())
+                .orElseThrow(() -> new DataNotFoundException("Students not found!"));
+        List<StudentStatisticsDTO> studentStatisticsDTOList = new ArrayList<>();
+        studentInfoList.forEach(studentInfo -> {
+            StudentStatisticsDTO studentStatisticsDTO = new StudentStatisticsDTO();
+            studentStatisticsDTO.setStudentName(studentInfo.getStudent().getName());
+            studentStatisticsDTO.setStudentSurname(studentInfo.getStudent().getSurname());
+            studentStatisticsDTO.setAvatar(studentInfo.getAvatar());
+            List<Integer> scoreList = new ArrayList<>();
+            List<LessonEntity> lessonEntities = lessonRepository.findAllByModule_IdOrderByNumberAsc(studentInfo.getCurrentModule().getId())
+                    .orElseThrow(() -> new DataNotFoundException("Lessons not found!"));
+            lessonEntities.forEach(lesson -> {
+                Optional<AttendanceEntity> attendance = attendanceRepository.findByStudent_IdAndLesson_IdAndStatusIs(studentInfo.getId(), lesson.getId(),CHECKED);
+                attendance.ifPresent(attendanceEntity -> scoreList.add(attendanceEntity.getScore()));
+            });
+            studentStatisticsDTO.setScoreList(scoreList);
+            studentStatisticsDTOList.add(studentStatisticsDTO);
+        });
+        return studentStatisticsDTOList;
+    }
+
+
+    public ProgressResponse getStudentProgress(UUID moduleId, UUID studentId) {
+        StudentInfo studentInfo = studentInfoRepository.findByStudentId(studentId)
+                .orElseThrow(() -> new DataNotFoundException("Student not found!"));
+        SubjectEntity subject = subjectRepository.findByModules_Id(moduleId)
+                .orElseThrow(() -> new DataNotFoundException("Subject not found!"));
+        List<LessonEntity> lessonEntities = lessonRepository.findAllByModule_Id(moduleId)
+                .orElseThrow(() -> new DataNotFoundException("Lessons not found!"));
+        ProgressResponse progressResponse = new ProgressResponse();
+        progressResponse.setModuleCount(subject.getModules().size()+1);
+        List<Integer> scoreList = new ArrayList<>();
+        lessonEntities.forEach(lessonEntity -> {
+            Optional<AttendanceEntity> attendance = attendanceRepository.findByStudentIdAndLessonId(studentInfo.getId(), lessonEntity.getId());
+            attendance.ifPresent(attendanceEntity -> scoreList.add(attendanceEntity.getScore()));
+        });
+        progressResponse.setScoreList(scoreList);
+        return progressResponse;
     }
 }

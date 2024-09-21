@@ -6,11 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import uz.rivoj.education.entity.LessonEntity;
-import uz.rivoj.education.exception.DataNotFoundException;
-import uz.rivoj.education.repository.LessonRepository;
-
-import javax.print.DocFlavor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +16,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UploadService {
     private final AmazonS3 s3Client;
-    private final LessonRepository lessonRepository;
     @Value("${do.spaces.endpoint2}")
     private String fileLink;
 
