@@ -166,7 +166,8 @@ public class StudentService {
                 studentInfo.getStudent().getPhoneNumber(),
                 studentInfo.getBirthday(),
                 studentInfo.getSubject() != null ? studentInfo.getSubject().getId() : null,
-                studentInfo.getLesson() != null ? studentInfo.getLesson().getId() : null
+                studentInfo.getLesson() != null ? studentInfo.getLesson().getId() : null,
+                studentInfo.getCurrentModule() != null ? studentInfo.getCurrentModule().getId() : null
         );
     }
 
@@ -230,12 +231,10 @@ public class StudentService {
     public ProgressResponse getStudentProgress(UUID moduleId, UUID studentId) {
         StudentInfo studentInfo = studentInfoRepository.findByStudentId(studentId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found!"));
-        SubjectEntity subject = subjectRepository.findByModules_Id(moduleId)
-                .orElseThrow(() -> new DataNotFoundException("Subject not found!"));
         List<LessonEntity> lessonEntities = lessonRepository.findAllByModule_Id(moduleId)
                 .orElseThrow(() -> new DataNotFoundException("Lessons not found!"));
         ProgressResponse progressResponse = new ProgressResponse();
-        progressResponse.setModuleCount(subject.getModules().size()+1);
+        progressResponse.setLessonCount(lessonEntities.size()+1);
         List<Integer> scoreList = new ArrayList<>();
         lessonEntities.forEach(lessonEntity -> {
             Optional<AttendanceEntity> attendance = attendanceRepository.findByStudentIdAndLessonId(studentInfo.getId(), lessonEntity.getId());

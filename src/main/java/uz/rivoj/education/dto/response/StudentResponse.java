@@ -3,7 +3,6 @@ import java.time.LocalDate;
 
 import lombok.*;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 @Getter
@@ -21,6 +20,7 @@ public class StudentResponse {
     private LocalDate birth;
     private UUID subjectId;
     private UUID currentLessonId;
+    private UUID currentModuleId;
 
 
 
