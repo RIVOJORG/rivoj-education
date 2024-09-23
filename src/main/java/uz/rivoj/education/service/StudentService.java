@@ -120,15 +120,12 @@ public class StudentService {
         if (studentUpdate.getPassword() != null) {
             userEntity.setPassword(passwordEncoder.encode(studentUpdate.getPassword()));
         }
-
         userRepository.save(userEntity);
         studentInfoRepository.save(studentInfo);
-
         StudentResponse response = modelMapper.map(userEntity, StudentResponse.class);
         response.setBirth(studentInfo.getBirthday());
         response.setSubjectId(studentInfo.getSubject().getId());
         response.setCurrentLessonId(studentInfo.getLesson().getId());
-
         return response;
     }
 

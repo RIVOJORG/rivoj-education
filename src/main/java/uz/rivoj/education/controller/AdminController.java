@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.*;
 import uz.rivoj.education.dto.response.*;
-import uz.rivoj.education.dto.update.LessonUpdateDTO;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.AttendanceStatus;
 import uz.rivoj.education.entity.enums.UserStatus;
@@ -72,16 +71,6 @@ public class AdminController {
     @PutMapping("/update-role{userPhoneNumber}")
     public ResponseEntity<String> updateRole(@PathVariable String userPhoneNumber, @RequestParam UserRole userRole){
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userPhoneNumber, userRole));
-    }
-    @PutMapping(value ="/update-lesson",
-            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
-            produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> updateLesson(
-            @RequestBody LessonUpdateDTO updateDTO,
-            @RequestPart(required = false) MultipartFile videoFile,
-            @RequestPart(required = false) MultipartFile coverOfLesson
-    ) {
-        return ResponseEntity.status(HttpStatus.OK).body(lessonService.updateLesson(updateDTO,videoFile,coverOfLesson));
     }
 
     @PutMapping("/change-phoneNumber/{oldPhoneNumber}/{newPhoneNumber}")

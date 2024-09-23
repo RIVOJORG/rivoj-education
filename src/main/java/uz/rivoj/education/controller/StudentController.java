@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.AttendanceCR;
 import uz.rivoj.education.dto.request.StudentUpdate;
 import uz.rivoj.education.dto.response.*;
+import uz.rivoj.education.dto.update.LessonUpdateDTO;
 import uz.rivoj.education.service.*;
 import java.security.Principal;
 import java.util.List;
@@ -21,6 +22,7 @@ public class StudentController {
     private final AttendanceService attendanceService;
     private final ModuleService moduleService;
     private  final StudentService studentService;
+    private final LessonService lessonService;
 
 
     @GetMapping("/getAllLessonsOfModule")
@@ -51,7 +53,16 @@ public class StudentController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(studentService.updateProfile(studentUpdate, UUID.fromString(principal.getName())));
     }
-
+    @PutMapping(value ="/update-lesson",
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
+            produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> updateLesson(
+            @RequestBody LessonUpdateDTO updateDTO,
+            @RequestPart(required = false) MultipartFile videoFile,
+            @RequestPart(required = false) MultipartFile coverOfLesson
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(lessonService.updateLesson(updateDTO,videoFile,coverOfLesson));
+    }
 
     @PutMapping(value = "/update-profile-picture",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
