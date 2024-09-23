@@ -158,6 +158,8 @@ public class StudentService {
 
 
     private StudentResponse convertToStudentResponse(StudentInfo studentInfo) {
+        assert studentInfo.getLesson() != null;
+        assert studentInfo.getCurrentModule() != null;
         return new StudentResponse(
                 studentInfo.getStudent().getId(),
                 studentInfo.getStudent().getName(),
@@ -166,8 +168,11 @@ public class StudentService {
                 studentInfo.getStudent().getPhoneNumber(),
                 studentInfo.getBirthday(),
                 studentInfo.getSubject() != null ? studentInfo.getSubject().getId() : null,
-                studentInfo.getLesson() != null ? studentInfo.getLesson().getId() : null,
-                studentInfo.getCurrentModule() != null ? studentInfo.getCurrentModule().getId() : null
+                studentInfo.getLesson().getId(),
+                studentInfo.getCurrentModule().getId(),
+                studentInfo.getLesson().getNumber(),
+                studentInfo.getCurrentModule().getNumber()
+
         );
     }
 
