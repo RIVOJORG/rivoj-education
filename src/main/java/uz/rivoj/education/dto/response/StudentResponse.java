@@ -21,6 +21,8 @@ public class StudentResponse {
     private UUID subjectId;
     private UUID currentLessonId;
     private UUID currentModuleId;
+    private Integer currentLessonNumber;
+    private Integer currentModuleNumber;
 
 
 

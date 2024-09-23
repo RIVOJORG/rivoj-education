@@ -12,5 +12,6 @@ public class StudentStatisticsDTO {
     private String studentName;
     private String studentSurname;
     private String avatar;
+    private Integer lessonCount;
     private List<Integer> scoreList;
 }

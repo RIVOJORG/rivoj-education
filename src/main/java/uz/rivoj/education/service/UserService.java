@@ -137,6 +137,8 @@ public class UserService {
             studentResponse.setCurrentLessonId(studentInfo.getLesson().getId());
             studentResponse.setId(studentInfo.getId());
             studentResponse.setCurrentModuleId(studentInfo.getCurrentModule().getId());
+            studentResponse.setCurrentLessonNumber(studentInfo.getLesson().getNumber());
+            studentResponse.setCurrentModuleNumber(studentInfo.getCurrentModule().getNumber());
             return studentResponse;
         }
 

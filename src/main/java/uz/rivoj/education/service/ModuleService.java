@@ -66,7 +66,7 @@ public class ModuleService {
     public List<ModuleResponse> getAllModulesOfStudent(UUID userId) {
         StudentInfo studentInfo= studentRepository.findByStudentId(userId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found with this id => " + userId));
-        List<ModuleEntity> modulesBySubject = moduleRepository.findAllBySubject(studentInfo.getSubject())
+        List<ModuleEntity> modulesBySubject = moduleRepository.findAllBySubjectOrderByNumberAsc(studentInfo.getSubject())
                 .orElseThrow(() -> new DataNotFoundException("Module not found with this subject => " + studentInfo.getSubject().getTitle()));
         return getModuleResponses(modulesBySubject);
     }
@@ -128,7 +128,7 @@ public class ModuleService {
     public List<ModuleResponse> getAllModulesOfSubject(UUID subjectId){
         SubjectEntity subject = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> new DataNotFoundException("Subject not found with this id => " + subjectId));
-        List<ModuleEntity> modulesBySubject = moduleRepository.findAllBySubject(subject)
+        List<ModuleEntity> modulesBySubject = moduleRepository.findAllBySubjectOrderByNumberAsc(subject)
                 .orElseThrow(() -> new DataNotFoundException("Module not found with this subject => " + subject.getTitle()));
         return getModuleResponses(modulesBySubject);
     }
