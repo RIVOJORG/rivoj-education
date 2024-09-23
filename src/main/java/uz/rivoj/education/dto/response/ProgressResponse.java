@@ -11,6 +11,7 @@ import java.util.List;
 @Builder
 @ToString
 public class ProgressResponse {
+    private Integer moduleNumber;
     private Integer lessonCount;
     private List<Integer> scoreList;
 }

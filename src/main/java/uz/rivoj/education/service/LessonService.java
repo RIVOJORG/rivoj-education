@@ -39,7 +39,7 @@ public class LessonService {
         if (lessonRepository.existsByModuleAndTitle(moduleEntity, createRequest.getTitle())) {
             throw new DataAlreadyExistsException("Lesson already exists with this title : " + createRequest.getTitle() + " in module id : " + createRequest.getModuleId());
         }
-        Optional<List<LessonEntity>> lessonEntities = lessonRepository.findAllByModule_Id(moduleEntity.getId());
+        Optional<List<LessonEntity>> lessonEntities = lessonRepository.findAllByModule_IdOrderByNumberAsc(moduleEntity.getId());
         LessonEntity lesson = modelMapper.map(createRequest, LessonEntity.class);
         if (lessonEntities.isEmpty()) {
             lesson.setNumber(1);
@@ -156,7 +156,7 @@ public class LessonService {
     public List<LessonResponse> getLessonsByModule(int page, int size, UUID moduleId) {
         Pageable pageable = PageRequest.of(page, size);
         ModuleEntity moduleEntity = moduleRepository.findById(moduleId).orElseThrow(() -> new DataNotFoundException("Module not found with this id: " + moduleId));
-        Optional<List<LessonEntity>> lessonEntityList = lessonRepository.findAllByModule_Id(moduleEntity.getId());
+        Optional<List<LessonEntity>> lessonEntityList = lessonRepository.findAllByModule_IdOrderByNumberAsc(moduleEntity.getId());
         if(lessonEntityList.isEmpty()){
             throw new DataNotFoundException("Lessons not found with this id: " + moduleId);
         }

@@ -73,6 +73,10 @@ public class StudentController {
     public ResponseEntity<ProgressResponse>  getProgressByModule(Principal principal,@RequestParam UUID moduleId){
         return ResponseEntity.ok(studentService.getStudentProgress(moduleId, UUID.fromString(principal.getName())));
     }
+    @GetMapping("/getProgressByModule2")
+    public ResponseEntity<List<ProgressResponse>>  getProgressByModule2(Principal principal){
+        return ResponseEntity.ok(studentService.getStudentProgress(UUID.fromString(principal.getName())));
+    }
 
 
 }

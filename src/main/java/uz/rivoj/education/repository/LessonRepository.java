@@ -15,7 +15,6 @@ public interface LessonRepository extends JpaRepository<LessonEntity, UUID> {
     boolean existsByModuleAndTitle(ModuleEntity module, String title);
     Optional<Page<LessonEntity>> findByModule_Id(Pageable pageable, UUID moduleId);
     Optional<LessonEntity>findFirstByModule_IdOrderByNumberAsc(UUID moduleId);;
-    Optional<List<LessonEntity>> findAllByModule_Id(UUID moduleId);
     Optional<List<LessonEntity>> findAllByModule_IdOrderByNumberAsc(UUID moduleId);
 
 }

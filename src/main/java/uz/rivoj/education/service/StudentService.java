@@ -236,16 +236,48 @@ public class StudentService {
     public ProgressResponse getStudentProgress(UUID moduleId, UUID studentId) {
         StudentInfo studentInfo = studentInfoRepository.findByStudentId(studentId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found!"));
-        List<LessonEntity> lessonEntities = lessonRepository.findAllByModule_Id(moduleId)
-                .orElseThrow(() -> new DataNotFoundException("Lessons not found!"));
+        Optional<List<LessonEntity>> lessonEntities = lessonRepository.findAllByModule_IdOrderByNumberAsc(moduleId);
         ProgressResponse progressResponse = new ProgressResponse();
-        progressResponse.setLessonCount(lessonEntities.size()+1);
-        List<Integer> scoreList = new ArrayList<>();
-        lessonEntities.forEach(lessonEntity -> {
-            Optional<AttendanceEntity> attendance = attendanceRepository.findByStudentIdAndLessonId(studentInfo.getId(), lessonEntity.getId());
-            attendance.ifPresent(attendanceEntity -> scoreList.add(attendanceEntity.getScore()));
-        });
-        progressResponse.setScoreList(scoreList);
+        if (lessonEntities.isPresent()) {
+            List<LessonEntity> lessons = lessonEntities.get();
+            progressResponse.setLessonCount(lessons.size()+1);
+            List<Integer> scoreList = new ArrayList<>();
+            lessons.forEach(lessonEntity -> {
+                Optional<AttendanceEntity> attendance = attendanceRepository.findByStudentIdAndLessonId(studentInfo.getId(), lessonEntity.getId());
+                attendance.ifPresent(attendanceEntity -> scoreList.add(attendanceEntity.getScore()));
+            });
+            progressResponse.setScoreList(scoreList);
+        }
         return progressResponse;
+
+    }
+
+    public List<ProgressResponse> getStudentProgress(UUID studentId) {
+        StudentInfo studentInfo = studentInfoRepository.findByStudentId(studentId)
+                .orElseThrow(() -> new DataNotFoundException("Student not found!"));
+        List<ModuleEntity> moduleEntities = moduleRepository.findAllBySubject_IdOrderByNumberAsc(studentInfo.getSubject().getId())
+                .orElseThrow(() -> new DataNotFoundException("Modules not found!"));
+        List<ProgressResponse> progressResponseList = new ArrayList<>();
+        moduleEntities.forEach(moduleEntity -> {
+            Optional<List<LessonEntity>> lessonEntities = lessonRepository.findAllByModule_IdOrderByNumberAsc(moduleEntity.getId());
+            ProgressResponse progressResponse = new ProgressResponse();
+            progressResponse.setModuleNumber(moduleEntity.getNumber());
+            if (lessonEntities.isPresent() && !lessonEntities.get().isEmpty()) {
+                List<LessonEntity> lessons = lessonEntities.get();
+                progressResponse.setLessonCount(lessons.size() + 1);
+                List<Integer> scoreList = new ArrayList<>();
+                lessons.forEach(lessonEntity -> {
+                    Optional<AttendanceEntity> attendance = attendanceRepository.findByStudentIdAndLessonId(studentInfo.getId(), lessonEntity.getId());
+                    attendance.ifPresent(attendanceEntity -> scoreList.add(attendanceEntity.getScore()));
+                });
+                progressResponse.setScoreList(scoreList);
+            } else {
+                progressResponse.setLessonCount(0);
+                progressResponse.setScoreList(Collections.emptyList());
+            }
+            progressResponseList.add(progressResponse);
+        });
+        return progressResponseList;
+
     }
 }
