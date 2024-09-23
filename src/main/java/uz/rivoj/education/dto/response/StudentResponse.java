@@ -23,6 +23,8 @@ public class StudentResponse {
     private UUID currentModuleId;
     private Integer currentLessonNumber;
     private Integer currentModuleNumber;
+    private Integer totalCoins;
+    private Integer totalScore;
 
 
 

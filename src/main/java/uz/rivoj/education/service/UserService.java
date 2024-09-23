@@ -139,6 +139,8 @@ public class UserService {
             studentResponse.setCurrentModuleId(studentInfo.getCurrentModule().getId());
             studentResponse.setCurrentLessonNumber(studentInfo.getLesson().getNumber());
             studentResponse.setCurrentModuleNumber(studentInfo.getCurrentModule().getNumber());
+            studentResponse.setTotalCoins(studentInfo.getCoin());
+            studentResponse.setTotalScore(studentInfo.getTotalScore());
             return studentResponse;
         }
 
