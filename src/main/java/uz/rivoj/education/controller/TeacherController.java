@@ -6,9 +6,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import uz.rivoj.education.dto.request.LessonCR;
 import uz.rivoj.education.dto.request.TeacherUpdate;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.dto.update.CheckAttendanceDTO;
+import uz.rivoj.education.dto.update.LessonUpdateDTO;
 import uz.rivoj.education.entity.ChatEntity;
 import uz.rivoj.education.entity.enums.AttendanceStatus;
 import uz.rivoj.education.service.*;
@@ -29,6 +31,26 @@ public class TeacherController {
     private final ChatService chatService;
     private final ModuleService moduleService;
     private final TeacherService teacherService;
+
+    @PostMapping(value = "/create-lesson", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<LessonResponse> createLesson(
+            @ModelAttribute LessonCR createRequest,
+            @RequestPart("lessonVideo") MultipartFile lessonVideo,
+            @RequestPart("coverOfLesson") MultipartFile coverOfLesson
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(lessonService.create(createRequest, lessonVideo,coverOfLesson));
+    }
+
+    @PutMapping(value ="/update-lesson",
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
+            produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> updateLesson(
+            @RequestBody LessonUpdateDTO updateDTO,
+            @RequestPart(required = false) MultipartFile videoFile,
+            @RequestPart(required = false) MultipartFile coverOfLesson
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(lessonService.updateLesson(updateDTO,videoFile,coverOfLesson));
+    }
 
     @GetMapping("/get-my-all-student")
     public ResponseEntity<List<StudentResponse>> getAllStudent(

@@ -2,10 +2,8 @@ package uz.rivoj.education.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.*;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.entity.*;
@@ -17,7 +15,6 @@ import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequiredArgsConstructor
@@ -60,14 +57,7 @@ public class AdminController {
     public ResponseEntity<ModuleResponse> createModule(@RequestBody Integer moduleNumber, Principal principal){
         return ResponseEntity.status(HttpStatus.CREATED).body(moduleService.create(moduleNumber, UUID.fromString(principal.getName())));
     }
-    @PostMapping(value = "/create-lesson", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<LessonResponse> createLesson(
-            @ModelAttribute LessonCR createRequest,
-            @RequestPart("lessonVideo") MultipartFile lessonVideo,
-            @RequestPart("coverOfLesson") MultipartFile coverOfLesson
-    ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(lessonService.create(createRequest, lessonVideo,coverOfLesson));
-    }
+
     @PutMapping("/update-role{userPhoneNumber}")
     public ResponseEntity<String> updateRole(@PathVariable String userPhoneNumber, @RequestParam UserRole userRole){
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userPhoneNumber, userRole));
