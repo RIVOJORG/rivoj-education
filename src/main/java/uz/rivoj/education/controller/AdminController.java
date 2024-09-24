@@ -188,10 +188,10 @@ public class AdminController {
         return ResponseEntity.status(200).body(lessonService.delete(lessonId));
     }
 
-    @GetMapping("/change-passwords")
-    public ResponseEntity<String> changePassword() {
-        return ResponseEntity.ok(studentService.changePassword());
-    }
+//    @GetMapping("/change-passwords")
+//    public ResponseEntity<String> changePassword() {
+//        return ResponseEntity.ok(studentService.changePassword());
+//    }
 
     @GetMapping("/getAllModulesOfSubject{subjectId}")
     public ResponseEntity<List<ModuleResponse>> getAllModulesOfSubject(@PathVariable UUID subjectId){
