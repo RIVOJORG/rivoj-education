@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.util.List;
 
+
 @Entity(name = "lesson")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,5 +25,6 @@ public class LessonEntity extends BaseEntity {
     private String source;
     private String cover;
     private String description;
+    @ElementCollection
     private List<String> additionalLinks;
 }
