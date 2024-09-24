@@ -170,4 +170,12 @@ public class AttendanceService {
                 .studentName(attendanceEntity.getStudent().getStudent().getName())
                 .studentSurname(attendanceEntity.getStudent().getStudent().getSurname()).build();
     }
+
+    public List<AttendanceResponse> getUncheckedAttendancesBySubjectId(UUID subjectId){
+        List<AttendanceResponse> list = new ArrayList<>();
+        for (AttendanceEntity attendanceEntity : attendanceRepository.findUncheckedBySubjectId(subjectId.toString())) {
+            list.add(modelMapper.map(attendanceEntity, AttendanceResponse.class));
+        }
+        return list;
+    }
 }
