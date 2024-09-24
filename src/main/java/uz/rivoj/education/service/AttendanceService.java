@@ -30,6 +30,7 @@ public class AttendanceService {
     private final TeacherInfoRepository teacherInfoRepository;
     private final ModelMapper modelMapper;
     private final LessonRepository lessonRepository;
+    private final SubjectRepository subjectRepository;
 
     public AttendanceResponse getAttendance(UUID id) {
         AttendanceEntity attendance = attendanceRepository.findById(id)
@@ -171,9 +172,11 @@ public class AttendanceService {
                 .studentSurname(attendanceEntity.getStudent().getStudent().getSurname()).build();
     }
 
-    public List<AttendanceResponse> getUncheckedAttendancesBySubjectId(UUID subjectId){
+    public List<AttendanceResponse> getUncheckedAttendancesBySubjectId(UUID teacherId){
+        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(teacherId)
+                .orElseThrow(() -> new DataNotFoundException("Teacher info not found!"));
         List<AttendanceResponse> list = new ArrayList<>();
-        for (AttendanceEntity attendanceEntity : attendanceRepository.findUncheckedBySubjectId(subjectId.toString())) {
+        for (AttendanceEntity attendanceEntity : attendanceRepository.findUncheckedBySubjectId(teacherInfo.getSubject().getId().toString())) {
             list.add(modelMapper.map(attendanceEntity, AttendanceResponse.class));
         }
         return list;

@@ -155,8 +155,8 @@ public class TeacherController {
         return ResponseEntity.status(200).body(attendanceService.getUncheckedAttendanceResponse(attendanceId));
     }
 
-    @GetMapping("/get-unchecked-attendances-by-subjectId{subjectId}")
-    public ResponseEntity<List<AttendanceResponse>> getUncheckedAttendancesBySubjectId(@PathVariable UUID subjectId){
-        return ResponseEntity.status(200).body(attendanceService.getUncheckedAttendancesBySubjectId(subjectId));
+    @GetMapping("/get-unchecked-attendances-by-subjectId")
+    public ResponseEntity<List<AttendanceResponse>> getUncheckedAttendancesBySubjectId(Principal principal){
+        return ResponseEntity.status(200).body(attendanceService.getUncheckedAttendancesBySubjectId(UUID.fromString(principal.getName())));
     }
 }
