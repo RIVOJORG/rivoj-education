@@ -4,10 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import uz.rivoj.education.dto.response.CommentResponse;
-import uz.rivoj.education.dto.response.LessonResponse;
-import uz.rivoj.education.dto.response.ModuleResponse;
-import uz.rivoj.education.dto.response.TeacherInfoResponse;
+import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.*;
@@ -41,7 +38,6 @@ public class ModuleService {
         return ModuleResponse.builder()
                 .module_id(module.getId())
                 .moduleNumber(module.getNumber())
-                .lessons(getAllLessonsByModule(module.getId()))
                 .subject(module.getSubject().getTitle()).build();
     }
 
@@ -63,7 +59,6 @@ public class ModuleService {
         return ModuleResponse.builder()
                 .moduleNumber(moduleEntity.getNumber())
                 .subject(moduleEntity.getSubject().getTitle())
-                .lessons(getAllLessonsByModule(moduleEntity.getId()))
                 .build();
     }
 
@@ -142,12 +137,12 @@ public class ModuleService {
         });
         return lessonResponseList;
     }
-    public List<ModuleResponse> getAllModulesOfSubject(UUID subjectId){
+    public List<ModuleDTO> getAllModulesOfSubject(UUID subjectId){
         SubjectEntity subject = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> new DataNotFoundException("Subject not found with this id => " + subjectId));
         List<ModuleEntity> modulesBySubject = moduleRepository.findAllBySubject_IdOrderByNumberAsc(subject.getId())
                 .orElseThrow(() -> new DataNotFoundException("Module not found with this subject => " + subject.getTitle()));
-        return getModuleResponses(modulesBySubject);
+        return getModuleDTOs(modulesBySubject);
     }
 
     private List<ModuleResponse> getModuleResponses(List<ModuleEntity> modulesBySubject) {
@@ -157,7 +152,16 @@ public class ModuleService {
             moduleResponse.setModule_id(module.getId());
             moduleResponse.setModuleNumber(module.getNumber());
             moduleResponse.setSubject(module.getSubject().getTitle());
-            moduleResponse.setLessons(getAllLessonsByModule(module.getId()));
+            modules.add(moduleResponse);
+        });
+        return modules;
+    } private List<ModuleDTO> getModuleDTOs(List<ModuleEntity> modulesBySubject) {
+        List<ModuleDTO> modules = new ArrayList<>();
+        modulesBySubject.forEach(module -> {
+            ModuleDTO moduleResponse = new ModuleDTO();
+            moduleResponse.setModule_id(module.getId());
+            moduleResponse.setModuleNumber(module.getNumber());
+            moduleResponse.setLesson(getAllLessonsByModule(module.getId()));
             modules.add(moduleResponse);
         });
         return modules;

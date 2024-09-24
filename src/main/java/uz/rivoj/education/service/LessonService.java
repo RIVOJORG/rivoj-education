@@ -91,7 +91,6 @@ public class LessonService {
         return LessonResponse.builder()
                 .cover(lessonEntity.getCover())
                 .description(lessonEntity.getDescription())
-                .lessonDuration(lessonEntity.getLessonDuration())
                 .comments(getCommentsByLessonId(lessonId))
                 .id(lessonEntity.getId())
                 .moduleId(lessonEntity.getModule().getId())

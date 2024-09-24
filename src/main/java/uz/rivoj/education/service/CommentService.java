@@ -125,7 +125,6 @@ public class CommentService {
                         .cover(lesson.getCover())
                         .moduleId(lesson.getModule().getId())
                         .description(lesson.getDescription())
-                        .lessonDuration(lesson.getLessonDuration())
                         .comments(commentResponses)
                         .build();
     }

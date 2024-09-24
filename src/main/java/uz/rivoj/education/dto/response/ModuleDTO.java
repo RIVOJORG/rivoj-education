@@ -11,9 +11,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @ToString
-public class ModuleResponse {
+public class ModuleDTO {
     private UUID module_id;
     private Integer moduleNumber;
-    private String subject;
+    private List<LessonResponse> lesson;
 
 }
