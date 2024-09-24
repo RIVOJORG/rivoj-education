@@ -61,6 +61,7 @@ public class LessonService {
         lessonRepository.save(savedLesson);
         LessonResponse response = modelMapper.map(savedLesson, LessonResponse.class);
         response.setModuleId(createRequest.getModuleId());
+        response.setComments(getCommentsByLessonId(savedLesson.getId()));
         return response;
     }
 
