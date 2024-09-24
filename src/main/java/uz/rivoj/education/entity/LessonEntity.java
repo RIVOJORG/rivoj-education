@@ -16,6 +16,9 @@ public class LessonEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "module_id", referencedColumnName = "id")
     private ModuleEntity module;
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "teacher_id", referencedColumnName = "teacher_id")
+    private TeacherInfo teacherInfo;
     private Integer number;
     private String title;
     private String source;

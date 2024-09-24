@@ -26,6 +26,7 @@ public class LessonResponse {
     private String description;
     private List<String> additionalLinks;
     private List<CommentResponse> comments;
+    private TeacherInfoResponse teacherInfo;
 
 }
 

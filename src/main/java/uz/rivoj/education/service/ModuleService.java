@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.response.CommentResponse;
 import uz.rivoj.education.dto.response.LessonResponse;
 import uz.rivoj.education.dto.response.ModuleResponse;
+import uz.rivoj.education.dto.response.TeacherInfoResponse;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.*;
@@ -25,6 +26,7 @@ public class ModuleService {
     private final LessonRepository lessonRepository;
     private final CommentService commentService;
     private final TeacherInfoRepository teacherInfoRepository;
+    private final UserRepository userRepository;
 
     public ModuleResponse create(Integer moduleNumber, UUID teacherId) {
         TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(teacherId)
@@ -116,10 +118,21 @@ public class ModuleService {
 
     public List<LessonResponse> getAllLessonsByModule(UUID moduleId) {
         List<LessonEntity> lessonEntities = lessonRepository.findAllByModule_IdOrderByNumberAsc(moduleId)
-                .orElseThrow(() -> new DataNotFoundException("Lesson not found in this module => " + moduleId));
+                .orElseThrow(() -> new DataNotFoundException("Lessons not found in this module => " + moduleId));
         List<LessonResponse> lessonResponseList = new ArrayList<>();
+        TeacherInfoResponse teacherInfoResponse = new TeacherInfoResponse();
         lessonEntities.forEach(lessonEntity -> {
+            TeacherInfo teacherInfo = teacherInfoRepository.findById(lessonEntity.getTeacherInfo().getId())
+                    .orElseThrow(() -> new DataNotFoundException("TeacherInfo not found!"));
+            UserEntity teacher = userRepository.findById(teacherInfo.getTeacher().getId())
+                    .orElseThrow(() -> new  DataNotFoundException("Teacher not found!"));
+            teacherInfoResponse.setName(teacher.getName());
+            teacherInfoResponse.setSurname(teacher.getSurname());
+            teacherInfoResponse.setAvatar(teacher.getAvatar());
+            teacherInfoResponse.setAbout(teacherInfo.getAbout());
+            teacherInfoResponse.setSubject(teacherInfo.getSubject().getTitle());
             LessonResponse lessonResponse = modelMapper.map(lessonEntity, LessonResponse.class);
+            lessonResponse.setTeacherInfo(teacherInfoResponse);
             lessonResponse.setModuleId(lessonEntity.getModule().getId());
             lessonResponseList.add(lessonResponse);
         });

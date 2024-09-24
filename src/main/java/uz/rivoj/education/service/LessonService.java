@@ -14,11 +14,13 @@ import uz.rivoj.education.dto.update.LessonUpdateDTO;
 import uz.rivoj.education.entity.CommentEntity;
 import uz.rivoj.education.entity.LessonEntity;
 import uz.rivoj.education.entity.ModuleEntity;
+import uz.rivoj.education.entity.TeacherInfo;
 import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.CommentRepository;
 import uz.rivoj.education.repository.LessonRepository;
 import uz.rivoj.education.repository.ModuleRepository;
+import uz.rivoj.education.repository.TeacherInfoRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -32,10 +34,14 @@ public class LessonService {
     private final UploadService uploadService;
     private final CommentService commentService;
     private final CommentRepository commentRepository;
+    private final TeacherInfoRepository teacherInfoRepository;
+
     @SneakyThrows
-    public LessonResponse create(LessonCR createRequest, MultipartFile lessonVideo, MultipartFile coverOfLesson)  {
+    public LessonResponse create(LessonCR createRequest, MultipartFile lessonVideo, MultipartFile coverOfLesson,UUID teacherId)  {
         ModuleEntity moduleEntity = moduleRepository.findById(createRequest.getModuleId())
                 .orElseThrow(() -> new DataNotFoundException("Module not found with this id " + createRequest.getModuleId()));
+        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(teacherId)
+                .orElseThrow(() -> new DataNotFoundException("Teacher not found with this id " + teacherId));
         if (lessonRepository.existsByModuleAndTitle(moduleEntity, createRequest.getTitle())) {
             throw new DataAlreadyExistsException("Lesson already exists with this title : " + createRequest.getTitle() + " in module id : " + createRequest.getModuleId());
         }
@@ -53,6 +59,7 @@ public class LessonService {
         }
 
         lesson.setModule(moduleEntity);
+        lesson.setTeacherInfo(teacherInfo);
         LessonEntity savedLesson = lessonRepository.save(lesson);
         String source = uploadService.uploadFile(lessonVideo,"Lesson"+savedLesson.getNumber()+"Content");
         String cover = uploadService.uploadFile(coverOfLesson,"CoverOfLesson"+savedLesson.getNumber());
