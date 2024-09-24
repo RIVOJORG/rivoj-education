@@ -15,6 +15,5 @@ public class ModuleResponse {
     private UUID module_id;
     private Integer moduleNumber;
     private String subject;
-    private List<LessonResponse> lessons;
 
 }
