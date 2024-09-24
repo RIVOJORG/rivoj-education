@@ -104,7 +104,7 @@ public class AttendanceService {
         return getAttendanceResponses(attendanceEntityList.map(Page::getContent));
 
     }
-        @SneakyThrows
+    @SneakyThrows
     public String checkAttendance(CheckAttendanceDTO checkAttendanceDTO,UUID teacherId) {
         TeacherInfo teacher = teacherInfoRepository.findByTeacher_Id(teacherId)
                 .orElseThrow(() -> new DataNotFoundException("Teacher not found! " + teacherId));
