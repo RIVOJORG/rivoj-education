@@ -20,4 +20,5 @@ public class TeacherInfo extends BaseEntity {
     private String avatar;
     private String about;
     private LocalDate birthday;
+
 }
