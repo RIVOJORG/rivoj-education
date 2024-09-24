@@ -4,6 +4,7 @@ package uz.rivoj.education.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalTime;
 import java.util.List;
 
 
@@ -25,6 +26,7 @@ public class LessonEntity extends BaseEntity {
     private String source;
     private String cover;
     private String description;
+    private LocalTime lessonDuration;
     @ElementCollection
     private List<String> additionalLinks;
 }

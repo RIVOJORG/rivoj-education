@@ -98,6 +98,12 @@ public class UserService {
         userRepository.save(user);
         return "Phone number successfully updated for user: " + user.getName();
     }
+    public String changePassword(UUID userId,String newPassword) {
+        Optional<UserEntity> user = userRepository.findById(userId);
+        user.get().setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user.get());
+        return "Password number successfully updated for user: " + user.get().getName();
+    }
 
     public String blockUnblockUser(String phoneNumber, UserStatus status) {
         UserEntity user = getUserByPhoneNumber(phoneNumber);
