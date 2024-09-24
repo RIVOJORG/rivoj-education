@@ -22,7 +22,6 @@ public class LessonResponse {
     private String cover;
     private UUID moduleId;
     private String description;
-    private LocalTime lessonDuration;
     private List<String> additionalLinks;
     private List<CommentResponse> comments;
     private TeacherInfoResponse teacherInfo;

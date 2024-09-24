@@ -17,5 +17,5 @@ public class LessonCR {
     private UUID moduleId;
     private String description;
     private List<String> additionalLinks;
-    private LocalDate lessonDuration;
+
 }

@@ -194,7 +194,7 @@ public class AdminController {
 //    }
 
     @GetMapping("/getAllModulesOfSubject{subjectId}")
-    public ResponseEntity<List<ModuleResponse>> getAllModulesOfSubject(@PathVariable UUID subjectId){
+    public ResponseEntity<List<ModuleDTO>> getAllModulesOfSubject(@PathVariable UUID subjectId){
         return ResponseEntity.status(200).body(moduleService.getAllModulesOfSubject(subjectId));
     }
 
