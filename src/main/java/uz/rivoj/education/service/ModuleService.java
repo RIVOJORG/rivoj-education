@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.exception.DataNotFoundException;
@@ -13,6 +14,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ModuleService {
     private final ModuleRepository moduleRepository;
@@ -70,6 +72,7 @@ public class ModuleService {
         return getModuleResponses(modulesBySubject);
     }
 
+
     public List<LessonResponse> getAllAccessibleLessonsOfUser(UUID userId, UUID moduleId) {
         StudentInfo studentInfo = studentRepository.findByStudentId(userId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found with this id => " + userId));
@@ -112,6 +115,7 @@ public class ModuleService {
                 .description(comment.getDescription())
                 .build();
     }
+
 
     public List<LessonResponse> getAllLessonsByModule(UUID moduleId) {
         List<LessonEntity> lessonEntities = lessonRepository.findAllByModule_IdOrderByNumberAsc(moduleId)
