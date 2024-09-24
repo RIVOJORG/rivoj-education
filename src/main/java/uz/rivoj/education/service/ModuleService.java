@@ -41,6 +41,7 @@ public class ModuleService {
         return ModuleResponse.builder()
                 .module_id(module.getId())
                 .moduleNumber(module.getNumber())
+                .lessons(getAllLessonsByModule(module.getId()))
                 .subject(module.getSubject().getTitle()).build();
     }
 
@@ -62,6 +63,7 @@ public class ModuleService {
         return ModuleResponse.builder()
                 .moduleNumber(moduleEntity.getNumber())
                 .subject(moduleEntity.getSubject().getTitle())
+                .lessons(getAllLessonsByModule(moduleEntity.getId()))
                 .build();
     }
 
@@ -134,6 +136,8 @@ public class ModuleService {
             LessonResponse lessonResponse = modelMapper.map(lessonEntity, LessonResponse.class);
             lessonResponse.setTeacherInfo(teacherInfoResponse);
             lessonResponse.setModuleId(lessonEntity.getModule().getId());
+            lessonResponse.setAdditionalLinks(lessonEntity.getAdditionalLinks());
+            lessonResponse.setComments(getCommentsByLessonId(lessonEntity.getId()));
             lessonResponseList.add(lessonResponse);
         });
         return lessonResponseList;
@@ -153,6 +157,7 @@ public class ModuleService {
             moduleResponse.setModule_id(module.getId());
             moduleResponse.setModuleNumber(module.getNumber());
             moduleResponse.setSubject(module.getSubject().getTitle());
+            moduleResponse.setLessons(getAllLessonsByModule(module.getId()));
             modules.add(moduleResponse);
         });
         return modules;

@@ -150,4 +150,8 @@ public class TeacherController {
     public ResponseEntity<List<LessonResponse>> getAllLessonsByModule(@PathVariable UUID moduleId){
         return ResponseEntity.status(200).body(moduleService.getAllLessonsByModule(moduleId));
     }
+    @GetMapping("/getUncheckedAttendanceResponse{attendanceId}")
+    public ResponseEntity<UncheckedAttendanceResponse> getUncheckedAttendanceResponse(@PathVariable UUID attendanceId){
+        return ResponseEntity.status(200).body(attendanceService.getUncheckedAttendanceResponse(attendanceId));
+    }
 }
