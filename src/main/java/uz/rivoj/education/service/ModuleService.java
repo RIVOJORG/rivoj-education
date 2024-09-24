@@ -123,6 +123,8 @@ public class ModuleService {
         lessonEntities.forEach(lessonEntity -> {
             LessonResponse lessonResponse = modelMapper.map(lessonEntity, LessonResponse.class);
             lessonResponse.setModuleId(lessonEntity.getModule().getId());
+            lessonResponse.setAdditionalLinks(lessonEntity.getAdditionalLinks());
+            lessonResponse.setComments(getCommentsByLessonId(lessonEntity.getId()));
             lessonResponseList.add(lessonResponse);
         });
         return lessonResponseList;

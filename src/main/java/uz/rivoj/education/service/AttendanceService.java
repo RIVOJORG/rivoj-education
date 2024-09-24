@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.rivoj.education.dto.response.AttendanceResponse;
+import uz.rivoj.education.dto.response.UncheckedAttendanceResponse;
 import uz.rivoj.education.dto.update.CheckAttendanceDTO;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.AttendanceStatus;
@@ -155,5 +156,18 @@ public class AttendanceService {
             attendanceResponse.setTeacher_id(attendanceEntity.getTeacher().getId());
         }
         return attendanceResponse;
+    }
+
+    public UncheckedAttendanceResponse getUncheckedAttendanceResponse(UUID attendanceId) {
+        AttendanceEntity attendanceEntity = attendanceRepository.findById(attendanceId)
+                .orElseThrow(() -> new DataNotFoundException("Attendance not found with this id: " + attendanceId));
+       return UncheckedAttendanceResponse.builder()
+                .attendanceId(attendanceEntity.getId())
+                .attendanceSource(attendanceEntity.getLesson().getSource())
+                .attendanceCover(attendanceEntity.getLesson().getCover())
+                .currentModule(attendanceEntity.getStudent().getCurrentModule().getNumber())
+                .currentLesson(attendanceEntity.getStudent().getLesson().getNumber())
+                .studentName(attendanceEntity.getStudent().getStudent().getName())
+                .studentSurname(attendanceEntity.getStudent().getStudent().getSurname()).build();
     }
 }
