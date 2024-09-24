@@ -7,6 +7,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.*;
 import uz.rivoj.education.entity.ModuleEntity;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,6 +25,7 @@ public class LessonResponse {
     private String cover;
     private UUID moduleId;
     private String description;
+    private LocalTime lessonDuration;
     private List<String> additionalLinks;
     private List<CommentResponse> comments;
 

@@ -69,6 +69,12 @@ public class AdminController {
             @PathVariable String newPhoneNumber) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.changePhoneNumber(oldPhoneNumber, newPhoneNumber));
     }
+    @PutMapping("/change-password/{userId}/{newPassword}")
+    public ResponseEntity<String> changePhoneNumber(
+            @PathVariable UUID userId,
+            @PathVariable String newPassword) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.changePassword(userId,newPassword));
+    }
     @GetMapping("/get-lessons-by-module{moduleId}")
     public List<LessonResponse> getLessonsByModule(
             @RequestParam(defaultValue = "0") int page,
