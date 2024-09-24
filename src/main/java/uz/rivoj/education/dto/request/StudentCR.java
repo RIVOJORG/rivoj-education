@@ -17,4 +17,5 @@ public class StudentCR {
     private String password;
     private LocalDate birthday;
     private String subject;
+    private Integer starterModule;
 }
