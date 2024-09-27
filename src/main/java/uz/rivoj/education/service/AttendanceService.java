@@ -104,7 +104,7 @@ public class AttendanceService {
         return getAttendanceResponses(attendanceEntityList.map(Page::getContent));
 
     }
-        @SneakyThrows
+    @SneakyThrows
     public String checkAttendance(CheckAttendanceDTO checkAttendanceDTO,UUID teacherId) {
         TeacherInfo teacher = teacherInfoRepository.findByTeacher_Id(teacherId)
                 .orElseThrow(() -> new DataNotFoundException("Teacher not found! " + teacherId));
@@ -169,5 +169,13 @@ public class AttendanceService {
                 .currentLesson(attendanceEntity.getStudent().getLesson().getNumber())
                 .studentName(attendanceEntity.getStudent().getStudent().getName())
                 .studentSurname(attendanceEntity.getStudent().getStudent().getSurname()).build();
+    }
+
+    public List<AttendanceResponse> getUncheckedAttendancesBySubjectId(UUID subjectId){
+        List<AttendanceResponse> list = new ArrayList<>();
+        for (AttendanceEntity attendanceEntity : attendanceRepository.findUncheckedBySubjectId(subjectId.toString())) {
+            list.add(modelMapper.map(attendanceEntity, AttendanceResponse.class));
+        }
+        return list;
     }
 }
