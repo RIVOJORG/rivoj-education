@@ -40,7 +40,10 @@ public class SecurityConfig {
             "/api/v1/auth/sign-in",
             "/v3/api-docs/**",
             "/swagger-ui/**",
-            "/swagger-ui.html"
+            "/swagger-ui.html",
+            "/api/v1/student/sendPhoneNumber{phoneNumber}",
+            "/api/v1/student/checkVerification"
+
     };
 
     @Bean

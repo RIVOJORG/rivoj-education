@@ -77,6 +77,15 @@ public class StudentController {
         return ResponseEntity.ok(studentService.getStudentProgress(UUID.fromString(principal.getName())));
     }
 
+    @PostMapping("/sendPhoneNumber{phoneNumber}")
+    public ResponseEntity<Integer> sendPhoneNumber(@PathVariable String phoneNumber){
+        return ResponseEntity.ok(studentService.sendOTP(phoneNumber));
+    }
+
+    @PostMapping("/checkVerification")
+    public ResponseEntity<JwtResponse> checkVerification(@RequestParam Integer code){
+        return ResponseEntity.ok(studentService.checkOTP(code));
+    }
 
 
 }

@@ -6,6 +6,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.AttendanceCR;
 import uz.rivoj.education.dto.request.StudentCR;
@@ -17,8 +18,10 @@ import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.*;
 import org.springframework.data.domain.Pageable;
+import uz.rivoj.education.service.jwt.JwtUtil;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,6 +41,9 @@ public class StudentService {
     private final AttendanceRepository attendanceRepository;
     private final PasswordEncoder passwordEncoder;
     private final UploadService uploadService;
+    private final VerificationRepository verificationRepository;
+    private final UserService userService;
+    private final JwtUtil jwtUtil;
 
     public List<StudentResponse> getAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -295,5 +301,27 @@ public class StudentService {
         });
         return progressResponseList;
 
+    }
+    @Transactional
+    public Integer sendOTP(String phoneNumber) {
+        userRepository.findByPhoneNumber(phoneNumber).orElseThrow(() -> new DataNotFoundException("User not found!"));
+        verificationRepository.deleteByPhoneNumber(phoneNumber);
+        VerificationCode verificationCode = new VerificationCode();
+        verificationCode.setPhoneNumber(phoneNumber);
+        verificationCode.setExpirationDate(LocalDateTime.now().plusMinutes(10));
+        Random random = new Random();
+        Integer code = 10000 + random.nextInt(90000);
+        verificationCode.setCode(code);
+        verificationRepository.save(verificationCode);
+        return code;
+    }
+
+
+    public JwtResponse checkOTP(Integer code) {
+        VerificationCode verificationCode = verificationRepository.findByCode(code)
+                .orElseThrow(() -> new DataNotFoundException("Verification code not found!"));
+        UserEntity user = userRepository.findByPhoneNumber(verificationCode.getPhoneNumber())
+                .orElseThrow(() -> new DataNotFoundException("User not found!"));
+        return new JwtResponse(jwtUtil.generateToken(user));
     }
 }
