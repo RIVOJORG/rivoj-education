@@ -320,8 +320,10 @@ public class StudentService {
     public JwtResponse checkOTP(Integer code) {
         VerificationCode verificationCode = verificationRepository.findByCode(code)
                 .orElseThrow(() -> new DataNotFoundException("Verification code not found!"));
-        UserEntity user = userRepository.findByPhoneNumber(verificationCode.getPhoneNumber())
-                .orElseThrow(() -> new DataNotFoundException("User not found!"));
-        return new JwtResponse(jwtUtil.generateToken(user));
+        if(verificationCode.getExpirationDate().isAfter(LocalDateTime.now())){
+            UserEntity user = userRepository.findByPhoneNumber(verificationCode.getPhoneNumber())
+                    .orElseThrow(() -> new DataNotFoundException("User not found!"));
+            return new JwtResponse(jwtUtil.generateToken(user));
+        }throw  new RuntimeException("Verification code expired!");
     }
 }
