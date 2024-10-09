@@ -88,6 +88,10 @@ public class AdminController {
             @RequestParam(defaultValue = "10") int size){
         return ResponseEntity.status(200).body(studentService.getAll(page, size));
     }
+    @GetMapping("/get-all-users-byRole")
+    public ResponseEntity<List<?>> getAllByRole(@RequestParam UserRole role){
+        return ResponseEntity.status(200).body(userService.getAllByRole(role));
+    }
 
     @GetMapping("get-lesson/{id}")
     public LessonResponse getLessonById(@PathVariable UUID id) {

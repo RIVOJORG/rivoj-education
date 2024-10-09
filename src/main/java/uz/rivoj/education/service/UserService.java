@@ -2,6 +2,7 @@ package uz.rivoj.education.service;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -148,6 +149,49 @@ public class UserService {
             studentResponse.setTotalCoins(studentInfo.getCoin());
             studentResponse.setTotalScore(studentInfo.getTotalScore());
             return studentResponse;
+        }
+
+    }
+
+    public List<?> getAllByRole(UserRole role) {
+        if (role.equals(UserRole.TEACHER)) {
+            List<TeacherResponse> teacherResponseList = new ArrayList<>();
+            List<UserEntity> teacherEntitylist = userRepository.findAllByRole(role);
+            teacherEntitylist.forEach(teacherEntity -> {
+                TeacherResponse teacherResponse = modelMapper.map(teacherEntity, TeacherResponse.class);
+                TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(teacherEntity.getId())
+                        .orElseThrow(() -> new DataNotFoundException("Teacher not found " + teacherEntity.getId()));
+                SubjectResponse subjectResponse = new SubjectResponse(teacherInfo.getSubject().getTitle(),teacherInfo.getSubject().getId());
+                teacherResponse.setSubject(subjectResponse);
+                teacherResponse.setBirthday(teacherInfo.getBirthday());
+                teacherResponse.setAbout(teacherInfo.getAbout());
+                teacherResponseList.add(teacherResponse);
+            });
+            return teacherResponseList;
+        }
+        else if (role.equals(UserRole.STUDENT)) {
+            List<StudentResponse> studentResponseList = new ArrayList<>();
+            List<UserEntity> studentEntityList = userRepository.findAllByRole(role);
+            studentEntityList.forEach(student -> {
+                StudentInfo studentInfo = studentInfoRepository.findByStudentId(student.getId())
+                        .orElseThrow(() -> new DataNotFoundException("User not found"));
+                StudentResponse studentResponse = modelMapper.map(student, StudentResponse.class);
+                studentResponse.setBirth(studentInfo.getBirthday());
+                studentResponse.setSubjectId(studentInfo.getSubject().getId());
+                studentResponse.setCurrentLessonId(studentInfo.getLesson().getId());
+                studentResponse.setId(studentInfo.getId());
+                studentResponse.setCurrentModuleId(studentInfo.getCurrentModule().getId());
+                studentResponse.setCurrentLessonNumber(studentInfo.getLesson().getNumber());
+                studentResponse.setCurrentModuleNumber(studentInfo.getCurrentModule().getNumber());
+                studentResponse.setTotalCoins(studentInfo.getCoin());
+                studentResponse.setTotalScore(studentInfo.getTotalScore());
+                studentResponseList.add(studentResponse);
+            });
+            return studentResponseList;
+        }else {
+            List<UserEntity> adminEntityList = userRepository.findAllByRole(role);
+            TypeToken<List<AdminResponse>> typeToken = new TypeToken<List<AdminResponse>>() {};
+            return  modelMapper.map(adminEntityList, typeToken.getType());
         }
 
     }

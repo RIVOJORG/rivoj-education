@@ -1,7 +1,12 @@
 package uz.rivoj.education.dto.response;
 
 
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.*;
+import uz.rivoj.education.entity.UserRole;
+import uz.rivoj.education.entity.enums.UserStatus;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -20,4 +25,6 @@ public class TeacherResponse { //
     private SubjectResponse subject;
     private String about;
     private LocalDate birthday;
+
+
 }

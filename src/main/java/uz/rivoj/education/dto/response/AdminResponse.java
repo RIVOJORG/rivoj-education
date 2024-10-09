@@ -15,6 +15,5 @@ public class AdminResponse {
     private String name;
     private String surname;
     private String avatar;
-    private LocalDate birth;
     private String phoneNumber;
 }
