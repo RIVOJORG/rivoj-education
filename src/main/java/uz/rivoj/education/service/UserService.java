@@ -43,7 +43,7 @@ public class UserService {
         UserEntity user = userRepository.findByPhoneNumber(dto.getPhoneNumber())
                 .orElseThrow(() -> new DataNotFoundException("user not found"));
       if (passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-            return new JwtResponse(jwtUtil.generateToken(user));
+            return new JwtResponse(jwtUtil.generateToken(user),user.getRole());
         }
         throw new AuthenticationCredentialsNotFoundException("password didn't match");
     }

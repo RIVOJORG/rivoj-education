@@ -323,7 +323,7 @@ public class StudentService {
         if(verificationCode.getExpirationDate().isAfter(LocalDateTime.now())){
             UserEntity user = userRepository.findByPhoneNumber(verificationCode.getPhoneNumber())
                     .orElseThrow(() -> new DataNotFoundException("User not found!"));
-            return new JwtResponse(jwtUtil.generateToken(user));
+            return new JwtResponse(jwtUtil.generateToken(user),user.getRole());
         }throw  new RuntimeException("Verification code expired!");
     }
 }
