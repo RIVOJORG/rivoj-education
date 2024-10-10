@@ -167,6 +167,7 @@ public class UserService {
                 teacherResponse.setSubject(subjectResponse);
                 teacherResponse.setBirthday(teacherInfo.getBirthday());
                 teacherResponse.setAbout(teacherInfo.getAbout());
+                teacherResponse.setStatus(teacherEntity.getUserStatus());
                 teacherResponseList.add(teacherResponse);
             });
             responseList = teacherResponseList;
@@ -186,6 +187,7 @@ public class UserService {
                 studentResponse.setTotalCoins(studentInfo.getCoin());
                 studentResponse.setTotalScore(studentInfo.getTotalScore());
                 studentResponse.setSubjectName(studentInfo.getSubject().getTitle());
+                studentResponse.setStatus(studentInfo.getStudent().getUserStatus());
                 studentResponseList.add(studentResponse);
             });
             responseList = studentResponseList;
