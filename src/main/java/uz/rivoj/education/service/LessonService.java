@@ -68,7 +68,6 @@ public class LessonService {
         lessonRepository.save(savedLesson);
         LessonResponse response = modelMapper.map(savedLesson, LessonResponse.class);
         response.setModuleId(createRequest.getModuleId());
-        response.setComments(getCommentsByLessonId(savedLesson.getId()));
         return response;
     }
 
@@ -91,7 +90,6 @@ public class LessonService {
         return LessonResponse.builder()
                 .cover(lessonEntity.getCover())
                 .description(lessonEntity.getDescription())
-                .comments(getCommentsByLessonId(lessonId))
                 .id(lessonEntity.getId())
                 .moduleId(lessonEntity.getModule().getId())
                 .number(lessonEntity.getNumber())
@@ -172,10 +170,6 @@ public class LessonService {
         for (LessonEntity lessonEntity : lessonEntityList.get()) {
             LessonResponse response = modelMapper.map(lessonEntity, LessonResponse.class);
             response.setModuleId(moduleId);
-            Optional<List<CommentEntity>> commentEntities = commentRepository.findByLessonId(lessonEntity.getId());
-            if(commentEntities.isPresent()){
-                response.setComments(Collections.singletonList(modelMapper.map(commentEntities, CommentResponse.class)));
-            }
             list.add(response);
         }
         return list;

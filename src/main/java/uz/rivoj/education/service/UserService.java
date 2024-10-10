@@ -154,7 +154,7 @@ public class UserService {
     }
 
     public Map<String, Object> getAllByRole(UserRole role, int pageNumber, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Pageable pageable = PageRequest.of(pageNumber-1, pageSize);
         Page<UserEntity> userPage = userRepository.findAllByRole(role, pageable);
         List<?> responseList;
         if (role.equals(UserRole.TEACHER)) {
@@ -197,7 +197,7 @@ public class UserService {
             responseList = modelMapper.map(adminEntityList, typeToken.getType());
         }
         Map<String, Object> responseMap = new LinkedHashMap<>();
-        responseMap.put("pageNumber", userPage.getNumber());
+        responseMap.put("pageNumber", userPage.getNumber()+1);
         responseMap.put("totalPages", userPage.getTotalPages());
         responseMap.put("totalCount", userPage.getTotalElements());
         responseMap.put("pageSize", userPage.getSize());

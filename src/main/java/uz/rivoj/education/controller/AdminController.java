@@ -94,8 +94,7 @@ public class AdminController {
             @RequestParam UserRole role,
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "20") int pageSize) {
-        Map<String, Object> result = userService.getAllByRole(role, pageNumber, pageSize);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(userService.getAllByRole(role, pageNumber, pageSize));
     }
 
     @GetMapping("get-lesson/{id}")
@@ -144,7 +143,7 @@ public class AdminController {
 
 
     @GetMapping("/getAllModulesOfSubject{subjectId}")
-    public ResponseEntity<List<ModuleDTO>> getAllModulesOfSubject(@PathVariable UUID subjectId){
+    public ResponseEntity<List<ModuleResponse>> getAllModulesOfSubject(@PathVariable UUID subjectId){
         return ResponseEntity.status(200).body(moduleService.getAllModulesOfSubject(subjectId));
     }
 

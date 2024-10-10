@@ -140,10 +140,7 @@ public class TeacherController {
     public ResponseEntity<ModuleResponse> createModule(@RequestBody Integer moduleNumber, Principal principal){
         return ResponseEntity.status(HttpStatus.CREATED).body(moduleService.create(moduleNumber, UUID.fromString(principal.getName())));
     }
-    @GetMapping("/getAllModules")
-    public ResponseEntity<List<ModuleDTO>> getAllModules(Principal principal){
-        return ResponseEntity.status(200).body(moduleService.getAllModules(UUID.fromString(principal.getName())));
-    }
+
     @GetMapping("/getAllLessonsByModule/{moduleId}")
     public ResponseEntity<List<LessonResponse>> getAllLessonsByModule(@PathVariable UUID moduleId){
         return ResponseEntity.status(200).body(moduleService.getAllLessonsByModule(moduleId));

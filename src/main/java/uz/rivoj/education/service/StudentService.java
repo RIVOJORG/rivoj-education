@@ -3,6 +3,7 @@ package uz.rivoj.education.service;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,8 @@ public class StudentService {
     private final VerificationRepository verificationRepository;
     private final UserService userService;
     private final JwtUtil jwtUtil;
+    private final CommentRepository commentRepository;
+    private final ModuleService moduleService;
 
     public List<StudentResponse> getAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -380,6 +383,24 @@ public class StudentService {
             }
         });
         return studentStatisticsDTOList;
+
+    }
+
+    public Map<String, Object> getCommentsOfLesson(UUID lessonId, int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber -1, pageSize);
+        Page<CommentEntity> commentEntityPage = commentRepository.findByLessonId(lessonId,pageable);
+        List<CommentResponse> commentResponseList = commentEntityPage.get().map(commentEntity -> moduleService.convertToCommentResponse((CommentEntity) commentEntity)).collect(Collectors.toList());
+
+        Map<String, Object> responseMap = new LinkedHashMap<>();
+        responseMap.put("pageNumber", commentEntityPage.getNumber() + 1);
+        responseMap.put("totalPages", commentEntityPage.getTotalPages());
+        responseMap.put("totalCount", commentEntityPage.getTotalElements());
+        responseMap.put("pageSize", commentEntityPage.getSize());
+        responseMap.put("hasPreviousPage", commentEntityPage.hasPrevious());
+        responseMap.put("hasNextPage", commentEntityPage.hasNext());
+        responseMap.put("data", commentResponseList);
+
+        return responseMap;
 
     }
 }

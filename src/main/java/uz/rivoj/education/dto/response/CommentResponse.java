@@ -19,4 +19,6 @@ public class CommentResponse {
     private String surname;
     private String avatar;
     private String description;
+
+
 }

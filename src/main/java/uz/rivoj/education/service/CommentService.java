@@ -2,25 +2,19 @@ package uz.rivoj.education.service;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.CommentCR;
-import uz.rivoj.education.dto.response.CommentResponse;
-import uz.rivoj.education.dto.response.LessonResponse;
-import uz.rivoj.education.entity.CommentEntity;
-import uz.rivoj.education.entity.LessonEntity;
-import uz.rivoj.education.entity.StudentInfo;
-import uz.rivoj.education.entity.UserEntity;
+import uz.rivoj.education.dto.response.*;
+import uz.rivoj.education.entity.*;
 import uz.rivoj.education.exception.DataNotFoundException;
-import uz.rivoj.education.repository.CommentRepository;
-import uz.rivoj.education.repository.LessonRepository;
-import uz.rivoj.education.repository.StudentInfoRepository;
-import uz.rivoj.education.repository.UserRepository;
+import uz.rivoj.education.repository.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +25,7 @@ public class CommentService {
     private final UserRepository userRepository;
     private final StudentInfoRepository studentInfoRepository;
     private final ModelMapper modelMapper;
+    private final TeacherInfoRepository teacherInfoRepository;
 
     public CommentResponse create(CommentCR createRequest, UUID ownerId) {
         LessonEntity lessonEntity = lessonRepository.findById(createRequest.getLessonId())
@@ -86,14 +81,6 @@ public class CommentService {
     }
 
 
-    public List<CommentResponse> getAll() {
-        List<CommentResponse> list = new ArrayList<>();
-        for (CommentEntity commentEntity : commentRepository.findAll()) {
-            list.add(modelMapper.map(commentEntity, CommentResponse.class));
-        }
-        return list;
-    }
-
     public LessonResponse getLessonWithComments(UUID lessonId) {
         LessonEntity lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new DataNotFoundException("Lesson not found"));
@@ -125,8 +112,8 @@ public class CommentService {
                         .cover(lesson.getCover())
                         .moduleId(lesson.getModule().getId())
                         .description(lesson.getDescription())
-                        .comments(commentResponses)
                         .build();
     }
+
 
 }

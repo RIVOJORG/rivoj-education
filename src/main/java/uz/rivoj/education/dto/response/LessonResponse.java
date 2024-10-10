@@ -23,7 +23,6 @@ public class LessonResponse {
     private UUID moduleId;
     private String description;
     private List<String> additionalLinks;
-    private List<CommentResponse> comments;
     private TeacherInfoResponse teacherInfo;
 
 }

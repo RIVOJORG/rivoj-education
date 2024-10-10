@@ -86,7 +86,6 @@ public class ModuleService {
                     if (currentLesson < lessonResponse.getNumber()) {
                         lessonResponse.setSource(null);
                     }
-                    lessonResponse.setComments(commentService.getLessonWithComments(lessonResponse.getId()).getComments());
                     responseList.add(lessonResponse);
                 }
             }
@@ -104,7 +103,7 @@ public class ModuleService {
                 .collect(Collectors.toList());
     }
 
-    private CommentResponse convertToCommentResponse(CommentEntity comment) {
+    public CommentResponse convertToCommentResponse(CommentEntity comment) {
         return CommentResponse.builder()
                 .commentId(comment.getId())
                 .ownerId(comment.getOwner().getId())
@@ -136,18 +135,11 @@ public class ModuleService {
             lessonResponse.setTeacherInfo(teacherInfoResponse);
             lessonResponse.setModuleId(lessonEntity.getModule().getId());
             lessonResponse.setAdditionalLinks(lessonEntity.getAdditionalLinks());
-            lessonResponse.setComments(getCommentsByLessonId(lessonEntity.getId()));
             lessonResponseList.add(lessonResponse);
         });
         return lessonResponseList;
     }
-    public List<ModuleDTO> getAllModules(UUID teacherId){
-        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(teacherId)
-                .orElseThrow(() -> new DataNotFoundException("Teacher not found!"));
-        List<ModuleEntity> modulesBySubject = moduleRepository.findAllBySubject_IdOrderByNumberAsc(teacherInfo.getSubject().getId())
-                .orElseThrow(() -> new DataNotFoundException("Module not found with this subject => " + teacherInfo.getSubject().getTitle()));
-        return getModuleDTOs(modulesBySubject);
-    }
+
 
     private List<ModuleResponse> getModuleResponses(List<ModuleEntity> modulesBySubject) {
         List<ModuleResponse> modules = new ArrayList<>();
@@ -159,23 +151,13 @@ public class ModuleService {
             modules.add(moduleResponse);
         });
         return modules;
-    } private List<ModuleDTO> getModuleDTOs(List<ModuleEntity> modulesBySubject) {
-        List<ModuleDTO> modules = new ArrayList<>();
-        modulesBySubject.forEach(module -> {
-            ModuleDTO moduleResponse = new ModuleDTO();
-            moduleResponse.setModule_id(module.getId());
-            moduleResponse.setModuleNumber(module.getNumber());
-            moduleResponse.setLesson(getAllLessonsByModule(module.getId()));
-            modules.add(moduleResponse);
-        });
-        return modules;
     }
 
-    public List<ModuleDTO> getAllModulesOfSubject(UUID subjectId) {
+    public List<ModuleResponse> getAllModulesOfSubject(UUID subjectId) {
         SubjectEntity subjectEntity = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> new DataNotFoundException("Subject not found with this id => " + subjectId));
         List<ModuleEntity> modulesBySubject = moduleRepository.findAllBySubject_IdOrderByNumberAsc(subjectEntity.getId())
                 .orElseThrow(() -> new DataNotFoundException("Module not found with this subject => " + subjectEntity.getTitle()));
-        return getModuleDTOs(modulesBySubject);
+        return getModuleResponses(modulesBySubject);
     }
 }
