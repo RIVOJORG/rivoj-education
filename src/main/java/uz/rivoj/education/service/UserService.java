@@ -153,17 +153,21 @@ public class UserService {
 
     }
 
-    public Map<String, Object> getAllByRole(UserRole role, int pageNumber, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber-1, pageSize);
-        Page<UserEntity> userPage = userRepository.findAllByRole(role, pageable);
+    public Map<String, Object> getAllByRole(UserRole role, String searchTerm, int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
+
+        // Qidiruv natijalarini olish
+        Page<UserEntity> userPage = userRepository.findAllByRoleAndSearchTerm(role, searchTerm, pageable);
+
         List<?> responseList;
+        // Foydalanuvchilarni turiga qarab javobni tayyorlash
         if (role.equals(UserRole.TEACHER)) {
             List<TeacherResponse> teacherResponseList = new ArrayList<>();
             userPage.getContent().forEach(teacherEntity -> {
                 TeacherResponse teacherResponse = modelMapper.map(teacherEntity, TeacherResponse.class);
                 TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(teacherEntity.getId())
                         .orElseThrow(() -> new DataNotFoundException("Teacher not found " + teacherEntity.getId()));
-                SubjectResponse subjectResponse = new SubjectResponse(teacherInfo.getSubject().getTitle(),teacherInfo.getSubject().getId());
+                SubjectResponse subjectResponse = new SubjectResponse(teacherInfo.getSubject().getTitle(), teacherInfo.getSubject().getId());
                 teacherResponse.setSubject(subjectResponse);
                 teacherResponse.setBirthday(teacherInfo.getBirthday());
                 teacherResponse.setAbout(teacherInfo.getAbout());
@@ -196,8 +200,9 @@ public class UserService {
             TypeToken<List<AdminResponse>> typeToken = new TypeToken<>() {};
             responseList = modelMapper.map(adminEntityList, typeToken.getType());
         }
+
         Map<String, Object> responseMap = new LinkedHashMap<>();
-        responseMap.put("pageNumber", userPage.getNumber()+1);
+        responseMap.put("pageNumber", userPage.getNumber() + 1);
         responseMap.put("totalPages", userPage.getTotalPages());
         responseMap.put("totalCount", userPage.getTotalElements());
         responseMap.put("pageSize", userPage.getSize());
@@ -207,4 +212,5 @@ public class UserService {
 
         return responseMap;
     }
+
 }

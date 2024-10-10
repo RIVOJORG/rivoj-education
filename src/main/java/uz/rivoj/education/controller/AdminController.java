@@ -92,10 +92,12 @@ public class AdminController {
     @GetMapping("/get-all-users-byRole")
     public ResponseEntity<Map<String, Object>> getAllByRole(
             @RequestParam UserRole role,
+            @RequestParam(required = false) String searchTerm,
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "20") int pageSize) {
-        return ResponseEntity.ok(userService.getAllByRole(role, pageNumber, pageSize));
+        return ResponseEntity.ok(userService.getAllByRole(role, searchTerm, pageNumber, pageSize));
     }
+
 
     @GetMapping("get-lesson/{id}")
     public LessonResponse getLessonById(@PathVariable UUID id) {
