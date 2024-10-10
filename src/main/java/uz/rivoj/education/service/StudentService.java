@@ -195,7 +195,8 @@ public class StudentService {
                 studentInfo.getLesson().getNumber(),
                 studentInfo.getCurrentModule().getNumber(),
                 studentInfo.getCoin(),
-                studentInfo.getTotalScore()
+                studentInfo.getTotalScore(),
+                studentInfo.getStudent().getUserStatus()
 
         );
     }
