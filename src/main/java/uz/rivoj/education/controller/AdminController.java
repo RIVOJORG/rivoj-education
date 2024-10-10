@@ -13,6 +13,7 @@ import uz.rivoj.education.service.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -63,14 +64,14 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userPhoneNumber, userRole));
     }
 
-    @PutMapping("/change-phoneNumber/{oldPhoneNumber}/{newPhoneNumber}")
+    @PutMapping("/change-phoneNumber/{userId}/{newPhoneNumber}")
     public ResponseEntity<String> changePhoneNumber(
-            @PathVariable String oldPhoneNumber,
+            @PathVariable UUID userId,
             @PathVariable String newPhoneNumber) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.changePhoneNumber(oldPhoneNumber, newPhoneNumber));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.changePhoneNumber(userId, newPhoneNumber));
     }
     @PutMapping("/change-password/{userId}/{newPassword}")
-    public ResponseEntity<String> changePhoneNumber(
+    public ResponseEntity<String> changePassword(
             @PathVariable UUID userId,
             @PathVariable String newPassword) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.changePassword(userId,newPassword));
@@ -89,8 +90,12 @@ public class AdminController {
         return ResponseEntity.status(200).body(studentService.getAll(page, size));
     }
     @GetMapping("/get-all-users-byRole")
-    public ResponseEntity<List<?>> getAllByRole(@RequestParam UserRole role){
-        return ResponseEntity.status(200).body(userService.getAllByRole(role));
+    public ResponseEntity<Map<String, Object>> getAllByRole(
+            @RequestParam UserRole role,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "20") int pageSize) {
+        Map<String, Object> result = userService.getAllByRole(role, pageNumber, pageSize);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("get-lesson/{id}")
@@ -99,77 +104,22 @@ public class AdminController {
     }
 
 
-    @GetMapping("/get-all-attendance{userId}")
-    public ResponseEntity<List<AttendanceResponse>> getAllUserAttendance(@PathVariable UUID userId){
-        return ResponseEntity.ok(attendanceService.getAllUserAttendance(userId));
-    }
-
-    @GetMapping("/get-attendance/{id}")
-    public ResponseEntity<AttendanceResponse> getAttendanceById(@PathVariable UUID id) {
-        return ResponseEntity.ok(attendanceService.findByAttendanceId(id));
-    }
-
-    @GetMapping("/get-attendance-by-status")
-    public List<AttendanceResponse> getAllAttendanceByStatus(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam AttendanceStatus status){
-        return attendanceService.getAllAttendanceByStatus(page, size, status);
-    }
-
-    @GetMapping("get-comment/{id}")
-    public CommentResponse getCommentById(@PathVariable UUID id) {
-        return commentService.findByCommentId(id);
-    }
-
-    @GetMapping("get-module/{id}")
-    public ModuleResponse getModuleById(@PathVariable UUID id) {
-        return moduleService.findByModuleId(id);
-    }
-
-    @GetMapping("/get-all-notification")
-    public List<NotificationResponse> getAllNotification(){
-        return notificationService.getAll();
-    }
-
-    @GetMapping("get-notification{id}")
-    public NotificationResponse getNotificationById(@PathVariable UUID id){
-        return notificationService.getById(id);
-    }
-
     @GetMapping("/get-all-subjects")
     public List<SubjectResponse> getAllSubject(){
         return subjectService.getAll();
     }
 
-    @GetMapping("get-subject/{id}")
-    public String getSubjectById(@PathVariable UUID id) {
-        return subjectService.findBySubjectId(id);
+    @PostMapping("/block-unblock-user{userId}")
+    public ResponseEntity<String> blockUnblockUser(@PathVariable UUID userId, @RequestParam UserStatus status){
+        return ResponseEntity.status(200).body(userService.blockUnblockUser(userId, status));
     }
 
-    @GetMapping("/block-unblock-user{phoneNumber}")
-    public ResponseEntity<String> blockUnblockUser(@PathVariable String phoneNumber, @RequestParam UserStatus status){
-        return ResponseEntity.status(200).body(userService.blockUnblockUser(phoneNumber, status));
-    }
-
-    @GetMapping("/get-all-users")
-    public List<UserResponse> getAll(){
-        return userService.getAll();
-    }
-
-    @GetMapping("get-user/{id}")
-    public UserResponse getUserById(@PathVariable UUID id) {
-        return userService.getUser(id);
-    }
 
     @DeleteMapping("/delete-subject{subjectId}")
     public ResponseEntity<String> deleteSubject(@PathVariable UUID subjectId){
         return ResponseEntity.status(200).body(subjectService.delete(subjectId));
     }
-    @DeleteMapping("delete-notification{id}")
-    public ResponseEntity<String> delete(@PathVariable UUID id){
-        return ResponseEntity.status(200).body(notificationService.delete(id));
-    }
+
     @DeleteMapping("/delete-module{moduleId}")
     public ResponseEntity<String> deleteModule(@PathVariable UUID moduleId){
         return ResponseEntity.status(200).body(moduleService.delete(moduleId));

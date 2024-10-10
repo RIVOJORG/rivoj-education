@@ -3,6 +3,9 @@ package uz.rivoj.education.service;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -85,16 +88,12 @@ public class UserService {
         return userResponse;
     }
 
-    public UserEntity getUserByPhoneNumber(String phoneNumber){
-        Optional<UserEntity> userOptional = userRepository.findByPhoneNumber(phoneNumber);
-        if (userOptional.isEmpty()) {
-            throw new DataNotFoundException("User not found with this phone number: " + phoneNumber);
-        }
-        return userOptional.get();
-    }
 
-    public String changePhoneNumber(String oldPhoneNumber, String newPhoneNumber) {
-        UserEntity user = getUserByPhoneNumber(oldPhoneNumber);
+    public String changePhoneNumber(UUID userId, String newPhoneNumber) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("user not found"));
+        if (userRepository.existsByPhoneNumber(newPhoneNumber)){
+            throw new DataAlreadyExistsException("phone number already exists");}
         user.setPhoneNumber(newPhoneNumber);
         userRepository.save(user);
         return "Phone number successfully updated for user: " + user.getName();
@@ -106,8 +105,9 @@ public class UserService {
         return "Password number successfully updated for user: " + user.get().getName();
     }
 
-    public String blockUnblockUser(String phoneNumber, UserStatus status) {
-        UserEntity user = getUserByPhoneNumber(phoneNumber);
+    public String blockUnblockUser(UUID userId, UserStatus status) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("user not found"));
         user.setUserStatus(status);
         userRepository.save(user);
         return "Successfully " + status.toString() + "ED";
@@ -153,11 +153,13 @@ public class UserService {
 
     }
 
-    public List<?> getAllByRole(UserRole role) {
+    public Map<String, Object> getAllByRole(UserRole role, int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<UserEntity> userPage = userRepository.findAllByRole(role, pageable);
+        List<?> responseList;
         if (role.equals(UserRole.TEACHER)) {
             List<TeacherResponse> teacherResponseList = new ArrayList<>();
-            List<UserEntity> teacherEntitylist = userRepository.findAllByRole(role);
-            teacherEntitylist.forEach(teacherEntity -> {
+            userPage.getContent().forEach(teacherEntity -> {
                 TeacherResponse teacherResponse = modelMapper.map(teacherEntity, TeacherResponse.class);
                 TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(teacherEntity.getId())
                         .orElseThrow(() -> new DataNotFoundException("Teacher not found " + teacherEntity.getId()));
@@ -167,12 +169,10 @@ public class UserService {
                 teacherResponse.setAbout(teacherInfo.getAbout());
                 teacherResponseList.add(teacherResponse);
             });
-            return teacherResponseList;
-        }
-        else if (role.equals(UserRole.STUDENT)) {
+            responseList = teacherResponseList;
+        } else if (role.equals(UserRole.STUDENT)) {
             List<StudentResponse> studentResponseList = new ArrayList<>();
-            List<UserEntity> studentEntityList = userRepository.findAllByRole(role);
-            studentEntityList.forEach(student -> {
+            userPage.getContent().forEach(student -> {
                 StudentInfo studentInfo = studentInfoRepository.findByStudentId(student.getId())
                         .orElseThrow(() -> new DataNotFoundException("User not found"));
                 StudentResponse studentResponse = modelMapper.map(student, StudentResponse.class);
@@ -188,12 +188,21 @@ public class UserService {
                 studentResponse.setSubjectName(studentInfo.getSubject().getTitle());
                 studentResponseList.add(studentResponse);
             });
-            return studentResponseList;
-        }else {
-            List<UserEntity> adminEntityList = userRepository.findAllByRole(role);
-            TypeToken<List<AdminResponse>> typeToken = new TypeToken<List<AdminResponse>>() {};
-            return  modelMapper.map(adminEntityList, typeToken.getType());
+            responseList = studentResponseList;
+        } else {
+            List<UserEntity> adminEntityList = userPage.getContent();
+            TypeToken<List<AdminResponse>> typeToken = new TypeToken<>() {};
+            responseList = modelMapper.map(adminEntityList, typeToken.getType());
         }
+        Map<String, Object> responseMap = new LinkedHashMap<>();
+        responseMap.put("pageNumber", userPage.getNumber());
+        responseMap.put("totalPages", userPage.getTotalPages());
+        responseMap.put("totalCount", userPage.getTotalElements());
+        responseMap.put("pageSize", userPage.getSize());
+        responseMap.put("hasPreviousPage", userPage.hasPrevious());
+        responseMap.put("hasNextPage", userPage.hasNext());
+        responseMap.put("data", responseList);
 
+        return responseMap;
     }
 }
