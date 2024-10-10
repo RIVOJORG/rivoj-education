@@ -2,6 +2,7 @@ package uz.rivoj.education.dto.response;
 
 
 import lombok.*;
+import uz.rivoj.education.entity.enums.UserStatus;
 
 import java.time.LocalDate;
 
@@ -16,4 +17,5 @@ public class AdminResponse {
     private String surname;
     private String avatar;
     private String phoneNumber;
+    private UserStatus userStatus;
 }

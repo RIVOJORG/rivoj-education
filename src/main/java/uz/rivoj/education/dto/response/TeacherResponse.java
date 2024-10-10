@@ -25,6 +25,7 @@ public class TeacherResponse { //
     private SubjectResponse subject;
     private String about;
     private LocalDate birthday;
+    private UserStatus status;
 
 
 }
