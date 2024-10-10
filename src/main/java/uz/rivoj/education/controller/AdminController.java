@@ -109,7 +109,7 @@ public class AdminController {
         return ResponseEntity.ok(attendanceService.findByAttendanceId(id));
     }
 
-    @GetMapping("/get-attendance-by-status") // for mentor and admin
+    @GetMapping("/get-attendance-by-status")
     public List<AttendanceResponse> getAllAttendanceByStatus(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -192,10 +192,6 @@ public class AdminController {
         return ResponseEntity.status(200).body(lessonService.delete(lessonId));
     }
 
-//    @GetMapping("/change-passwords")
-//    public ResponseEntity<String> changePassword() {
-//        return ResponseEntity.ok(studentService.changePassword());
-//    }
 
     @GetMapping("/getAllModulesOfSubject{subjectId}")
     public ResponseEntity<List<ModuleDTO>> getAllModulesOfSubject(@PathVariable UUID subjectId){
@@ -207,6 +203,13 @@ public class AdminController {
             @RequestParam UUID moduleId
     ) {
         return ResponseEntity.ok(studentService.getStudentStatisticsByModule(moduleId));
+    }
+
+    @GetMapping("/getAllStatisticsOnCurrentModule")
+    public ResponseEntity<List<StudentStatisticsDTO>> getAllStudentStatisticsOnCurrentModule(
+            @RequestParam UUID subjectId
+    ) {
+        return ResponseEntity.ok(studentService.getAllStudentStatisticsOnCurrentModule2(subjectId));
     }
 
 

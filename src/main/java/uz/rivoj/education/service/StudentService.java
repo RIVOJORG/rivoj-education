@@ -243,11 +243,12 @@ public class StudentService {
             List<Integer> scoreList = new ArrayList<>();
             Optional<List<LessonEntity>> lessonEntities = lessonRepository.findAllByModule_IdOrderByNumberAsc(studentInfo.getCurrentModule().getId());
             if (lessonEntities.isPresent()) {
-                lessonEntities.get().forEach(lesson -> {
+                List<LessonEntity> lessonEntityList = lessonEntities.get();
+                lessonEntityList.forEach(lesson -> {
                     Optional<AttendanceEntity> attendance = attendanceRepository.findByStudent_IdAndLesson_IdAndStatusIs(studentInfo.getId(), lesson.getId(),CHECKED);
                     attendance.ifPresent(attendanceEntity -> scoreList.add(attendanceEntity.getScore()));
                 });
-                studentStatisticsDTO.setLessonCount(lessonEntities.get().size());
+                studentStatisticsDTO.setLessonCount(lessonEntityList.size()+1);
                 studentStatisticsDTO.setScoreList(scoreList);
                 studentStatisticsDTOs.add(studentStatisticsDTO);
             }
@@ -267,14 +268,17 @@ public class StudentService {
             studentStatisticsDTO.setStudentSurname(studentInfo.getStudent().getSurname());
             studentStatisticsDTO.setAvatar(studentInfo.getAvatar());
             List<Integer> scoreList = new ArrayList<>();
-            List<LessonEntity> lessonEntities = lessonRepository.findAllByModule_IdOrderByNumberAsc(studentInfo.getCurrentModule().getId())
-                    .orElseThrow(() -> new DataNotFoundException("Lessons not found!"));
-            lessonEntities.forEach(lesson -> {
-                Optional<AttendanceEntity> attendance = attendanceRepository.findByStudent_IdAndLesson_IdAndStatusIs(studentInfo.getId(), lesson.getId(),CHECKED);
-                attendance.ifPresent(attendanceEntity -> scoreList.add(attendanceEntity.getScore()));
-            });
-            studentStatisticsDTO.setScoreList(scoreList);
-            studentStatisticsDTOList.add(studentStatisticsDTO);
+            Optional<List<LessonEntity>> lessonEntities = lessonRepository.findAllByModule_IdOrderByNumberAsc(studentInfo.getCurrentModule().getId());
+            if (lessonEntities.isPresent()) {
+                List<LessonEntity> lessonEntityList = lessonEntities.get();
+                lessonEntityList.forEach(lesson -> {
+                    Optional<AttendanceEntity> attendance = attendanceRepository.findByStudent_IdAndLesson_IdAndStatusIs(studentInfo.getId(), lesson.getId(),CHECKED);
+                    attendance.ifPresent(attendanceEntity -> scoreList.add(attendanceEntity.getScore()));
+                });
+                studentStatisticsDTO.setScoreList(scoreList);
+                studentStatisticsDTOList.add(studentStatisticsDTO);
+            }
+
         });
         return studentStatisticsDTOList;
     }
@@ -350,5 +354,31 @@ public class StudentService {
                     .orElseThrow(() -> new DataNotFoundException("User not found!"));
             return new JwtResponse(jwtUtil.generateToken(user),user.getRole());
         }throw  new RuntimeException("Verification code expired!");
+    }
+
+    public List<StudentStatisticsDTO> getAllStudentStatisticsOnCurrentModule2(UUID subjectId) {
+        List<StudentInfo> studentInfoList = studentInfoRepository.findBySubjectId(subjectId)
+                .orElseThrow(() -> new DataNotFoundException("Students not found!"));
+        List<StudentStatisticsDTO> studentStatisticsDTOList = new ArrayList<>();
+        studentInfoList.forEach(studentInfo -> {
+            StudentStatisticsDTO studentStatisticsDTO = new StudentStatisticsDTO();
+            studentStatisticsDTO.setStudentName(studentInfo.getStudent().getName());
+            studentStatisticsDTO.setStudentSurname(studentInfo.getStudent().getSurname());
+            studentStatisticsDTO.setAvatar(studentInfo.getAvatar());
+            List<Integer> scoreList = new ArrayList<>();
+            Optional<List<LessonEntity>> lessonEntities = lessonRepository.findAllByModule_IdOrderByNumberAsc(studentInfo.getCurrentModule().getId());
+            if (lessonEntities.isPresent()) {
+                List<LessonEntity> lessons = lessonEntities.get();
+                lessons.forEach(lesson -> {
+                    Optional<AttendanceEntity> attendance = attendanceRepository.findByStudent_IdAndLesson_IdAndStatusIs(studentInfo.getId(), lesson.getId(),CHECKED);
+                    attendance.ifPresent(attendanceEntity -> scoreList.add(attendanceEntity.getScore()));
+                });
+                studentStatisticsDTO.setLessonCount(lessons.size()+1);
+                studentStatisticsDTO.setScoreList(scoreList);
+                studentStatisticsDTOList.add(studentStatisticsDTO);
+            }
+        });
+        return studentStatisticsDTOList;
+
     }
 }
