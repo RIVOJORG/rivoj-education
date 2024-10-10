@@ -88,14 +88,6 @@ public class AttendanceService {
         }
     }
 
-    public AttendanceResponse getAttendancesByLesson(UUID lessonId) {
-        LessonEntity lessonEntity = lessonRepository.findById(lessonId).orElseThrow(() -> new DataNotFoundException("Lesson not found! " + lessonId));
-        Optional<AttendanceEntity> attendanceEntity = attendanceRepository.findByLesson_Id(lessonEntity.getId());
-        if(attendanceEntity.isPresent()){
-            return modelMapper.map(attendanceEntity,AttendanceResponse.class);
-        }
-        throw new DataNotFoundException("Attendance not found!");
-    }
 
 
     public List<AttendanceResponse> getAllAttendanceByStatus(int page, int size, AttendanceStatus status) {

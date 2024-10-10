@@ -90,7 +90,6 @@ public class TeacherController {
         return ResponseEntity.ok(attendanceService.findByAttendanceId(id));
     }
 
-
     @GetMapping("get-chat/{id}")
     public ChatEntity getChatById(@PathVariable UUID id) {
         return chatService.getChat(id);
@@ -118,10 +117,9 @@ public class TeacherController {
 
     @GetMapping("/getStatisticsByModule")
     public ResponseEntity<List<StudentStatisticsDTO>> getStudentStatisticsByModule(
-            Principal principal,
             @RequestParam UUID moduleId
     ) {
-        return ResponseEntity.ok(studentService.getStudentStatisticsByModule(UUID.fromString(principal.getName()), moduleId));
+        return ResponseEntity.ok(studentService.getStudentStatisticsByModule(moduleId));
     }
 
     @GetMapping("/getAllStatisticsOnCurrentModule")

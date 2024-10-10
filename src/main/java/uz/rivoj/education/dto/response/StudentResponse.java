@@ -19,6 +19,7 @@ public class StudentResponse {
     private String phoneNumber;
     private LocalDate birth;
     private UUID subjectId;
+    private String subjectName;
     private UUID currentLessonId;
     private UUID currentModuleId;
     private Integer currentLessonNumber;

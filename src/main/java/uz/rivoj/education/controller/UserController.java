@@ -87,10 +87,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.create(createRequest, UUID.fromString(principal.getName())));
     }
 
-    @GetMapping("/get-attendances-by-lesson{lessonId}")
-    public ResponseEntity<AttendanceResponse> getAttendancesByLesson(@PathVariable UUID lessonId){
-        return ResponseEntity.ok(attendanceService.getAttendancesByLesson(lessonId));
-    }
 
     @GetMapping("/get-user-details")
     public ResponseEntity<?> getUserDetails(Principal principal){

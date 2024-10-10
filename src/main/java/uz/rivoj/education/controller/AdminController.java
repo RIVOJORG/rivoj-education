@@ -202,5 +202,12 @@ public class AdminController {
         return ResponseEntity.status(200).body(moduleService.getAllModulesOfSubject(subjectId));
     }
 
+    @GetMapping("/getStatisticsByModule")
+    public ResponseEntity<List<StudentStatisticsDTO>> getStudentStatisticsByModule(
+            @RequestParam UUID moduleId
+    ) {
+        return ResponseEntity.ok(studentService.getStudentStatisticsByModule(moduleId));
+    }
+
 
 }

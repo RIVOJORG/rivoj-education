@@ -18,7 +18,7 @@ public interface AttendanceRepository extends JpaRepository<AttendanceEntity, UU
     Optional<AttendanceEntity> findByStudent_IdAndLesson_IdAndStatusIs(UUID student_id, UUID lesson_id,AttendanceStatus status);
     Optional<List<AttendanceEntity>> findByStudentId(UUID userId);
     Optional<Page<AttendanceEntity>> findByStatus(Pageable pageable, AttendanceStatus status);
-    Optional<AttendanceEntity> findByLesson_Id(UUID lesson_Id);
+    Optional<List<AttendanceEntity>> findAllByLesson_Id(UUID lesson_Id);
     Optional<AttendanceEntity> findByStudentIdAndLessonId(UUID student_id, UUID lesson_id);
 
     @Query("SELECT a FROM attendance a " +
