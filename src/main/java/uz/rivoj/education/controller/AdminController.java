@@ -54,9 +54,9 @@ public class AdminController {
     public ResponseEntity<NotificationResponse> createNotification(@RequestBody NotificationCR notificationCR){
         return ResponseEntity.status(HttpStatus.CREATED).body(notificationService.create(notificationCR));
     }
-    @PostMapping("/create-module")
-    public ResponseEntity<ModuleResponse> createModule(@RequestBody Integer moduleNumber, Principal principal){
-        return ResponseEntity.status(HttpStatus.CREATED).body(moduleService.create(moduleNumber, UUID.fromString(principal.getName())));
+    @PostMapping("/add-module")
+    public ResponseEntity<?> createModule(@RequestParam UUID subjectId){
+        return ResponseEntity.status(HttpStatus.CREATED).body(moduleService.addModule(subjectId));
     }
 
     @PutMapping("/update-role{userPhoneNumber}")
@@ -83,12 +83,6 @@ public class AdminController {
             @PathVariable UUID moduleId){
         return lessonService.getLessonsByModule(page, size, moduleId);
     }
-    @GetMapping("/get-all-student")
-    public ResponseEntity<List<StudentResponse>> getAllStudent(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size){
-        return ResponseEntity.status(200).body(studentService.getAll(page, size));
-    }
     @GetMapping("/get-all-users-byRole")
     public ResponseEntity<Map<String, Object>> getAllByRole(
             @RequestParam UserRole role,
@@ -96,12 +90,6 @@ public class AdminController {
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "20") int pageSize) {
         return ResponseEntity.ok(userService.getAllByRole(role, searchTerm, pageNumber, pageSize));
-    }
-
-
-    @GetMapping("get-lesson/{id}")
-    public LessonResponse getLessonById(@PathVariable UUID id) {
-        return lessonService.findByLessonId(id);
     }
 
 
@@ -114,7 +102,6 @@ public class AdminController {
     public ResponseEntity<String> blockUnblockUser(@PathVariable UUID userId, @RequestParam UserStatus status){
         return ResponseEntity.status(200).body(userService.blockUnblockUser(userId, status));
     }
-
 
     @DeleteMapping("/delete-subject{subjectId}")
     public ResponseEntity<String> deleteSubject(@PathVariable UUID subjectId){
@@ -134,7 +121,7 @@ public class AdminController {
         return ResponseEntity.ok(chatService.deleteChat(chatId));
     }
 
-    @DeleteMapping("/delete-comment{commentId}") // for admin
+    @DeleteMapping("/delete-comment{commentId}")
     public ResponseEntity<String> deleteComment(@PathVariable UUID commentId){
         return ResponseEntity.status(200).body(commentService.delete(commentId));
     }
@@ -142,7 +129,6 @@ public class AdminController {
     public ResponseEntity<String> deleteLesson(@PathVariable UUID lessonId){
         return ResponseEntity.status(200).body(lessonService.delete(lessonId));
     }
-
 
     @GetMapping("/getAllModulesOfSubject{subjectId}")
     public ResponseEntity<List<ModuleResponse>> getAllModulesOfSubject(@PathVariable UUID subjectId){

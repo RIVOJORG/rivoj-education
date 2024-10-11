@@ -71,13 +71,7 @@ public class StudentController {
         return ResponseEntity.ok(attendanceService.getAttendanceByLessonId(UUID.fromString(principal.getName()),lessonId));
     }
 
-    @GetMapping("/get-comments")
-    public  ResponseEntity<Map<String, Object>>  getCommentsOfLesson(
-            @RequestParam UUID lessonId,
-            @RequestParam(defaultValue = "0") int pageNumber,
-            @RequestParam(defaultValue = "20") int pageSize){
-        return ResponseEntity.ok(studentService.getCommentsOfLesson(lessonId,pageNumber,pageSize));
-    }
+
 
 
 //    @GetMapping("/getProgressByModule")

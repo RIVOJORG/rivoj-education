@@ -23,7 +23,6 @@ public class ModuleService {
     private final CommentRepository commentRepository;
     private final StudentInfoRepository studentRepository;
     private final LessonRepository lessonRepository;
-    private final CommentService commentService;
     private final TeacherInfoRepository teacherInfoRepository;
     private final UserRepository userRepository;
 
@@ -159,5 +158,20 @@ public class ModuleService {
         List<ModuleEntity> modulesBySubject = moduleRepository.findAllBySubject_IdOrderByNumberAsc(subjectEntity.getId())
                 .orElseThrow(() -> new DataNotFoundException("Module not found with this subject => " + subjectEntity.getTitle()));
         return getModuleResponses(modulesBySubject);
+    }
+
+    public Object addModule(UUID subjectId) {
+        SubjectEntity subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> new DataNotFoundException("Subject not found with this id => " + subjectId));
+        Optional<ModuleEntity> module = moduleRepository.findTopBySubjectIdOrderByNumberDesc(subjectId);
+        ModuleEntity moduleEntity;
+        if (module.isPresent()) {
+            moduleEntity = new ModuleEntity(subject,module.get().getNumber()+1);
+            moduleRepository.save(moduleEntity);
+        }else {
+             moduleEntity = new ModuleEntity(subject,1);
+        }
+        moduleRepository.save(moduleEntity);
+        return "Successfully created";
     }
 }

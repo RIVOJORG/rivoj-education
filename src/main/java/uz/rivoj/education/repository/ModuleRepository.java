@@ -1,6 +1,8 @@
 package uz.rivoj.education.repository;
 
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import uz.rivoj.education.entity.ModuleEntity;
 
@@ -14,4 +16,8 @@ public interface ModuleRepository extends JpaRepository<ModuleEntity, UUID> {
     Integer countBySubject_Id(UUID subjectId);
     Optional<ModuleEntity> findBySubject_IdAndNumber(UUID subjectId, Integer number);
     Optional<List<ModuleEntity>> findAllBySubject_IdOrderByNumberAsc(UUID subjectId);
+
+
+    Optional<ModuleEntity> findTopBySubjectIdOrderByNumberDesc(UUID subjectId);
 }
+

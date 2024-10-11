@@ -68,25 +68,20 @@ public class StudentService {
         return responses;
     }
     public String addStudent(StudentCR studentCR) {
-        // Check if a student already exists with the provided phone number
         if (userRepository.findByPhoneNumber(studentCR.getPhoneNumber()).isPresent()) {
             throw new DataAlreadyExistsException("Student already exists with this phone number: " + studentCR.getPhoneNumber());
         }
 
-        // Find the subject based on the subject title from the DTO
         SubjectEntity subject = subjectRepository.findByTitle(studentCR.getSubject())
                 .orElseThrow(() -> new DataNotFoundException("Subject not found with this title: " + studentCR.getSubject()));
 
-        // Find the module based on the provided starterModule number in the DTO
         ModuleEntity moduleEntity = moduleRepository.findBySubject_IdAndNumber(subject.getId(), studentCR.getStarterModule())
                 .orElseThrow(() -> new DataNotFoundException("Module not found with subject ID: " + subject.getId()
                         + " and module number: " + studentCR.getStarterModule()));
 
-        // Find the first lesson of the module
         LessonEntity lesson = lessonRepository.findFirstByModule_IdOrderByNumberAsc(moduleEntity.getId())
                 .orElseThrow(() -> new DataNotFoundException("Lesson not found with module ID: " + moduleEntity.getId()));
 
-        // Create a new UserEntity for the student
         UserEntity userEntity = UserEntity.builder()
                 .name(studentCR.getName())
                 .password(passwordEncoder.encode(studentCR.getPassword()))
@@ -96,18 +91,16 @@ public class StudentService {
                 .surname(studentCR.getSurname())
                 .build();
 
-        // Create a new StudentInfo entity and set the currentModule based on the starterModule
         StudentInfo student = StudentInfo.builder()
                 .birthday(studentCR.getBirthday())
                 .coin(0)
                 .student(userEntity)
                 .subject(subject)
                 .lesson(lesson)
-                .currentModule(moduleEntity)  // Set the module as the student's current module
+                .currentModule(moduleEntity)
                 .totalScore(0)
                 .build();
 
-        // Save the user and student information in the repository
         userRepository.save(userEntity);
         studentInfoRepository.save(student);
 
@@ -386,21 +379,5 @@ public class StudentService {
 
     }
 
-    public Map<String, Object> getCommentsOfLesson(UUID lessonId, int pageNumber, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber -1, pageSize);
-        Page<CommentEntity> commentEntityPage = commentRepository.findByLessonId(lessonId,pageable);
-        List<CommentResponse> commentResponseList = commentEntityPage.get().map(commentEntity -> moduleService.convertToCommentResponse((CommentEntity) commentEntity)).collect(Collectors.toList());
 
-        Map<String, Object> responseMap = new LinkedHashMap<>();
-        responseMap.put("pageNumber", commentEntityPage.getNumber() + 1);
-        responseMap.put("totalPages", commentEntityPage.getTotalPages());
-        responseMap.put("totalCount", commentEntityPage.getTotalElements());
-        responseMap.put("pageSize", commentEntityPage.getSize());
-        responseMap.put("hasPreviousPage", commentEntityPage.hasPrevious());
-        responseMap.put("hasNextPage", commentEntityPage.hasNext());
-        responseMap.put("data", commentResponseList);
-
-        return responseMap;
-
-    }
 }
