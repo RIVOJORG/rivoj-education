@@ -155,12 +155,13 @@ public class UserService {
 
     public Map<String, Object> getAllByRole(UserRole role, String searchTerm, int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
-
-        // Qidiruv natijalarini olish
-        Page<UserEntity> userPage = userRepository.findAllByRoleAndSearchTerm(role, searchTerm, pageable);
-
+        Page<UserEntity> userPage;
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            userPage = userRepository.findAllByRole(role, pageable);
+        } else {
+            userPage = userRepository.findAllByRoleAndSearchTerm(role, searchTerm, pageable);
+        }
         List<?> responseList;
-        // Foydalanuvchilarni turiga qarab javobni tayyorlash
         if (role.equals(UserRole.TEACHER)) {
             List<TeacherResponse> teacherResponseList = new ArrayList<>();
             userPage.getContent().forEach(teacherEntity -> {
@@ -203,7 +204,7 @@ public class UserService {
 
         Map<String, Object> responseMap = new LinkedHashMap<>();
         responseMap.put("pageNumber", userPage.getNumber() + 1);
-        responseMap.put("totalPages", userPage.getTotalPages());
+        responseMap.put("totalPages", userPage.getTotalPages() + 1);
         responseMap.put("totalCount", userPage.getTotalElements());
         responseMap.put("pageSize", userPage.getSize());
         responseMap.put("hasPreviousPage", userPage.hasPrevious());

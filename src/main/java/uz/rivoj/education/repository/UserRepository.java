@@ -28,12 +28,14 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     List<UserEntity> findAllByRole(UserRole role);
 
     @Query("SELECT u FROM users u WHERE u.role = :role AND " +
-            "(LOWER(u.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+            "(COALESCE(:searchTerm, '') = '' OR " +
+            "LOWER(u.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(u.surname) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "u.phoneNumber LIKE CONCAT('%', :searchTerm, '%'))")
     Page<UserEntity> findAllByRoleAndSearchTerm(@Param("role") UserRole role,
                                                 @Param("searchTerm") String searchTerm,
                                                 Pageable pageable);
+
 
 }
 
