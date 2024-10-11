@@ -204,7 +204,7 @@ public class UserService {
 
         Map<String, Object> responseMap = new LinkedHashMap<>();
         responseMap.put("pageNumber", userPage.getNumber() + 1);
-        responseMap.put("totalPages", userPage.getTotalPages() + 1);
+        responseMap.put("totalPages", userPage.getTotalPages());
         responseMap.put("totalCount", userPage.getTotalElements());
         responseMap.put("pageSize", userPage.getSize());
         responseMap.put("hasPreviousPage", userPage.hasPrevious());

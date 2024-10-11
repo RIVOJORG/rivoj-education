@@ -25,7 +25,6 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
 
     boolean existsByPhoneNumber(String phoneNumber);
 
-    List<UserEntity> findAllByRole(UserRole role);
 
     @Query("SELECT u FROM users u WHERE u.role = :role AND " +
             "(COALESCE(:searchTerm, '') = '' OR " +
