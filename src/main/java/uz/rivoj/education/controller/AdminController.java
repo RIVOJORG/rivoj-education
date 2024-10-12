@@ -78,10 +78,8 @@ public class AdminController {
     }
     @GetMapping("/get-lessons-by-module{moduleId}")
     public List<LessonResponse> getLessonsByModule(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
             @PathVariable UUID moduleId){
-        return lessonService.getLessonsByModule(page, size, moduleId);
+        return lessonService.getLessonsByModule(moduleId);
     }
     @GetMapping("/get-all-users-byRole")
     public ResponseEntity<Map<String, Object>> getAllByRole(

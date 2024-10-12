@@ -1,7 +1,9 @@
 package uz.rivoj.education.dto.response;
 
+import jakarta.persistence.*;
 import lombok.*;
 import uz.rivoj.education.entity.ModuleEntity;
+import uz.rivoj.education.entity.TeacherInfo;
 
 import java.time.LocalTime;
 
@@ -24,6 +26,7 @@ public class LessonResponse {
     private String description;
     private List<String> additionalLinks;
     private TeacherInfoResponse teacherInfo;
+
 
 }
 
