@@ -185,7 +185,6 @@ public class UserService {
                 studentResponse.setBirth(studentInfo.getBirthday());
                 studentResponse.setSubjectId(studentInfo.getSubject().getId());
                 studentResponse.setCurrentLessonId(studentInfo.getLesson().getId());
-                studentResponse.setId(studentInfo.getId());
                 studentResponse.setCurrentModuleId(studentInfo.getCurrentModule().getId());
                 studentResponse.setCurrentLessonNumber(studentInfo.getLesson().getNumber());
                 studentResponse.setCurrentModuleNumber(studentInfo.getCurrentModule().getNumber());
