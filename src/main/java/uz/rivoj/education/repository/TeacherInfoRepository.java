@@ -15,4 +15,6 @@ public interface TeacherInfoRepository extends JpaRepository<TeacherInfo, UUID> 
 
     Optional<List<TeacherInfo>> findBySubjectId(UUID subjectId);
     Optional<TeacherInfo> findByTeacher_Id(UUID teacherId);
+
+    Optional<List<TeacherInfo>> findBySubject_Id(UUID subjectId);
 }

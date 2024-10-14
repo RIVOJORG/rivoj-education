@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.List;
+
 
 @Entity(name = "student_info")
 @AllArgsConstructor
@@ -32,7 +32,7 @@ public class StudentInfo extends BaseEntity{
     @JoinColumn(name = "lesson_id", referencedColumnName = "id")
     private LessonEntity lesson;
 
-    private Boolean isLessonOver; // hozirgi lessonni tugatganmi yoki yo'qmiligini bildiradi
+    private Boolean isLessonOver;
 
     private Integer coin;
 

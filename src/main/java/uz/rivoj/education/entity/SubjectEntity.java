@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @Builder
 public class SubjectEntity extends BaseEntity {
-    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
     private List<ModuleEntity> modules;
     private String title;
 

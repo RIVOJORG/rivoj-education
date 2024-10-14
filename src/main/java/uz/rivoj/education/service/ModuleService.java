@@ -42,17 +42,25 @@ public class ModuleService {
                 .subject(module.getSubject().getTitle()).build();
     }
 
+    @Transactional
     public String delete(UUID moduleId){
-        ModuleEntity module = getModule(moduleId);
-        moduleRepository.deleteById(module.getId());
-        return "Successfully deleted: ";
-    }
-
-    public ModuleEntity getModule(UUID moduleId){
-        return moduleRepository.findById(moduleId)
+        ModuleEntity module = moduleRepository.findById(moduleId)
                 .orElseThrow(() -> new DataNotFoundException("Module not found with this id: " + moduleId));
+        Optional<List<StudentInfo>> studentInfoList = studentRepository.findByCurrentModule_Id(moduleId);
+        studentInfoList.ifPresent(studentInfos -> studentInfos.forEach(studentInfo -> {
+            studentInfo.setCurrentModule(null);
+            studentInfo.setLesson(null);
+            studentRepository.save(studentInfo);
+        }));
+        List<LessonEntity> lessons = module.getLessons();
+        for (LessonEntity lesson : lessons) {
+            lesson.setModule(null);  // O'zaro bog'lanishni to'xtatish
+            lesson.getAttendances().forEach(attendance -> attendance.setLesson(null));  // Bog'langan AttendanceEntitylarni yangilash
+            lesson.getComments().forEach(comment -> comment.setLesson(null));  // Bog'langan CommentEntitylarni yangilash
+        }
+        moduleRepository.deleteById(moduleId);
+        return "Successfully deleted!";
     }
-
 
     public ModuleResponse findByModuleId(UUID moduleId) {
         ModuleEntity moduleEntity = moduleRepository.findById(moduleId)
