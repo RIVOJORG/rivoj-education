@@ -1,5 +1,6 @@
 package uz.rivoj.education.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,7 @@ public class SubjectService {
     private final ModelMapper modelMapper;
     private  final StudentInfoRepository studentInfoRepository;
     private final TeacherInfoRepository teacherInfoRepository;
+    private final UploadService uploadService;
 
 
     public SubjectResponse create(SubjectCR createRequest) {
@@ -68,8 +70,9 @@ public class SubjectService {
                 .orElseThrow(() -> new DataNotFoundException("Subject not found with this id: " + subjectId));
     }
 
-
+    @Transactional
     public List<SubjectResponse> getAll() {
+        uploadService.deleteFile("asdas");
         List<SubjectResponse> list = new ArrayList<>();
         for (SubjectEntity subjectEntity : subjectRepository.findAll()) {
             list.add(modelMapper.map(subjectEntity, SubjectResponse.class));

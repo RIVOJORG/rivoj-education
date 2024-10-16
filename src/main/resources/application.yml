@@ -24,6 +24,10 @@ spring:
       host: 164.90.187.178
       port: 6379
       password: 1234
+logging:
+    level:
+      org.hibernate.SQL: DEBUG
+      org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
 springdoc:
   api-docs:
