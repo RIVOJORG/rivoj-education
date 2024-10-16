@@ -9,9 +9,11 @@ import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.AttendanceCR;
 import uz.rivoj.education.dto.request.StudentUpdate;
 import uz.rivoj.education.dto.response.*;
+import uz.rivoj.education.entity.UserRole;
 import uz.rivoj.education.service.*;
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -21,6 +23,7 @@ public class StudentController {
     private final AttendanceService attendanceService;
     private final ModuleService moduleService;
     private  final StudentService studentService;
+    private final CommentService commentService;
 
 
     @GetMapping("/getAllLessonsOfModule")
@@ -68,15 +71,27 @@ public class StudentController {
         return ResponseEntity.ok(attendanceService.getAttendanceByLessonId(UUID.fromString(principal.getName()),lessonId));
     }
 
+
+
+
+//    @GetMapping("/getProgressByModule")
+//    public ResponseEntity<ProgressResponse>  getProgressByModule(Principal principal,@RequestParam UUID moduleId){
+//        return ResponseEntity.ok(studentService.getStudentProgress(moduleId, UUID.fromString(principal.getName())));
+//    }
     @GetMapping("/getProgressByModule")
-    public ResponseEntity<ProgressResponse>  getProgressByModule(Principal principal,@RequestParam UUID moduleId){
-        return ResponseEntity.ok(studentService.getStudentProgress(moduleId, UUID.fromString(principal.getName())));
-    }
-    @GetMapping("/getProgressByModule2")
     public ResponseEntity<List<ProgressResponse>>  getProgressByModule2(Principal principal){
         return ResponseEntity.ok(studentService.getStudentProgress(UUID.fromString(principal.getName())));
     }
 
+    @PostMapping("/sendPhoneNumber{phoneNumber}")
+    public ResponseEntity<Integer> sendPhoneNumber(@PathVariable String phoneNumber){
+        return ResponseEntity.ok(studentService.sendOTP(phoneNumber));
+    }
+
+    @PostMapping("/checkVerification")
+    public ResponseEntity<JwtResponse> checkVerification(@RequestParam Integer code){
+        return ResponseEntity.ok(studentService.checkOTP(code));
+    }
 
 
 }

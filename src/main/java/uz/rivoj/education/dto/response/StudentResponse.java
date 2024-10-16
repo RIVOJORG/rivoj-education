@@ -2,6 +2,7 @@ package uz.rivoj.education.dto.response;
 import java.time.LocalDate;
 
 import lombok.*;
+import uz.rivoj.education.entity.enums.UserStatus;
 
 import java.util.UUID;
 
@@ -19,12 +20,14 @@ public class StudentResponse {
     private String phoneNumber;
     private LocalDate birth;
     private UUID subjectId;
+    private String subjectName;
     private UUID currentLessonId;
     private UUID currentModuleId;
     private Integer currentLessonNumber;
     private Integer currentModuleNumber;
     private Integer totalCoins;
     private Integer totalScore;
+    private UserStatus status;
 
 
 

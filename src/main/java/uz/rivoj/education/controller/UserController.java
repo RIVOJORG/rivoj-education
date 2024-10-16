@@ -12,6 +12,7 @@ import uz.rivoj.education.service.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -42,7 +43,6 @@ public class UserController {
 
 
 
-    // MESSAGE
     @PostMapping("/send-message")
     public ResponseEntity<String> sendMessage(MessageCR messageCreateRequest){
         return ResponseEntity.ok(messageService.sendMessage(messageCreateRequest));
@@ -87,20 +87,28 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.create(createRequest, UUID.fromString(principal.getName())));
     }
 
-    @GetMapping("/get-attendances-by-lesson{lessonId}")
-    public ResponseEntity<AttendanceResponse> getAttendancesByLesson(@PathVariable UUID lessonId){
-        return ResponseEntity.ok(attendanceService.getAttendancesByLesson(lessonId));
-    }
 
     @GetMapping("/get-user-details")
     public ResponseEntity<?> getUserDetails(Principal principal){
         return ResponseEntity.ok(userService.getUserDetails(UUID.fromString(principal.getName())));
     }
 
-    @GetMapping("/getCommentsOfLesson{lessonId}")
-    public ResponseEntity<LessonResponse> getLessonWithComments(@PathVariable UUID lessonId) {
-        LessonResponse response = commentService.getLessonWithComments(lessonId);
-        return ResponseEntity.ok(response);
+
+    @GetMapping("/get-comments")
+    public  ResponseEntity<Map<String, Object>>  getCommentsOfLesson(
+            @RequestParam UUID lessonId,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "20") int pageSize){
+        return ResponseEntity.ok(commentService.getCommentsOfLesson(lessonId,pageNumber,pageSize));
+    }
+
+    @PutMapping("/edit-comment")
+    public void editComment(Principal principal,@RequestParam UUID commentId, @RequestParam String text){
+        commentService.editComment(UUID.fromString(principal.getName()), commentId,text);
+    }
+    @DeleteMapping("/delete-comment")
+    public void editComment(Principal principal,@RequestParam UUID commentId){
+        commentService.deleteComment(UUID.fromString(principal.getName()), commentId);
     }
 
 }

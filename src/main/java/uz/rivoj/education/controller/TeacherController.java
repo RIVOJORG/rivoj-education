@@ -90,19 +90,16 @@ public class TeacherController {
         return ResponseEntity.ok(attendanceService.findByAttendanceId(id));
     }
 
-
     @GetMapping("get-chat/{id}")
     public ChatEntity getChatById(@PathVariable UUID id) {
         return chatService.getChat(id);
     }
 
 
-    @GetMapping("/get-lessons-by-module{moduleId}") // for mentor and admin
+    @GetMapping("/get-lessons-by-module{moduleId}")
     public List<LessonResponse> getLessonsByModule(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
             @PathVariable UUID moduleId){
-        return lessonService.getLessonsByModule(page, size, moduleId);
+        return lessonService.getLessonsByModule(moduleId);
     }
     @GetMapping("get-lesson/{id}")
     public LessonResponse getLessonById(@PathVariable UUID id) {
@@ -118,10 +115,9 @@ public class TeacherController {
 
     @GetMapping("/getStatisticsByModule")
     public ResponseEntity<List<StudentStatisticsDTO>> getStudentStatisticsByModule(
-            Principal principal,
             @RequestParam UUID moduleId
     ) {
-        return ResponseEntity.ok(studentService.getStudentStatisticsByModule(UUID.fromString(principal.getName()), moduleId));
+        return ResponseEntity.ok(studentService.getStudentStatisticsByModule(moduleId));
     }
 
     @GetMapping("/getAllStatisticsOnCurrentModule")
@@ -142,10 +138,7 @@ public class TeacherController {
     public ResponseEntity<ModuleResponse> createModule(@RequestBody Integer moduleNumber, Principal principal){
         return ResponseEntity.status(HttpStatus.CREATED).body(moduleService.create(moduleNumber, UUID.fromString(principal.getName())));
     }
-    @GetMapping("/getAllModulesOfSubject/{subjectId}")
-    public ResponseEntity<List<ModuleDTO>> getAllModulesOfSubject(@PathVariable UUID subjectId){
-        return ResponseEntity.status(200).body(moduleService.getAllModulesOfSubject(subjectId));
-    }
+
     @GetMapping("/getAllLessonsByModule/{moduleId}")
     public ResponseEntity<List<LessonResponse>> getAllLessonsByModule(@PathVariable UUID moduleId){
         return ResponseEntity.status(200).body(moduleService.getAllLessonsByModule(moduleId));

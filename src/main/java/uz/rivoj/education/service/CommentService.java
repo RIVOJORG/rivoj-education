@@ -2,35 +2,31 @@ package uz.rivoj.education.service;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.CommentCR;
-import uz.rivoj.education.dto.response.CommentResponse;
-import uz.rivoj.education.dto.response.LessonResponse;
-import uz.rivoj.education.entity.CommentEntity;
-import uz.rivoj.education.entity.LessonEntity;
-import uz.rivoj.education.entity.StudentInfo;
-import uz.rivoj.education.entity.UserEntity;
+import uz.rivoj.education.dto.response.*;
+import uz.rivoj.education.entity.*;
 import uz.rivoj.education.exception.DataNotFoundException;
-import uz.rivoj.education.repository.CommentRepository;
-import uz.rivoj.education.repository.LessonRepository;
-import uz.rivoj.education.repository.StudentInfoRepository;
-import uz.rivoj.education.repository.UserRepository;
+import uz.rivoj.education.repository.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Lazy
 public class CommentService {
     private final CommentRepository commentRepository;
     private final LessonRepository lessonRepository;
     private final UserRepository userRepository;
     private final StudentInfoRepository studentInfoRepository;
-    private final ModelMapper modelMapper;
+    private final  ModuleService moduleService;
 
     public CommentResponse create(CommentCR createRequest, UUID ownerId) {
         LessonEntity lessonEntity = lessonRepository.findById(createRequest.getLessonId())
@@ -58,41 +54,11 @@ public class CommentService {
     }
 
     public String delete(UUID commentId){
-        CommentEntity commentEntity = getComment(commentId);
-        commentRepository.deleteById(commentEntity.getId());
+        commentRepository.deleteById(commentId);
         return "Successfully deleted";
     }
-    public CommentResponse findByCommentId(UUID commentId){
-        CommentEntity commentEntity = commentRepository.findById(commentId)
-                .orElseThrow(() -> new DataNotFoundException("Comment not found with this id: " + commentId));
-        UserEntity user = userRepository.findById(commentEntity.getOwner().getId())
-                .orElseThrow(() -> new DataNotFoundException("User not found with this id: " + commentEntity.getOwner().getId()));
-        StudentInfo studentInfo = studentInfoRepository.findByStudentId(user.getId())
-                .orElseThrow(() -> new DataNotFoundException("Student not found with this id: " + user.getId()));
-        return CommentResponse.builder()
-                .avatar(studentInfo.getAvatar())
-                .commentId(commentEntity.getId())
-                .description(commentEntity.getDescription())
-                .lessonId(commentEntity.getLesson().getId())
-                .name(user.getName())
-                .ownerId(user.getId())
-                .surname(user.getSurname())
-                .build();
-    }
-
-    public CommentEntity getComment(UUID commentId){
-        return commentRepository.findById(commentId)
-                .orElseThrow(() -> new DataNotFoundException("Comment not found with this id: " + commentId));
-    }
 
 
-    public List<CommentResponse> getAll() {
-        List<CommentResponse> list = new ArrayList<>();
-        for (CommentEntity commentEntity : commentRepository.findAll()) {
-            list.add(modelMapper.map(commentEntity, CommentResponse.class));
-        }
-        return list;
-    }
 
     public LessonResponse getLessonWithComments(UUID lessonId) {
         LessonEntity lesson = lessonRepository.findById(lessonId)
@@ -125,8 +91,40 @@ public class CommentService {
                         .cover(lesson.getCover())
                         .moduleId(lesson.getModule().getId())
                         .description(lesson.getDescription())
-                        .comments(commentResponses)
                         .build();
     }
+    public Map<String, Object> getCommentsOfLesson(UUID lessonId, int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber -1, pageSize);
+        Page<CommentEntity> commentEntityPage = commentRepository.findByLessonId(lessonId,pageable);
+        List<CommentResponse> commentResponseList = commentEntityPage.get().map(commentEntity -> moduleService.convertToCommentResponse((CommentEntity) commentEntity)).collect(Collectors.toList());
 
+        Map<String, Object> responseMap = new LinkedHashMap<>();
+        responseMap.put("pageNumber", commentEntityPage.getNumber() + 1);
+        responseMap.put("totalPages", commentEntityPage.getTotalPages());
+        responseMap.put("totalCount", commentEntityPage.getTotalElements());
+        responseMap.put("pageSize", commentEntityPage.getSize());
+        responseMap.put("hasPreviousPage", commentEntityPage.hasPrevious());
+        responseMap.put("hasNextPage", commentEntityPage.hasNext());
+        responseMap.put("data", commentResponseList);
+        return responseMap;
+
+    }
+
+
+    public void editComment(UUID ownerId, UUID commentId,String text) {
+        CommentEntity comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new DataNotFoundException("Comment not found with this id: " + commentId));
+        if(comment.getOwner().getId().equals(ownerId)){
+            comment.setDescription(text);
+            commentRepository.save(comment);
+        }
+    }
+
+    public void deleteComment(UUID ownerId, UUID commentId) {
+        CommentEntity comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new DataNotFoundException("Comment not found with this id: " + commentId));
+        if(comment.getOwner().getId().equals(ownerId)){
+            commentRepository.delete(comment);
+        }
+    }
 }

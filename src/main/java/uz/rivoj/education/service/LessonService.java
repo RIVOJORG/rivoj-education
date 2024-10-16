@@ -3,28 +3,25 @@ package uz.rivoj.education.service;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.LessonCR;
 import uz.rivoj.education.dto.response.CommentResponse;
 import uz.rivoj.education.dto.response.LessonResponse;
+import uz.rivoj.education.dto.response.TeacherInfoResponse;
 import uz.rivoj.education.dto.update.LessonUpdateDTO;
-import uz.rivoj.education.entity.CommentEntity;
-import uz.rivoj.education.entity.LessonEntity;
-import uz.rivoj.education.entity.ModuleEntity;
-import uz.rivoj.education.entity.TeacherInfo;
+import uz.rivoj.education.entity.*;
 import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.exception.DataNotFoundException;
-import uz.rivoj.education.repository.CommentRepository;
-import uz.rivoj.education.repository.LessonRepository;
-import uz.rivoj.education.repository.ModuleRepository;
-import uz.rivoj.education.repository.TeacherInfoRepository;
+import uz.rivoj.education.repository.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
+@Lazy
 @Service
 @RequiredArgsConstructor
 public class LessonService {
@@ -35,6 +32,7 @@ public class LessonService {
     private final CommentService commentService;
     private final CommentRepository commentRepository;
     private final TeacherInfoRepository teacherInfoRepository;
+    private final UserRepository userRepository;
 
     @SneakyThrows
     public LessonResponse create(LessonCR createRequest, MultipartFile lessonVideo, MultipartFile coverOfLesson,UUID teacherId)  {
@@ -68,7 +66,6 @@ public class LessonService {
         lessonRepository.save(savedLesson);
         LessonResponse response = modelMapper.map(savedLesson, LessonResponse.class);
         response.setModuleId(createRequest.getModuleId());
-        response.setComments(getCommentsByLessonId(savedLesson.getId()));
         return response;
     }
 
@@ -91,7 +88,6 @@ public class LessonService {
         return LessonResponse.builder()
                 .cover(lessonEntity.getCover())
                 .description(lessonEntity.getDescription())
-                .comments(getCommentsByLessonId(lessonId))
                 .id(lessonEntity.getId())
                 .moduleId(lessonEntity.getModule().getId())
                 .number(lessonEntity.getNumber())
@@ -160,9 +156,8 @@ public class LessonService {
         return "Successfully updated: ";
 
     }
-
-    public List<LessonResponse> getLessonsByModule(int page, int size, UUID moduleId) {
-        Pageable pageable = PageRequest.of(page, size);
+    @Transactional
+    public List<LessonResponse> getLessonsByModule(UUID moduleId) {
         ModuleEntity moduleEntity = moduleRepository.findById(moduleId).orElseThrow(() -> new DataNotFoundException("Module not found with this id: " + moduleId));
         Optional<List<LessonEntity>> lessonEntityList = lessonRepository.findAllByModule_IdOrderByNumberAsc(moduleEntity.getId());
         if(lessonEntityList.isEmpty()){
@@ -172,10 +167,9 @@ public class LessonService {
         for (LessonEntity lessonEntity : lessonEntityList.get()) {
             LessonResponse response = modelMapper.map(lessonEntity, LessonResponse.class);
             response.setModuleId(moduleId);
-            Optional<List<CommentEntity>> commentEntities = commentRepository.findByLessonId(lessonEntity.getId());
-            if(commentEntities.isPresent()){
-                response.setComments(Collections.singletonList(modelMapper.map(commentEntities, CommentResponse.class)));
-            }
+            TeacherInfo teacherInfo = lessonEntity.getTeacherInfo();
+            UserEntity teacher = teacherInfo.getTeacher();
+            response.setTeacherInfo(new TeacherInfoResponse(teacher.getName(),teacher.getSurname(),teacher.getAvatar(),teacherInfo.getSubject().getTitle(),teacherInfo.getAbout()));
             list.add(response);
         }
         return list;

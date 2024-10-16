@@ -15,7 +15,7 @@ import uz.rivoj.education.service.UserService;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
-public class AuthUserController {
+public class AuthController {
     private final UserService userService;
 
     @PostMapping("/sign-in")

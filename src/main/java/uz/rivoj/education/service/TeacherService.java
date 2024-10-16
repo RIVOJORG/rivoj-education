@@ -80,7 +80,7 @@ public class TeacherService {
         teacherInfoRepository.save(teacherInfo);
         TeacherResponse response = modelMapper.map(userEntity, TeacherResponse.class);
         response.setBirthday(teacherInfo.getBirthday());
-        response.setSubject(SubjectResponse.builder().title(teacherInfo.getSubject().getTitle()).subjectId(teacherInfo.getSubject().getId()).build());
+        response.setSubject(SubjectResponse.builder().title(teacherInfo.getSubject().getTitle()).id(teacherInfo.getSubject().getId()).build());
         return  response;
     }
 }

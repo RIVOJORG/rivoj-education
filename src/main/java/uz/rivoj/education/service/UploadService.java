@@ -66,4 +66,16 @@ public class UploadService {
         }
     }
 
+    public void deleteFile(String fileUrl) {
+        System.out.println("Delete ishladi");
+        fileUrl = "https://rivojspace.blr1.digitaloceanspaces.com/meta-data/2426bd78-129b-4316-b605-170205e32efb_EmmaUpdated_ProfilePicture.jpeg";
+        String objectKey = fileUrl.replace("https://" + doSpaceBucket + ".blr1.digitaloceanspaces.com/", "");
+        try {
+            s3Client.deleteObject(doSpaceBucket, objectKey);
+            System.out.println("Fayl o'chirildi: " + objectKey);
+        } catch (Exception e) {
+            System.err.println("Faylni o'chirishda xato: " + e.getMessage());
+        }
+    }
+
 }

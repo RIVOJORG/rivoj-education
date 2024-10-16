@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import uz.rivoj.education.entity.UserRole;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,4 +12,5 @@ import lombok.Setter;
 @Setter
 public class JwtResponse {
     String token;
+    UserRole role;
 }

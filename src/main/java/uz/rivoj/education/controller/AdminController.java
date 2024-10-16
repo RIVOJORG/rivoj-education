@@ -13,6 +13,7 @@ import uz.rivoj.education.service.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 
@@ -53,9 +54,9 @@ public class AdminController {
     public ResponseEntity<NotificationResponse> createNotification(@RequestBody NotificationCR notificationCR){
         return ResponseEntity.status(HttpStatus.CREATED).body(notificationService.create(notificationCR));
     }
-    @PostMapping("/create-module")
-    public ResponseEntity<ModuleResponse> createModule(@RequestBody Integer moduleNumber, Principal principal){
-        return ResponseEntity.status(HttpStatus.CREATED).body(moduleService.create(moduleNumber, UUID.fromString(principal.getName())));
+    @PostMapping("/add-module")
+    public ResponseEntity<?> createModule(@RequestParam UUID subjectId){
+        return ResponseEntity.status(HttpStatus.CREATED).body(moduleService.addModule(subjectId));
     }
 
     @PutMapping("/update-role{userPhoneNumber}")
@@ -63,109 +64,48 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userPhoneNumber, userRole));
     }
 
-    @PutMapping("/change-phoneNumber/{oldPhoneNumber}/{newPhoneNumber}")
+    @PutMapping("/change-phoneNumber/{userId}/{newPhoneNumber}")
     public ResponseEntity<String> changePhoneNumber(
-            @PathVariable String oldPhoneNumber,
+            @PathVariable UUID userId,
             @PathVariable String newPhoneNumber) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.changePhoneNumber(oldPhoneNumber, newPhoneNumber));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.changePhoneNumber(userId, newPhoneNumber));
     }
     @PutMapping("/change-password/{userId}/{newPassword}")
-    public ResponseEntity<String> changePhoneNumber(
+    public ResponseEntity<String> changePassword(
             @PathVariable UUID userId,
             @PathVariable String newPassword) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.changePassword(userId,newPassword));
     }
     @GetMapping("/get-lessons-by-module{moduleId}")
     public List<LessonResponse> getLessonsByModule(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
             @PathVariable UUID moduleId){
-        return lessonService.getLessonsByModule(page, size, moduleId);
+        return lessonService.getLessonsByModule(moduleId);
     }
-    @GetMapping("/get-all-student")
-    public ResponseEntity<List<StudentResponse>> getAllStudent(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size){
-        return ResponseEntity.status(200).body(studentService.getAll(page, size));
-    }
-
-    @GetMapping("get-lesson/{id}")
-    public LessonResponse getLessonById(@PathVariable UUID id) {
-        return lessonService.findByLessonId(id);
+    @GetMapping("/get-all-users-byRole")
+    public ResponseEntity<Map<String, Object>> getAllByRole(
+            @RequestParam UserRole role,
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "20") int pageSize) {
+        return ResponseEntity.ok(userService.getAllByRole(role, searchTerm, pageNumber, pageSize));
     }
 
-
-    @GetMapping("/get-all-attendance{userId}")
-    public ResponseEntity<List<AttendanceResponse>> getAllUserAttendance(@PathVariable UUID userId){
-        return ResponseEntity.ok(attendanceService.getAllUserAttendance(userId));
-    }
-
-    @GetMapping("/get-attendance/{id}")
-    public ResponseEntity<AttendanceResponse> getAttendanceById(@PathVariable UUID id) {
-        return ResponseEntity.ok(attendanceService.findByAttendanceId(id));
-    }
-
-    @GetMapping("/get-attendance-by-status") // for mentor and admin
-    public List<AttendanceResponse> getAllAttendanceByStatus(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam AttendanceStatus status){
-        return attendanceService.getAllAttendanceByStatus(page, size, status);
-    }
-
-    @GetMapping("get-comment/{id}")
-    public CommentResponse getCommentById(@PathVariable UUID id) {
-        return commentService.findByCommentId(id);
-    }
-
-    @GetMapping("get-module/{id}")
-    public ModuleResponse getModuleById(@PathVariable UUID id) {
-        return moduleService.findByModuleId(id);
-    }
-
-    @GetMapping("/get-all-notification")
-    public List<NotificationResponse> getAllNotification(){
-        return notificationService.getAll();
-    }
-
-    @GetMapping("get-notification{id}")
-    public NotificationResponse getNotificationById(@PathVariable UUID id){
-        return notificationService.getById(id);
-    }
 
     @GetMapping("/get-all-subjects")
     public List<SubjectResponse> getAllSubject(){
         return subjectService.getAll();
     }
 
-    @GetMapping("get-subject/{id}")
-    public String getSubjectById(@PathVariable UUID id) {
-        return subjectService.findBySubjectId(id);
-    }
-
-    @GetMapping("/block-unblock-user{phoneNumber}")
-    public ResponseEntity<String> blockUnblockUser(@PathVariable String phoneNumber, @RequestParam UserStatus status){
-        return ResponseEntity.status(200).body(userService.blockUnblockUser(phoneNumber, status));
-    }
-
-    @GetMapping("/get-all-users")
-    public List<UserResponse> getAll(){
-        return userService.getAll();
-    }
-
-    @GetMapping("get-user/{id}")
-    public UserResponse getUserById(@PathVariable UUID id) {
-        return userService.getUser(id);
+    @PostMapping("/block-unblock-user{userId}")
+    public ResponseEntity<String> blockUnblockUser(@PathVariable UUID userId, @RequestParam UserStatus status){
+        return ResponseEntity.status(200).body(userService.blockUnblockUser(userId, status));
     }
 
     @DeleteMapping("/delete-subject{subjectId}")
     public ResponseEntity<String> deleteSubject(@PathVariable UUID subjectId){
         return ResponseEntity.status(200).body(subjectService.delete(subjectId));
     }
-    @DeleteMapping("delete-notification{id}")
-    public ResponseEntity<String> delete(@PathVariable UUID id){
-        return ResponseEntity.status(200).body(notificationService.delete(id));
-    }
+
     @DeleteMapping("/delete-module{moduleId}")
     public ResponseEntity<String> deleteModule(@PathVariable UUID moduleId){
         return ResponseEntity.status(200).body(moduleService.delete(moduleId));
@@ -179,7 +119,7 @@ public class AdminController {
         return ResponseEntity.ok(chatService.deleteChat(chatId));
     }
 
-    @DeleteMapping("/delete-comment{commentId}") // for admin
+    @DeleteMapping("/delete-comment{commentId}")
     public ResponseEntity<String> deleteComment(@PathVariable UUID commentId){
         return ResponseEntity.status(200).body(commentService.delete(commentId));
     }
@@ -188,14 +128,23 @@ public class AdminController {
         return ResponseEntity.status(200).body(lessonService.delete(lessonId));
     }
 
-//    @GetMapping("/change-passwords")
-//    public ResponseEntity<String> changePassword() {
-//        return ResponseEntity.ok(studentService.changePassword());
-//    }
-
     @GetMapping("/getAllModulesOfSubject{subjectId}")
-    public ResponseEntity<List<ModuleDTO>> getAllModulesOfSubject(@PathVariable UUID subjectId){
+    public ResponseEntity<List<ModuleResponse>> getAllModulesOfSubject(@PathVariable UUID subjectId){
         return ResponseEntity.status(200).body(moduleService.getAllModulesOfSubject(subjectId));
+    }
+
+    @GetMapping("/getStatisticsByModule")
+    public ResponseEntity<List<StudentStatisticsDTO>> getStudentStatisticsByModule(
+            @RequestParam UUID moduleId
+    ) {
+        return ResponseEntity.ok(studentService.getStudentStatisticsByModule(moduleId));
+    }
+
+    @GetMapping("/getAllStatisticsOnCurrentModule")
+    public ResponseEntity<List<StudentStatisticsDTO>> getAllStudentStatisticsOnCurrentModule(
+            @RequestParam UUID subjectId
+    ) {
+        return ResponseEntity.ok(studentService.getAllStudentStatisticsOnCurrentModule2(subjectId));
     }
 
 

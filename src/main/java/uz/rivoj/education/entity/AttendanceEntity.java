@@ -20,7 +20,7 @@ public class AttendanceEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "student_id", referencedColumnName = "id")
     private StudentInfo student;
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "lesson_id", referencedColumnName = "id")
     private LessonEntity lesson;
     @ElementCollection

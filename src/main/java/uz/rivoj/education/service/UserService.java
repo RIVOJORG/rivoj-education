@@ -2,6 +2,10 @@ package uz.rivoj.education.service;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -43,7 +47,7 @@ public class UserService {
         UserEntity user = userRepository.findByPhoneNumber(dto.getPhoneNumber())
                 .orElseThrow(() -> new DataNotFoundException("user not found"));
       if (passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-            return new JwtResponse(jwtUtil.generateToken(user));
+            return new JwtResponse(jwtUtil.generateToken(user),user.getRole());
         }
         throw new AuthenticationCredentialsNotFoundException("password didn't match");
     }
@@ -84,16 +88,12 @@ public class UserService {
         return userResponse;
     }
 
-    public UserEntity getUserByPhoneNumber(String phoneNumber){
-        Optional<UserEntity> userOptional = userRepository.findByPhoneNumber(phoneNumber);
-        if (userOptional.isEmpty()) {
-            throw new DataNotFoundException("User not found with this phone number: " + phoneNumber);
-        }
-        return userOptional.get();
-    }
 
-    public String changePhoneNumber(String oldPhoneNumber, String newPhoneNumber) {
-        UserEntity user = getUserByPhoneNumber(oldPhoneNumber);
+    public String changePhoneNumber(UUID userId, String newPhoneNumber) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("user not found"));
+        if (userRepository.existsByPhoneNumber(newPhoneNumber)){
+            throw new DataAlreadyExistsException("phone number already exists");}
         user.setPhoneNumber(newPhoneNumber);
         userRepository.save(user);
         return "Phone number successfully updated for user: " + user.getName();
@@ -105,8 +105,9 @@ public class UserService {
         return "Password number successfully updated for user: " + user.get().getName();
     }
 
-    public String blockUnblockUser(String phoneNumber, UserStatus status) {
-        UserEntity user = getUserByPhoneNumber(phoneNumber);
+    public String blockUnblockUser(UUID userId, UserStatus status) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("user not found"));
         user.setUserStatus(status);
         userRepository.save(user);
         return "Successfully " + status.toString() + "ED";
@@ -129,7 +130,7 @@ public class UserService {
             TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(userId)
                     .orElseThrow(() -> new DataNotFoundException("User not found"));
             TeacherResponse teacherResponse = modelMapper.map(user, TeacherResponse.class);
-            teacherResponse.setSubject(SubjectResponse.builder().title(teacherInfo.getSubject().getTitle()).subjectId(teacherInfo.getSubject().getId()).build());
+            teacherResponse.setSubject(SubjectResponse.builder().title(teacherInfo.getSubject().getTitle()).id(teacherInfo.getSubject().getId()).build());
             teacherResponse.setAbout(teacherInfo.getAbout());
             teacherResponse.setId(teacherInfo.getId());
             teacherResponse.setBirthday(teacherInfo.getBirthday());
@@ -151,4 +152,65 @@ public class UserService {
         }
 
     }
+
+    public Map<String, Object> getAllByRole(UserRole role, String searchTerm, int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
+        Page<UserEntity> userPage;
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            userPage = userRepository.findAllByRole(role, pageable);
+        } else {
+            userPage = userRepository.findAllByRoleAndSearchTerm(role, searchTerm, pageable);
+        }
+        List<?> responseList;
+        if (role.equals(UserRole.TEACHER)) {
+            List<TeacherResponse> teacherResponseList = new ArrayList<>();
+            userPage.getContent().forEach(teacherEntity -> {
+                TeacherResponse teacherResponse = modelMapper.map(teacherEntity, TeacherResponse.class);
+                TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(teacherEntity.getId())
+                        .orElseThrow(() -> new DataNotFoundException("Teacher not found " + teacherEntity.getId()));
+                SubjectResponse subjectResponse = new SubjectResponse(teacherInfo.getSubject().getTitle(), teacherInfo.getSubject().getId());
+                teacherResponse.setSubject(subjectResponse);
+                teacherResponse.setBirthday(teacherInfo.getBirthday());
+                teacherResponse.setAbout(teacherInfo.getAbout());
+                teacherResponse.setStatus(teacherEntity.getUserStatus());
+                teacherResponseList.add(teacherResponse);
+            });
+            responseList = teacherResponseList;
+        } else if (role.equals(UserRole.STUDENT)) {
+            List<StudentResponse> studentResponseList = new ArrayList<>();
+            userPage.getContent().forEach(student -> {
+                StudentInfo studentInfo = studentInfoRepository.findByStudentId(student.getId())
+                        .orElseThrow(() -> new DataNotFoundException("User not found"));
+                StudentResponse studentResponse = modelMapper.map(student, StudentResponse.class);
+                studentResponse.setBirth(studentInfo.getBirthday());
+                studentResponse.setCurrentLessonId(studentInfo.getLesson() != null ? studentInfo.getLesson().getId() : null);
+                studentResponse.setCurrentModuleId(studentInfo.getCurrentModule() != null ? studentInfo.getCurrentModule().getId() : null);
+                studentResponse.setSubjectId(studentInfo.getSubject() != null ? studentInfo.getSubject().getId() : null);
+                studentResponse.setCurrentLessonNumber(studentInfo.getLesson() != null ? studentInfo.getLesson().getNumber() : null);
+                studentResponse.setCurrentModuleNumber(studentInfo.getCurrentModule() != null ? studentInfo.getCurrentModule().getNumber() : null);
+                studentResponse.setSubjectName(studentInfo.getSubject() != null ? studentInfo.getSubject().getTitle() : null);
+                studentResponse.setTotalCoins(studentInfo.getCoin());
+                studentResponse.setTotalScore(studentInfo.getTotalScore());
+                studentResponse.setStatus(studentInfo.getStudent().getUserStatus());
+                studentResponseList.add(studentResponse);
+            });
+            responseList = studentResponseList;
+        } else {
+            List<UserEntity> adminEntityList = userPage.getContent();
+            TypeToken<List<AdminResponse>> typeToken = new TypeToken<>() {};
+            responseList = modelMapper.map(adminEntityList, typeToken.getType());
+        }
+
+        Map<String, Object> responseMap = new LinkedHashMap<>();
+        responseMap.put("pageNumber", userPage.getNumber() + 1);
+        responseMap.put("totalPages", userPage.getTotalPages());
+        responseMap.put("totalCount", userPage.getTotalElements());
+        responseMap.put("pageSize", userPage.getSize());
+        responseMap.put("hasPreviousPage", userPage.hasPrevious());
+        responseMap.put("hasNextPage", userPage.hasNext());
+        responseMap.put("data", responseList);
+
+        return responseMap;
+    }
+
 }

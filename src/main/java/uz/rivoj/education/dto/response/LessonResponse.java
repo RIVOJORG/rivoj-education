@@ -1,7 +1,9 @@
 package uz.rivoj.education.dto.response;
 
+import jakarta.persistence.*;
 import lombok.*;
 import uz.rivoj.education.entity.ModuleEntity;
+import uz.rivoj.education.entity.TeacherInfo;
 
 import java.time.LocalTime;
 
@@ -23,8 +25,8 @@ public class LessonResponse {
     private UUID moduleId;
     private String description;
     private List<String> additionalLinks;
-    private List<CommentResponse> comments;
     private TeacherInfoResponse teacherInfo;
+
 
 }
 

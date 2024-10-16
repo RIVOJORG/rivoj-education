@@ -1,20 +1,26 @@
 package uz.rivoj.education.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import uz.rivoj.education.entity.ModuleEntity;
+import uz.rivoj.education.entity.StudentInfo;
+import uz.rivoj.education.entity.TeacherInfo;
 import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.dto.request.SubjectCR;
 import uz.rivoj.education.dto.response.SubjectResponse;
 import uz.rivoj.education.entity.SubjectEntity;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.ModuleRepository;
+import uz.rivoj.education.repository.StudentInfoRepository;
 import uz.rivoj.education.repository.SubjectRepository;
+import uz.rivoj.education.repository.TeacherInfoRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -23,6 +29,9 @@ public class SubjectService {
     private final SubjectRepository subjectRepository;
     private final ModuleRepository moduleRepository;
     private final ModelMapper modelMapper;
+    private  final StudentInfoRepository studentInfoRepository;
+    private final TeacherInfoRepository teacherInfoRepository;
+    private final UploadService uploadService;
 
 
     public SubjectResponse create(SubjectCR createRequest) {
@@ -40,9 +49,20 @@ public class SubjectService {
     }
 
     public String delete(UUID subjectId){
-        SubjectEntity subjectEntity = getSubject(subjectId);
-        subjectRepository.deleteById(subjectEntity.getId());
-        return "Successfully deleted: " + subjectEntity.getTitle();
+        Optional<List<StudentInfo>> studentInfoList = studentInfoRepository.findBySubject_Id(subjectId);
+        studentInfoList.ifPresent(studentInfos -> studentInfos.forEach(studentInfo -> {
+            studentInfo.setSubject(null);
+            studentInfo.setCurrentModule(null);
+            studentInfo.setLesson(null);
+            studentInfoRepository.save(studentInfo);
+        }));
+        Optional<List<TeacherInfo>> teacherInfoList = teacherInfoRepository.findBySubject_Id(subjectId);
+        teacherInfoList.ifPresent(teacherInfos -> teacherInfos.forEach(teacherInfo -> {
+            teacherInfo.setSubject(null);
+            teacherInfoRepository.save(teacherInfo);
+        }));
+        subjectRepository.deleteById(subjectId);
+        return "Successfully deleted!" ;
     }
 
     public SubjectEntity getSubject(UUID subjectId){
@@ -50,8 +70,9 @@ public class SubjectService {
                 .orElseThrow(() -> new DataNotFoundException("Subject not found with this id: " + subjectId));
     }
 
-
+    @Transactional
     public List<SubjectResponse> getAll() {
+        uploadService.deleteFile("asdas");
         List<SubjectResponse> list = new ArrayList<>();
         for (SubjectEntity subjectEntity : subjectRepository.findAll()) {
             list.add(modelMapper.map(subjectEntity, SubjectResponse.class));
