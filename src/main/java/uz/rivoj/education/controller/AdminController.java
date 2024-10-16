@@ -77,9 +77,15 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.changePassword(userId,newPassword));
     }
     @GetMapping("/get-lessons-by-module{moduleId}")
-    public List<LessonResponse> getLessonsByModule(
+    public List<SpecialLessonResponse> getLessonsByModule(
             @PathVariable UUID moduleId){
         return lessonService.getLessonsByModule(moduleId);
+    }
+
+    @GetMapping("/get-lesson-by-id{lessonId}")
+    public ResponseEntity<LessonResponse> getLesson(
+            @PathVariable UUID lessonId){
+        return ResponseEntity.ok(lessonService.getLessonById(lessonId));
     }
     @GetMapping("/get-all-users-byRole")
     public ResponseEntity<Map<String, Object>> getAllByRole(

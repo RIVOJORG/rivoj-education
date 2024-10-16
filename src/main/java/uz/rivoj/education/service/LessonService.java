@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.LessonCR;
 import uz.rivoj.education.dto.response.CommentResponse;
 import uz.rivoj.education.dto.response.LessonResponse;
+import uz.rivoj.education.dto.response.SpecialLessonResponse;
 import uz.rivoj.education.dto.response.TeacherInfoResponse;
 import uz.rivoj.education.dto.update.LessonUpdateDTO;
 import uz.rivoj.education.entity.*;
@@ -64,9 +65,7 @@ public class LessonService {
         savedLesson.setSource(source);
         savedLesson.setCover(cover);
         lessonRepository.save(savedLesson);
-        LessonResponse response = modelMapper.map(savedLesson, LessonResponse.class);
-        response.setModuleId(createRequest.getModuleId());
-        return response;
+        return modelMapper.map(savedLesson, LessonResponse.class);
     }
 
 
@@ -89,7 +88,6 @@ public class LessonService {
                 .cover(lessonEntity.getCover())
                 .description(lessonEntity.getDescription())
                 .id(lessonEntity.getId())
-                .moduleId(lessonEntity.getModule().getId())
                 .number(lessonEntity.getNumber())
                 .source(lessonEntity.getSource())
                 .title(lessonEntity.getTitle())
@@ -124,7 +122,6 @@ public class LessonService {
         for (LessonEntity lesson : lessonRepository.findAll()) {
             Optional<ModuleEntity> module = moduleRepository.findById(lesson.getModule().getId());
             LessonResponse response = modelMapper.map(lesson, LessonResponse.class);
-            response.setModuleId(module.get().getId());
             response.setNumber(lesson.getNumber());
             list.add(response);
         }
@@ -157,24 +154,33 @@ public class LessonService {
 
     }
     @Transactional
-    public List<LessonResponse> getLessonsByModule(UUID moduleId) {
+    public List<SpecialLessonResponse> getLessonsByModule(UUID moduleId) {
         ModuleEntity moduleEntity = moduleRepository.findById(moduleId).orElseThrow(() -> new DataNotFoundException("Module not found with this id: " + moduleId));
         Optional<List<LessonEntity>> lessonEntityList = lessonRepository.findAllByModule_IdOrderByNumberAsc(moduleEntity.getId());
         if(lessonEntityList.isEmpty()){
             throw new DataNotFoundException("Lessons not found with this id: " + moduleId);
         }
-        List<LessonResponse> list = new ArrayList<>();
+        List<SpecialLessonResponse> list = new ArrayList<>();
         for (LessonEntity lessonEntity : lessonEntityList.get()) {
-            LessonResponse response = modelMapper.map(lessonEntity, LessonResponse.class);
-            response.setModuleId(moduleId);
-            TeacherInfo teacherInfo = lessonEntity.getTeacherInfo();
-            UserEntity teacher = teacherInfo.getTeacher();
-            response.setTeacherInfo(new TeacherInfoResponse(teacher.getName(),teacher.getSurname(),teacher.getAvatar(),teacherInfo.getSubject().getTitle(),teacherInfo.getAbout()));
+            SpecialLessonResponse response = modelMapper.map(lessonEntity, SpecialLessonResponse.class);
             list.add(response);
         }
         return list;
     }
 
+    @Transactional
+    public LessonResponse getLessonById(UUID lessonId) {
+        LessonEntity lessonEntity = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new DataNotFoundException("Lesson not found with this id: " + lessonId));
+        LessonResponse response = modelMapper.map(lessonEntity, LessonResponse.class);
+        TeacherInfo teacherInfo = lessonEntity.getTeacherInfo();
+        if(teacherInfo != null){
+            UserEntity teacher = teacherInfo.getTeacher();
+            response.setTeacherInfo(new TeacherInfoResponse(teacher.getName(),teacher.getSurname(),teacher.getAvatar(),teacherInfo.getSubject().getTitle(),teacherInfo.getAbout()));
+        }
+
+        return  response;
 
 
+    }
 }

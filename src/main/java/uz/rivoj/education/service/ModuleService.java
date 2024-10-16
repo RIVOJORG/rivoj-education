@@ -54,9 +54,9 @@ public class ModuleService {
         }));
         List<LessonEntity> lessons = module.getLessons();
         for (LessonEntity lesson : lessons) {
-            lesson.setModule(null);  // O'zaro bog'lanishni to'xtatish
-            lesson.getAttendances().forEach(attendance -> attendance.setLesson(null));  // Bog'langan AttendanceEntitylarni yangilash
-            lesson.getComments().forEach(comment -> comment.setLesson(null));  // Bog'langan CommentEntitylarni yangilash
+            lesson.setModule(null);
+            lesson.getAttendances().forEach(attendance -> attendance.setLesson(null));
+            lesson.getComments().forEach(comment -> comment.setLesson(null));
         }
         moduleRepository.deleteById(moduleId);
         return "Successfully deleted!";
@@ -102,13 +102,7 @@ public class ModuleService {
         }
         throw  new DataNotFoundException("There is not any accessible lesson for this user!");
     }
-    public List<CommentResponse> getCommentsByLessonId(UUID lessonId) {
-        List<CommentEntity> comments = commentRepository.findByLessonId(lessonId)
-                .orElseThrow(() -> new DataNotFoundException("Comments not found with this id => " + lessonId));
-        return comments.stream()
-                .map(this::convertToCommentResponse)
-                .collect(Collectors.toList());
-    }
+
 
     public CommentResponse convertToCommentResponse(CommentEntity comment) {
         return CommentResponse.builder()
@@ -140,7 +134,6 @@ public class ModuleService {
             teacherInfoResponse.setSubject(teacherInfo.getSubject().getTitle());
             LessonResponse lessonResponse = modelMapper.map(lessonEntity, LessonResponse.class);
             lessonResponse.setTeacherInfo(teacherInfoResponse);
-            lessonResponse.setModuleId(lessonEntity.getModule().getId());
             lessonResponse.setAdditionalLinks(lessonEntity.getAdditionalLinks());
             lessonResponseList.add(lessonResponse);
         });

@@ -89,7 +89,6 @@ public class CommentService {
                         .title(lesson.getTitle())
                         .source(lesson.getSource())
                         .cover(lesson.getCover())
-                        .moduleId(lesson.getModule().getId())
                         .description(lesson.getDescription())
                         .build();
     }
