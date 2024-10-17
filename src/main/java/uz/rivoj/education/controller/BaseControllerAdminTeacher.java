@@ -35,7 +35,7 @@ public class BaseControllerAdminTeacher {
     private final UserService userService;
 
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+
     @PostMapping(value = "/create-lesson", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<LessonResponse> createLesson(
             @ModelAttribute LessonCR createRequest,
@@ -44,7 +44,7 @@ public class BaseControllerAdminTeacher {
     ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(lessonService.create(createRequest, lessonVideo,coverOfLesson));
     }
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+
     @PutMapping(value ="/update-lesson",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
             produces = MediaType.TEXT_PLAIN_VALUE)
@@ -55,7 +55,7 @@ public class BaseControllerAdminTeacher {
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(lessonService.updateLesson(updateDTO,videoFile,coverOfLesson));
     }
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+
     @GetMapping("/get-all-users-byRole")
     public ResponseEntity<Map<String, Object>> getAllByRole(
             @RequestParam UserRole role,
@@ -64,19 +64,19 @@ public class BaseControllerAdminTeacher {
             @RequestParam(defaultValue = "20") int pageSize) {
         return ResponseEntity.ok(userService.getAllByRole(role, searchTerm, pageNumber, pageSize));
     }
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+
     @GetMapping("/get-lesson-by-id{lessonId}")
     public ResponseEntity<LessonResponse> getLesson(
             @PathVariable UUID lessonId){
         return ResponseEntity.ok(lessonService.getLessonById(lessonId));
     }
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+
     @GetMapping("/get-lessons-by-module{moduleId}")
     public List<SpecialLessonResponse> getLessonsByModule(
             @PathVariable UUID moduleId){
         return lessonService.getLessonsByModule(moduleId);
     }
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+
     @PostMapping("/add-module")
     public ResponseEntity<?> createModule(@RequestParam UUID subjectId){
         return ResponseEntity.status(HttpStatus.CREATED).body(moduleService.addModule(subjectId));
@@ -86,14 +86,14 @@ public class BaseControllerAdminTeacher {
     public ResponseEntity<List<ModuleResponse>> getAllModulesOfSubject(@PathVariable UUID subjectId){
         return ResponseEntity.status(200).body(moduleService.getAllModulesOfSubject(subjectId));
     }
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+
     @GetMapping("/getStatisticsByModule")
     public ResponseEntity<List<StudentStatisticsDTO>> getStudentStatisticsByModule(
             @RequestParam UUID moduleId
     ) {
         return ResponseEntity.ok(studentService.getStudentStatisticsByModule(moduleId));
     }
-    @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER')")
+
     @GetMapping("/getAllStatisticsOnCurrentModule")
     public ResponseEntity<List<StudentStatisticsDTO>> getAllStudentStatisticsOnCurrentModule(
             @RequestParam UUID subjectId
