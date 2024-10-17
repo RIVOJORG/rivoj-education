@@ -35,12 +35,11 @@ public class TeacherController {
 
     @PostMapping(value = "/create-lesson", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<LessonResponse> createLesson(
-            Principal principal,
             @ModelAttribute LessonCR createRequest,
             @RequestPart("lessonVideo") MultipartFile lessonVideo,
             @RequestPart("coverOfLesson") MultipartFile coverOfLesson
     ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(lessonService.create(createRequest, lessonVideo,coverOfLesson,UUID.fromString(principal.getName())));
+        return ResponseEntity.status(HttpStatus.CREATED).body(lessonService.create(createRequest, lessonVideo,coverOfLesson));
     }
 
     @PutMapping(value ="/update-lesson",

@@ -36,11 +36,11 @@ public class LessonService {
     private final UserRepository userRepository;
 
     @SneakyThrows
-    public LessonResponse create(LessonCR createRequest, MultipartFile lessonVideo, MultipartFile coverOfLesson,UUID teacherId)  {
+    public LessonResponse create(LessonCR createRequest, MultipartFile lessonVideo, MultipartFile coverOfLesson)  {
         ModuleEntity moduleEntity = moduleRepository.findById(createRequest.getModuleId())
                 .orElseThrow(() -> new DataNotFoundException("Module not found with this id " + createRequest.getModuleId()));
-        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(teacherId)
-                .orElseThrow(() -> new DataNotFoundException("Teacher not found with this id " + teacherId));
+        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(createRequest.getTeacherId())
+                .orElseThrow(() -> new DataNotFoundException("Teacher not found with this id " + createRequest.getTeacherId()));
         if (lessonRepository.existsByModuleAndTitle(moduleEntity, createRequest.getTitle())) {
             throw new DataAlreadyExistsException("Lesson already exists with this title : " + createRequest.getTitle() + " in module id : " + createRequest.getModuleId());
         }

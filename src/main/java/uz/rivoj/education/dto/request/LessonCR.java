@@ -14,8 +14,10 @@ import java.util.UUID;
 @ToString
 public class LessonCR {
     private String title;
+    private UUID teacherId;
     private UUID moduleId;
     private String description;
     private List<String> additionalLinks;
+
 
 }
