@@ -60,7 +60,7 @@ public class BaseControllerAdminTeacher {
     public ResponseEntity<Map<String, Object>> getAllByRole(
             @RequestParam UserRole role,
             @RequestParam(required = false) String searchTerm,
-            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "1") int pageNumber,
             @RequestParam(defaultValue = "20") int pageSize) {
         return ResponseEntity.ok(userService.getAllByRole(role, searchTerm, pageNumber, pageSize));
     }
@@ -87,17 +87,27 @@ public class BaseControllerAdminTeacher {
         return ResponseEntity.status(200).body(moduleService.getAllModulesOfSubject(subjectId));
     }
 
-    @GetMapping("/getStatisticsByModule")
-    public ResponseEntity<List<StudentStatisticsDTO>> getStudentStatisticsByModule(
-            @RequestParam UUID moduleId
-    ) {
-        return ResponseEntity.ok(studentService.getStudentStatisticsByModule(moduleId));
-    }
+//    @GetMapping("/getStatisticsByModule")
+//    public ResponseEntity<List<StudentStatisticsDTO>> getStudentStatisticsByModule(
+//            @RequestParam UUID moduleId
+//    ) {
+//        return ResponseEntity.ok(studentService.getStudentStatisticsByModule(moduleId));
+//    }
+//
+//    @GetMapping("/getAllStatisticsOnCurrentModule")
+//    public ResponseEntity<List<StudentStatisticsDTO>> getAllStudentStatisticsOnCurrentModule(
+//            @RequestParam UUID subjectId
+//    ) {
+//        return ResponseEntity.ok(studentService.getAllStudentStatisticsOnCurrentModule(subjectId));
+//    }
 
-    @GetMapping("/getAllStatisticsOnCurrentModule")
-    public ResponseEntity<List<StudentStatisticsDTO>> getAllStudentStatisticsOnCurrentModule(
-            @RequestParam UUID subjectId
-    ) {
-        return ResponseEntity.ok(studentService.getAllStudentStatisticsOnCurrentModule2(subjectId));
+    @GetMapping("/getStatistics")
+    public ResponseEntity<Map<String, Object>> getStatistics(
+            @RequestParam(required = false)UUID subjectId,
+            @RequestParam(required = false) UUID moduleId,
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(defaultValue = "1") int pageNumber,
+            @RequestParam(defaultValue = "20") int pageSize) {
+        return ResponseEntity.ok(studentService.getStatistics(moduleId, subjectId, searchTerm, pageNumber, pageSize));
     }
 }

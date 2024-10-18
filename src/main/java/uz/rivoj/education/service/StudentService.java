@@ -48,25 +48,7 @@ public class StudentService {
     private final CommentRepository commentRepository;
     private final ModuleService moduleService;
 
-    public List<StudentResponse> getAll(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        List<UserEntity> all = userRepository.findAllByRole(UserRole.STUDENT,pageable).getContent();
-        List<StudentResponse> responses = new ArrayList<>();
-        for (UserEntity userEntity : all) {
-            StudentResponse studentResponse = modelMapper.map(userEntity, StudentResponse.class);
-            Optional<StudentInfo> studentInfo = studentInfoRepository.findByStudentId(userEntity.getId());
-            if (studentInfo.isPresent()) {
-                studentResponse.setId((studentInfo.get().getId()));
-                studentResponse.setAvatar(studentInfo.get().getAvatar());
-                studentResponse.setBirth(studentInfo.get().getBirthday());
-                studentResponse.setSubjectId(studentInfo.get().getSubject().getId());
-                studentResponse.setCurrentLessonId(studentInfo.get().getLesson().getId());
-                responses.add(studentResponse);
-            }
 
-            }
-        return responses;
-    }
     public String addStudent(StudentCR studentCR) {
         if (userRepository.findByPhoneNumber(studentCR.getPhoneNumber()).isPresent()) {
             throw new DataAlreadyExistsException("Student already exists with this phone number: " + studentCR.getPhoneNumber());
@@ -108,14 +90,6 @@ public class StudentService {
     }
 
 
-    public String changePassword() {
-        List<UserEntity> all = userRepository.findAll();
-        for (UserEntity user : all) {
-            user.setPassword(passwordEncoder.encode("12345678"));
-            userRepository.save(user);
-        }
-        return "Password changed";
-    }
 
     public StudentResponse updateProfile(StudentUpdate studentUpdate, UUID studentId) {
         StudentInfo studentInfo = studentInfoRepository.findByStudentId(studentId)
@@ -224,81 +198,37 @@ public class StudentService {
         return "Uploaded!";
     }
 
-    public List<StudentStatisticsDTO> getStudentStatisticsByModule(UUID moduleId) {
-        List<StudentStatisticsDTO> studentStatisticsDTOs = new ArrayList<>();
-        ModuleEntity module = moduleRepository.findById(moduleId)
-                .orElseThrow(() -> new DataNotFoundException("Module not found!"));
-        SubjectEntity subjectEntity = subjectRepository.findByModules_Id(moduleId)
-                .orElseThrow(() -> new DataNotFoundException("Subject not found!"));
-        List<StudentInfo> studentInfoList = studentInfoRepository.findBySubject_Id(subjectEntity.getId())
-                .orElseThrow(() -> new DataNotFoundException("Students not found"));
-        studentInfoList.forEach(studentInfo -> {
-            StudentStatisticsDTO studentStatisticsDTO = new StudentStatisticsDTO();
-            studentStatisticsDTO.setStudentName(studentInfo.getStudent().getName());
-            studentStatisticsDTO.setStudentSurname(studentInfo.getStudent().getSurname());
-            studentStatisticsDTO.setAvatar(studentInfo.getAvatar());
-            List<Integer> scoreList = new ArrayList<>();
-            Optional<List<LessonEntity>> lessonEntities = lessonRepository.findAllByModule_IdOrderByNumberAsc(studentInfo.getCurrentModule().getId());
-            if (lessonEntities.isPresent()) {
-                List<LessonEntity> lessonEntityList = lessonEntities.get();
-                lessonEntityList.forEach(lesson -> {
-                    Optional<AttendanceEntity> attendance = attendanceRepository.findByStudent_IdAndLesson_IdAndStatusIs(studentInfo.getId(), lesson.getId(),CHECKED);
-                    attendance.ifPresent(attendanceEntity -> scoreList.add(attendanceEntity.getScore()));
-                });
-                studentStatisticsDTO.setLessonCount(lessonEntityList.size()+1);
-                studentStatisticsDTO.setScoreList(scoreList);
-                studentStatisticsDTOs.add(studentStatisticsDTO);
-            }
-        });
-        return studentStatisticsDTOs;
-    }
-
-    public List<StudentStatisticsDTO> getAllStudentStatisticsOnCurrentModule(UUID teacherId) {
-        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(teacherId)
-                .orElseThrow(() -> new DataNotFoundException("Teacher not found!"));
-        List<StudentInfo> studentInfoList = studentInfoRepository.findBySubjectId(teacherInfo.getSubject().getId())
-                .orElseThrow(() -> new DataNotFoundException("Students not found!"));
-        List<StudentStatisticsDTO> studentStatisticsDTOList = new ArrayList<>();
-        studentInfoList.forEach(studentInfo -> {
-            StudentStatisticsDTO studentStatisticsDTO = new StudentStatisticsDTO();
-            studentStatisticsDTO.setStudentName(studentInfo.getStudent().getName());
-            studentStatisticsDTO.setStudentSurname(studentInfo.getStudent().getSurname());
-            studentStatisticsDTO.setAvatar(studentInfo.getAvatar());
-            List<Integer> scoreList = new ArrayList<>();
-            Optional<List<LessonEntity>> lessonEntities = lessonRepository.findAllByModule_IdOrderByNumberAsc(studentInfo.getCurrentModule().getId());
-            if (lessonEntities.isPresent()) {
-                List<LessonEntity> lessonEntityList = lessonEntities.get();
-                lessonEntityList.forEach(lesson -> {
-                    Optional<AttendanceEntity> attendance = attendanceRepository.findByStudent_IdAndLesson_IdAndStatusIs(studentInfo.getId(), lesson.getId(),CHECKED);
-                    attendance.ifPresent(attendanceEntity -> scoreList.add(attendanceEntity.getScore()));
-                });
-                studentStatisticsDTO.setScoreList(scoreList);
-                studentStatisticsDTOList.add(studentStatisticsDTO);
-            }
-
-        });
-        return studentStatisticsDTOList;
-    }
 
 
-    public ProgressResponse getStudentProgress(UUID moduleId, UUID studentId) {
-        StudentInfo studentInfo = studentInfoRepository.findByStudentId(studentId)
-                .orElseThrow(() -> new DataNotFoundException("Student not found!"));
-        Optional<List<LessonEntity>> lessonEntities = lessonRepository.findAllByModule_IdOrderByNumberAsc(moduleId);
-        ProgressResponse progressResponse = new ProgressResponse();
-        if (lessonEntities.isPresent()) {
-            List<LessonEntity> lessons = lessonEntities.get();
-            progressResponse.setLessonCount(lessons.size()+1);
-            List<Integer> scoreList = new ArrayList<>();
-            lessons.forEach(lessonEntity -> {
-                Optional<AttendanceEntity> attendance = attendanceRepository.findByStudentIdAndLessonId(studentInfo.getId(), lessonEntity.getId());
-                attendance.ifPresent(attendanceEntity -> scoreList.add(attendanceEntity.getScore()));
-            });
-            progressResponse.setScoreList(scoreList);
-        }
-        return progressResponse;
+//    public List<StudentStatisticsDTO> getAllStudentStatisticsOnCurrentModule(UUID teacherId) {
+//        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(teacherId)
+//                .orElseThrow(() -> new DataNotFoundException("Teacher not found!"));
+//        List<StudentInfo> studentInfoList = studentInfoRepository.findBySubjectId(teacherInfo.getSubject().getId())
+//                .orElseThrow(() -> new DataNotFoundException("Students not found!"));
+//        List<StudentStatisticsDTO> studentStatisticsDTOList = new ArrayList<>();
+//        studentInfoList.forEach(studentInfo -> {
+//            StudentStatisticsDTO studentStatisticsDTO = new StudentStatisticsDTO();
+//            studentStatisticsDTO.setStudentName(studentInfo.getStudent().getName());
+//            studentStatisticsDTO.setStudentSurname(studentInfo.getStudent().getSurname());
+//            studentStatisticsDTO.setAvatar(studentInfo.getAvatar());
+//            List<Integer> scoreList = new ArrayList<>();
+//            Optional<List<LessonEntity>> lessonEntities = lessonRepository.findAllByModule_IdOrderByNumberAsc(studentInfo.getCurrentModule().getId());
+//            if (lessonEntities.isPresent()) {
+//                List<LessonEntity> lessonEntityList = lessonEntities.get();
+//                lessonEntityList.forEach(lesson -> {
+//                    Optional<AttendanceEntity> attendance = attendanceRepository.findByStudent_IdAndLesson_IdAndStatusIs(studentInfo.getId(), lesson.getId(),CHECKED);
+//                    attendance.ifPresent(attendanceEntity -> scoreList.add(attendanceEntity.getScore()));
+//                });
+//                studentStatisticsDTO.setScoreList(scoreList);
+//                studentStatisticsDTOList.add(studentStatisticsDTO);
+//            }
+//
+//        });
+//        return studentStatisticsDTOList;
+//    }
 
-    }
+
+
 
     public List<ProgressResponse> getStudentProgress(UUID studentId) {
         StudentInfo studentInfo = studentInfoRepository.findByStudentId(studentId)
@@ -353,9 +283,51 @@ public class StudentService {
         }throw  new RuntimeException("Verification code expired!");
     }
 
-    public List<StudentStatisticsDTO> getAllStudentStatisticsOnCurrentModule2(UUID subjectId) {
-        List<StudentInfo> studentInfoList = studentInfoRepository.findBySubjectId(subjectId)
-                .orElseThrow(() -> new DataNotFoundException("Students not found!"));
+//    public List<StudentStatisticsDTO> getAllStudentStatisticsOnCurrentModule(UUID subjectId) {
+//        List<StudentInfo> studentInfoList = studentInfoRepository.findBySubjectId(subjectId)
+//                .orElseThrow(() -> new DataNotFoundException("Students not found!"));
+//        List<StudentStatisticsDTO> studentStatisticsDTOList = new ArrayList<>();
+//        return getStudentStatisticsDTOS(studentInfoList, studentStatisticsDTOList);
+//
+//    }
+//    public List<StudentStatisticsDTO> getStudentStatisticsByModule(UUID moduleId) {
+//        List<StudentStatisticsDTO> studentStatisticsDTOs = new ArrayList<>();
+//        moduleRepository.findById(moduleId)
+//                .orElseThrow(() -> new DataNotFoundException("Module not found!"));
+//        SubjectEntity subjectEntity = subjectRepository.findByModules_Id(moduleId)
+//                .orElseThrow(() -> new DataNotFoundException("Subject not found!"));
+//        List<StudentInfo> studentInfoList = studentInfoRepository.findBySubject_Id(subjectEntity.getId())
+//                .orElseThrow(() -> new DataNotFoundException("Students not found"));
+//        return getStudentStatisticsDTOS(studentInfoList, studentStatisticsDTOs);
+//    }
+public Map<String, Object> getStatistics(UUID moduleId, UUID subjectId, String searchTerm, int pageNumber, int pageSize) {
+    Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
+    Page<StudentInfo> studentInfoPage;
+
+    if (moduleId == null) {
+        studentInfoPage = studentInfoRepository.findBySubjectIdWithSearchTerm(subjectId, searchTerm, pageable);
+    } else {
+        moduleRepository.findById(moduleId)
+                .orElseThrow(() -> new DataNotFoundException("Module not found!"));
+        SubjectEntity subjectEntity = subjectRepository.findByModules_Id(moduleId)
+                .orElseThrow(() -> new DataNotFoundException("Subject not found!"));
+        studentInfoPage = studentInfoRepository.findBySubject_IdWithSearchTerm(subjectEntity.getId(), searchTerm, pageable);
+    }
+
+    List<StudentStatisticsDTO> studentStatisticsDTOList = getStudentStatisticsDTOS(studentInfoPage.getContent());
+
+    Map<String, Object> responseMap = new LinkedHashMap<>();
+    responseMap.put("pageNumber", studentInfoPage.getNumber() + 1);
+    responseMap.put("totalPages", studentInfoPage.getTotalPages());
+    responseMap.put("totalCount", studentInfoPage.getTotalElements());
+    responseMap.put("pageSize", studentInfoPage.getSize());
+    responseMap.put("hasPreviousPage", studentInfoPage.hasPrevious());
+    responseMap.put("hasNextPage", studentInfoPage.hasNext());
+    responseMap.put("data", studentStatisticsDTOList);
+
+    return responseMap;
+}
+    private List<StudentStatisticsDTO> getStudentStatisticsDTOS(List<StudentInfo> studentInfoList) {
         List<StudentStatisticsDTO> studentStatisticsDTOList = new ArrayList<>();
         studentInfoList.forEach(studentInfo -> {
             StudentStatisticsDTO studentStatisticsDTO = new StudentStatisticsDTO();
@@ -363,21 +335,20 @@ public class StudentService {
             studentStatisticsDTO.setStudentSurname(studentInfo.getStudent().getSurname());
             studentStatisticsDTO.setAvatar(studentInfo.getAvatar());
             List<Integer> scoreList = new ArrayList<>();
-            Optional<List<LessonEntity>> lessonEntities = lessonRepository.findAllByModule_IdOrderByNumberAsc(studentInfo.getCurrentModule().getId());
-            if (lessonEntities.isPresent()) {
-                List<LessonEntity> lessons = lessonEntities.get();
-                lessons.forEach(lesson -> {
-                    Optional<AttendanceEntity> attendance = attendanceRepository.findByStudent_IdAndLesson_IdAndStatusIs(studentInfo.getId(), lesson.getId(),CHECKED);
+            Optional<List<LessonEntity>> lessons = lessonRepository.findAllByModule_IdOrderByNumberAsc(studentInfo.getCurrentModule().getId());
+            if (lessons.isPresent()) {
+                lessons.get().forEach(lesson -> {
+                    Optional<AttendanceEntity> attendance = attendanceRepository.findByStudent_IdAndLesson_IdAndStatusIs(studentInfo.getId(), lesson.getId(), CHECKED);
                     attendance.ifPresent(attendanceEntity -> scoreList.add(attendanceEntity.getScore()));
                 });
-                studentStatisticsDTO.setLessonCount(lessons.size()+1);
-                studentStatisticsDTO.setScoreList(scoreList);
-                studentStatisticsDTOList.add(studentStatisticsDTO);
+                studentStatisticsDTO.setLessonCount(lessons.get().size() + 1);
             }
+            studentStatisticsDTO.setScoreList(scoreList);
+            studentStatisticsDTOList.add(studentStatisticsDTO);
         });
         return studentStatisticsDTOList;
-
     }
+
 
 
 }

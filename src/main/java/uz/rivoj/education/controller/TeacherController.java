@@ -114,19 +114,13 @@ public class TeacherController {
     }
 
 
-    @GetMapping("/getStatisticsByModule")
-    public ResponseEntity<List<StudentStatisticsDTO>> getStudentStatisticsByModule(
-            @RequestParam UUID moduleId
-    ) {
-        return ResponseEntity.ok(studentService.getStudentStatisticsByModule(moduleId));
-    }
+//    @GetMapping("/getStatisticsByModule")
+//    public ResponseEntity<List<StudentStatisticsDTO>> getStudentStatisticsByModule(
+//            @RequestParam UUID moduleId
+//    ) {
+//        return ResponseEntity.ok(studentService.getStudentStatisticsByModule(moduleId));
+//    }
 
-    @GetMapping("/getAllStatisticsOnCurrentModule")
-    public ResponseEntity<List<StudentStatisticsDTO>> getAllStudentStatisticsOnCurrentModule(
-            Principal principal
-    ) {
-        return ResponseEntity.ok(studentService.getAllStudentStatisticsOnCurrentModule(UUID.fromString(principal.getName())));
-    }
 
     @PutMapping(value = "/update_profile", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<TeacherResponse> createComment(
