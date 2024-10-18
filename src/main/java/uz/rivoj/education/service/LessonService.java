@@ -58,6 +58,8 @@ public class LessonService {
         }
 
         lesson.setModule(moduleEntity);
+        lesson.setAttendances(new ArrayList<>());
+        lesson.setComments(new ArrayList<>());
         lesson.setTeacherInfo(teacherInfo);
         LessonEntity savedLesson = lessonRepository.save(lesson);
         String source = uploadService.uploadFile(lessonVideo,"Lesson"+savedLesson.getNumber()+"Content");
