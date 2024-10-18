@@ -139,6 +139,11 @@ public class AdminController {
         return ResponseEntity.status(200).body(moduleService.getAllModulesOfSubject(subjectId));
     }
 
+    @GetMapping("/getTeachers")
+    public ResponseEntity<List<TeacherDTO>> getTeachers(){
+        return ResponseEntity.status(200).body(userService.getTeachers());
+    }
+
 //    @GetMapping("/getStatisticsByModule")
 //    public ResponseEntity<List<StudentStatisticsDTO>> getStudentStatisticsByModule(
 //            @RequestParam UUID moduleId

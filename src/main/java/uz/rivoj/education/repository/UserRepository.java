@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import uz.rivoj.education.dto.response.TeacherDTO;
 import uz.rivoj.education.entity.UserEntity;
 import uz.rivoj.education.entity.UserRole;
 
@@ -34,6 +35,9 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     Page<UserEntity> findAllByRoleAndSearchTerm(@Param("role") UserRole role,
                                                 @Param("searchTerm") String searchTerm,
                                                 Pageable pageable);
+
+    @Query("SELECT new uz.rivoj.education.dto.response.TeacherDTO(u.name, u.surname, u.id) FROM users u WHERE u.role = :role")
+    List<TeacherDTO> findByRole(@Param("role") UserRole role);
 
 
 }

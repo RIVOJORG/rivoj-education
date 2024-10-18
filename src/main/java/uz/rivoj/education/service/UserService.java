@@ -213,4 +213,7 @@ public class UserService {
         return responseMap;
     }
 
+    public List<TeacherDTO> getTeachers() {
+        return userRepository.findByRole(UserRole.TEACHER);
+    }
 }

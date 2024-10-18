@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import uz.rivoj.education.entity.AttendanceEntity;
+import uz.rivoj.education.entity.LessonEntity;
 import uz.rivoj.education.entity.enums.AttendanceStatus;
 
 import java.util.List;
@@ -28,4 +29,6 @@ public interface AttendanceRepository extends JpaRepository<AttendanceEntity, UU
             "WHERE s.id = :subjectId " +
             "AND a.status = 'UNCHECKED'")
     List<AttendanceEntity> findUncheckedBySubjectId(@Param("subjectId") String subjectId);
+
+
 }

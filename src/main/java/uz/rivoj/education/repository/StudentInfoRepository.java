@@ -14,7 +14,7 @@ import java.util.UUID;
 public interface StudentInfoRepository extends JpaRepository<StudentInfo, UUID> {
     Optional<StudentInfo> findByStudentId(UUID studentId);
     Optional<List<StudentInfo>> findByCurrentModule_Id(UUID currentModule_id);
-    Optional<List<StudentInfo>> findBySubject_Id(UUID subjectId, Pageable pageable);
+    Page<StudentInfo> findBySubject_Id(UUID subjectId, Pageable pageable);
     Optional<List<StudentInfo>> findTop10BySubject_idOrderByTotalScoreDesc(UUID subjectId, Pageable pageable);
     Optional<List<StudentInfo>> findTop10ByOrderByTotalScoreAsc();
     Optional<List<StudentInfo>> findBySubjectId(UUID subjectId);
@@ -22,19 +22,13 @@ public interface StudentInfoRepository extends JpaRepository<StudentInfo, UUID> 
     Optional<List<StudentInfo>> findBySubject_Id(UUID subjectId);
 
 
-    @Query("SELECT si FROM student_info si JOIN si.student student WHERE si.subject.id = :subjectId AND " +
-            "(COALESCE(:searchTerm, '') = '' OR " +
-            "LOWER(student.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-            "LOWER(student.surname) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
-    Page<StudentInfo> findBySubjectIdWithSearchTerm(@Param("subjectId") UUID subjectId,
-                                                    @Param("searchTerm") String searchTerm,
-                                                    Pageable pageable);
 
-    @Query("SELECT si FROM student_info si JOIN si.student student WHERE si.subject.id = :subjectId AND " +
+    @Query("SELECT si FROM student_info si JOIN FETCH si.student student WHERE si.subject.id = :subjectId AND " +
             "(COALESCE(:searchTerm, '') = '' OR " +
             "LOWER(student.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
             "LOWER(student.surname) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
     Page<StudentInfo> findBySubject_IdWithSearchTerm(@Param("subjectId") UUID subjectId,
                                                      @Param("searchTerm") String searchTerm,
                                                      Pageable pageable);
+
 }

@@ -138,9 +138,7 @@ public class StudentService {
         TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(teacherId)
                 .orElseThrow(() -> new DataNotFoundException("Teacher not found!"));
         Pageable pageable = PageRequest.of(page, size);
-        List<StudentInfo> students = studentInfoRepository.findBySubject_Id(teacherInfo.getSubject().getId(), pageable)
-                .orElseThrow(() -> new DataNotFoundException("Students not found!"));
-        System.out.println("Fetched students: " + students);
+        Page<StudentInfo> students = studentInfoRepository.findBySubject_Id(teacherInfo.getSubject().getId(), pageable);
         return students.stream()
                 .map(this::convertToStudentResponse)
                 .collect(Collectors.toList());
@@ -300,21 +298,20 @@ public class StudentService {
 //                .orElseThrow(() -> new DataNotFoundException("Students not found"));
 //        return getStudentStatisticsDTOS(studentInfoList, studentStatisticsDTOs);
 //    }
-public Map<String, Object> getStatistics(UUID moduleId, UUID subjectId, String searchTerm, int pageNumber, int pageSize) {
+public Map<String, Object> getStatistics(UUID moduleId, String searchTerm, int pageNumber, int pageSize) {
     Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
     Page<StudentInfo> studentInfoPage;
-
-    if (moduleId == null) {
-        studentInfoPage = studentInfoRepository.findBySubjectIdWithSearchTerm(subjectId, searchTerm, pageable);
-    } else {
-        moduleRepository.findById(moduleId)
-                .orElseThrow(() -> new DataNotFoundException("Module not found!"));
-        SubjectEntity subjectEntity = subjectRepository.findByModules_Id(moduleId)
-                .orElseThrow(() -> new DataNotFoundException("Subject not found!"));
+    moduleRepository.findById(moduleId)
+            .orElseThrow(() -> new DataNotFoundException("Module not found!"));
+    SubjectEntity subjectEntity = subjectRepository.findByModules_Id(moduleId)
+            .orElseThrow(() -> new DataNotFoundException("Subject not found!"));
+    if(searchTerm != null){
         studentInfoPage = studentInfoRepository.findBySubject_IdWithSearchTerm(subjectEntity.getId(), searchTerm, pageable);
+    }else {
+        studentInfoPage = studentInfoRepository.findBySubject_Id(subjectEntity.getId(),pageable);
     }
 
-    List<StudentStatisticsDTO> studentStatisticsDTOList = getStudentStatisticsDTOS(studentInfoPage.getContent());
+    List<StudentStatisticsDTO> studentStatisticsDTOList = getStudentStatisticsDTOS(studentInfoPage.getContent(),moduleId);
 
     Map<String, Object> responseMap = new LinkedHashMap<>();
     responseMap.put("pageNumber", studentInfoPage.getNumber() + 1);
@@ -327,27 +324,36 @@ public Map<String, Object> getStatistics(UUID moduleId, UUID subjectId, String s
 
     return responseMap;
 }
-    private List<StudentStatisticsDTO> getStudentStatisticsDTOS(List<StudentInfo> studentInfoList) {
+    private List<StudentStatisticsDTO> getStudentStatisticsDTOS(List<StudentInfo> studentInfoList, UUID moduleId) {
         List<StudentStatisticsDTO> studentStatisticsDTOList = new ArrayList<>();
+
         studentInfoList.forEach(studentInfo -> {
             StudentStatisticsDTO studentStatisticsDTO = new StudentStatisticsDTO();
             studentStatisticsDTO.setStudentName(studentInfo.getStudent().getName());
             studentStatisticsDTO.setStudentSurname(studentInfo.getStudent().getSurname());
             studentStatisticsDTO.setAvatar(studentInfo.getAvatar());
+
+
+            Optional<List<LessonEntity>> lessons = lessonRepository.findAllByModule_IdOrderByNumberAsc(moduleId);
             List<Integer> scoreList = new ArrayList<>();
-            Optional<List<LessonEntity>> lessons = lessonRepository.findAllByModule_IdOrderByNumberAsc(studentInfo.getCurrentModule().getId());
+
             if (lessons.isPresent()) {
                 lessons.get().forEach(lesson -> {
                     Optional<AttendanceEntity> attendance = attendanceRepository.findByStudent_IdAndLesson_IdAndStatusIs(studentInfo.getId(), lesson.getId(), CHECKED);
                     attendance.ifPresent(attendanceEntity -> scoreList.add(attendanceEntity.getScore()));
                 });
-                studentStatisticsDTO.setLessonCount(lessons.get().size() + 1);
+                studentStatisticsDTO.setLessonCount(lessons.get().size());
+            } else {
+                studentStatisticsDTO.setLessonCount(0);
             }
+
             studentStatisticsDTO.setScoreList(scoreList);
             studentStatisticsDTOList.add(studentStatisticsDTO);
         });
+
         return studentStatisticsDTOList;
     }
+
 
 
 
