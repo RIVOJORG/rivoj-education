@@ -87,19 +87,15 @@ public class BaseControllerAdminTeacher {
         return ResponseEntity.status(200).body(moduleService.getAllModulesOfSubject(subjectId));
     }
 
-//    @GetMapping("/getStatisticsByModule")
-//    public ResponseEntity<List<StudentStatisticsDTO>> getStudentStatisticsByModule(
-//            @RequestParam UUID moduleId
-//    ) {
-//        return ResponseEntity.ok(studentService.getStudentStatisticsByModule(moduleId));
-//    }
-//
-//    @GetMapping("/getAllStatisticsOnCurrentModule")
-//    public ResponseEntity<List<StudentStatisticsDTO>> getAllStudentStatisticsOnCurrentModule(
-//            @RequestParam UUID subjectId
-//    ) {
-//        return ResponseEntity.ok(studentService.getAllStudentStatisticsOnCurrentModule(subjectId));
-//    }
+    @DeleteMapping("/delete-module{moduleId}")
+    public ResponseEntity<String> deleteModule(@PathVariable UUID moduleId){
+        return ResponseEntity.status(200).body(moduleService.delete(moduleId));
+    }
+    @DeleteMapping("/delete-lesson{lessonId}")
+    public ResponseEntity<String> deleteLesson(@PathVariable UUID lessonId){
+        return ResponseEntity.status(200).body(lessonService.delete(lessonId));
+    }
+
 
     @GetMapping("/getStatistics")
     public ResponseEntity<Map<String, Object>> getStatistics(
@@ -108,5 +104,9 @@ public class BaseControllerAdminTeacher {
             @RequestParam(defaultValue = "1") int pageNumber,
             @RequestParam(defaultValue = "20") int pageSize) {
         return ResponseEntity.ok(studentService.getStatistics(moduleId, searchTerm, pageNumber, pageSize));
+    }
+    @DeleteMapping("/delete-attendance{id}")
+    public ResponseEntity<String> deleteAttendance(@PathVariable UUID id){
+        return ResponseEntity.status(200).body(attendanceService.delete(id));
     }
 }

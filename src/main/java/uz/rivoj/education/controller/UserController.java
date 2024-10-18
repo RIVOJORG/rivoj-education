@@ -20,7 +20,6 @@ public class UserController {
     private final UserService userService;
 
 
-
     @PostMapping("/create-comment")
     public ResponseEntity<CommentResponse> createComment(
             @RequestBody CommentCR createRequest,
@@ -28,7 +27,6 @@ public class UserController {
     ){
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.create(createRequest, UUID.fromString(principal.getName())));
     }
-
 
     @GetMapping("/get-user-details")
     public ResponseEntity<?> getUserDetails(Principal principal){
