@@ -38,12 +38,12 @@ springdoc:
 
 do:
   spaces:
-    key: DO00DE3ACUXBRFM6WJD6
-    secret: bKcrF+t4lUPGZrC+Nk/+0zsJVC0r0hWnLqBbysolMgw
-    endpoint2: https://rivojspace.blr1.digitaloceanspaces.com
-    endpoint: https://blr1.digitaloceanspaces.com
-    region: blr1
-    bucket: rivojspace
+    key: DO0082YXEHNPKRRDJF2W
+    secret: Es4wkTcPAnIiQ61m8XF7COc1WhAuyRhZRJMnAOxTkUM
+    endpoint2: https://rivojspace1.sgp1.digitaloceanspaces.com
+    endpoint: https://sgp1.digitaloceanspaces.com
+    region: sgp1
+    bucket: rivojspace1
 
 jwt:
   expiry: 604800000
