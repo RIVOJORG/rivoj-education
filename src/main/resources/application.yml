@@ -10,7 +10,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:1}
-    url: jdbc:postgresql://${DB_IP:164.90.187.178}:${DB_PORT:5433}/${DB_NAME:rivojstorage}
+    url: jdbc:postgresql://${DB_IP:159.223.33.43}:${DB_PORT:5433}/${DB_NAME:rivojstorage}
   jpa:
     open-in-view: false
     hibernate:
@@ -21,7 +21,7 @@ spring:
         format_sql: false
   data:
     redis:
-      host: 164.90.187.178
+      host: 159.223.33.43
       port: 6379
       password: 1234
 
