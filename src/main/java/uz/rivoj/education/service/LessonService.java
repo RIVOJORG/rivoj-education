@@ -36,7 +36,7 @@ public class LessonService {
     private final UserRepository userRepository;
 
     @SneakyThrows
-    public LessonResponse create(LessonCR createRequest, MultipartFile lessonVideo, MultipartFile coverOfLesson)  {
+    public LessonResponse create(LessonCR createRequest)  {
         ModuleEntity moduleEntity = moduleRepository.findById(createRequest.getModuleId())
                 .orElseThrow(() -> new DataNotFoundException("Module not found with this id " + createRequest.getModuleId()));
         TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(createRequest.getTeacherId())
@@ -62,8 +62,8 @@ public class LessonService {
         lesson.setComments(new ArrayList<>());
         lesson.setTeacherInfo(teacherInfo);
         LessonEntity savedLesson = lessonRepository.save(lesson);
-        String source = uploadService.uploadFile(lessonVideo,"Lesson"+savedLesson.getNumber()+"Content");
-        String cover = uploadService.uploadFile(coverOfLesson,"CoverOfLesson"+savedLesson.getNumber());
+        String source = uploadService.uploadFile(createRequest.getLessonVideo(),"Lesson"+savedLesson.getNumber()+"Content");
+        String cover = uploadService.uploadFile(createRequest.getCoverOfLesson(),"CoverOfLesson"+savedLesson.getNumber());
         savedLesson.setSource(source);
         savedLesson.setCover(cover);
         lessonRepository.save(savedLesson);
@@ -131,16 +131,16 @@ public class LessonService {
     }
 
     @SneakyThrows
-    public String updateLesson(LessonUpdateDTO updateDTO, MultipartFile videoFile,MultipartFile cover) {
+    public String updateLesson(LessonUpdateDTO updateDTO) {
         LessonEntity lesson = lessonRepository.findById(updateDTO.getId())
                 .orElseThrow(() -> new DataNotFoundException("Lesson not found with this id: " + updateDTO.getId()));
-        if(videoFile != null){
+        if(updateDTO.getLessonVideo() != null){
             String fileName = "Lesson"+lesson.getNumber()+"Content";
-            lesson.setSource(uploadService.uploadFile(videoFile,fileName));
+            lesson.setSource(uploadService.uploadFile(updateDTO.getLessonVideo(),fileName));
         }
-        if(cover != null){
+        if(updateDTO.getCoverOfLesson() != null){
             String fileName = "coverOfLesson"+lesson.getNumber();
-            lesson.setCover(uploadService.uploadFile(cover,fileName));
+            lesson.setCover(uploadService.uploadFile(updateDTO.getCoverOfLesson(),fileName));
         }
         if(updateDTO.getTitle() != null){
             lesson.setTitle(updateDTO.getTitle());

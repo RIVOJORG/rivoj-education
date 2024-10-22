@@ -36,24 +36,34 @@ public class BaseControllerAdminTeacher {
 
 
 
-    @PostMapping(value = "/create-lesson", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/create-lesson",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<LessonResponse> createLesson(
-            @ModelAttribute LessonCR createRequest,
-            @RequestPart("lessonVideo") MultipartFile lessonVideo,
-            @RequestPart("coverOfLesson") MultipartFile coverOfLesson
+            @RequestParam("title") String title,
+            @RequestParam("teacherId") UUID teacherId,
+            @RequestParam("moduleId") UUID moduleId,
+            @RequestParam("description") String description,
+            @RequestParam("additionalLinks") List<String> additionalLinks,
+            @RequestParam("coverOfLesson") MultipartFile coverOfLesson,
+            @RequestParam("lessonVideo") MultipartFile lessonVideo
     ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(lessonService.create(createRequest, lessonVideo,coverOfLesson));
+        return ResponseEntity.status(HttpStatus.CREATED).body(lessonService.create(new LessonCR(title,teacherId,moduleId,description,additionalLinks,coverOfLesson,lessonVideo)));
     }
 
     @PutMapping(value ="/update-lesson",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
             produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> updateLesson(
-            @RequestBody LessonUpdateDTO updateDTO,
-            @RequestPart(required = false) MultipartFile videoFile,
-            @RequestPart(required = false) MultipartFile coverOfLesson
+            @RequestParam("id") UUID id,
+            @RequestParam("title") String title,
+            @RequestParam("teacherId") UUID teacherId,
+            @RequestParam("moduleId") UUID moduleId,
+            @RequestParam("description") String description,
+            @RequestParam("additionalLinks") List<String> additionalLinks,
+            @RequestParam("coverOfLesson") MultipartFile coverOfLesson,
+            @RequestParam("lessonVideo") MultipartFile lessonVideo
+
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(lessonService.updateLesson(updateDTO,videoFile,coverOfLesson));
+        return ResponseEntity.status(HttpStatus.OK).body(lessonService.updateLesson(new LessonUpdateDTO(id,title,description,additionalLinks,coverOfLesson,lessonVideo)));
     }
 
     @GetMapping("/get-all-users-byRole")

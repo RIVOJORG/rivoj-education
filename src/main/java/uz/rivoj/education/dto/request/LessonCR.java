@@ -1,6 +1,7 @@
 package uz.rivoj.education.dto.request;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,6 +19,8 @@ public class LessonCR {
     private UUID moduleId;
     private String description;
     private List<String> additionalLinks;
+    private MultipartFile coverOfLesson;
+    private MultipartFile lessonVideo;
 
 
 }
