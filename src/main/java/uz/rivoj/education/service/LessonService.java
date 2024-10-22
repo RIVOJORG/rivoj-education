@@ -10,10 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.LessonCR;
-import uz.rivoj.education.dto.response.CommentResponse;
-import uz.rivoj.education.dto.response.LessonResponse;
-import uz.rivoj.education.dto.response.SpecialLessonResponse;
-import uz.rivoj.education.dto.response.TeacherInfoResponse;
+import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.dto.update.LessonUpdateDTO;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.exception.DataAlreadyExistsException;
@@ -67,7 +64,9 @@ public class LessonService {
         savedLesson.setSource(source);
         savedLesson.setCover(cover);
         lessonRepository.save(savedLesson);
-        return modelMapper.map(savedLesson, LessonResponse.class);
+        LessonResponse lessonResponse = modelMapper.map(savedLesson, LessonResponse.class);
+        lessonResponse.setTeacherInfo(modelMapper.map(savedLesson.getTeacherInfo(), TeacherInfoResponse.class));
+        return lessonResponse;
     }
 
 
