@@ -168,7 +168,7 @@ public class StudentService {
 
         );
     }
-
+    @Transactional
     public String uploadHomework(AttendanceCR attendanceCR, UUID userId,List<MultipartFile> files) {
         StudentInfo student = studentInfoRepository.findByStudentId(userId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found!"));
@@ -176,9 +176,11 @@ public class StudentService {
                 .orElseThrow(() -> new DataNotFoundException("Student not found!"));
         LessonEntity lesson = lessonRepository.findById(attendanceCR.getLessonId())
                 .orElseThrow(() -> new DataNotFoundException("Lesson not found!"));
-        Optional<AttendanceEntity> attendance = attendanceRepository.findByStudentIdAndLessonId(userId, lesson.getId());
+        Optional<AttendanceEntity> attendance = attendanceRepository.findByStudentIdAndLessonId(student.getId(), lesson.getId());
         AttendanceEntity attendanceEntity ;
         if (attendance.isPresent() && attendance.get().getAttemptsNumber() < 3) {
+            attendance.get().getAnswers().forEach(uploadService::deleteFile);
+            attendanceRepository.delete(attendance.get());
             List<String> homeworkPaths = new ArrayList<>();
             for (MultipartFile multipartFile : files) {
                 String fileName = user.getName() + "'s_homework";

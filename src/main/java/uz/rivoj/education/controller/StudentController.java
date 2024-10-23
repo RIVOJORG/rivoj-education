@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.AttendanceCR;
 import uz.rivoj.education.dto.request.StudentUpdate;
 import uz.rivoj.education.dto.response.*;
+import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.service.*;
 import java.security.Principal;
 import java.util.List;
@@ -35,12 +36,17 @@ public class StudentController {
     @PostMapping(value = "/upload-homework",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
             produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> uploadHomework(
+    public ResponseEntity<?> uploadHomework(
             Principal principal,
             @ModelAttribute AttendanceCR attendanceCR,
             @RequestPart List<MultipartFile> files
     ){
-        return ResponseEntity.ok(studentService.uploadHomework(attendanceCR, UUID.fromString(principal.getName()), files));
+        try {
+            String result = studentService.uploadHomework(attendanceCR, UUID.fromString(principal.getName()), files);
+            return ResponseEntity.ok(result);
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @PutMapping(value = "/update-profile")
