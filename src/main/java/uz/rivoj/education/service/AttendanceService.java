@@ -1,5 +1,6 @@
 package uz.rivoj.education.service;
 
+import jakarta.persistence.Version;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
@@ -94,46 +95,59 @@ public class AttendanceService {
         Pageable pageable = PageRequest.of(page, size);
         Optional<Page<AttendanceEntity>> attendanceEntityList = attendanceRepository.findByStatus(pageable, status);
         return getAttendanceResponses(attendanceEntityList.map(Page::getContent));
-
     }
+    @Version
     @SneakyThrows
-    public String checkAttendance(CheckAttendanceDTO checkAttendanceDTO,UUID teacherId) {
+    public String checkAttendance(CheckAttendanceDTO checkAttendanceDTO, UUID teacherId) {
         TeacherInfo teacher = teacherInfoRepository.findByTeacher_Id(teacherId)
                 .orElseThrow(() -> new DataNotFoundException("Teacher not found! " + teacherId));
+
         AttendanceEntity attendanceEntity = attendanceRepository.findById(checkAttendanceDTO.getAttendanceId())
                 .orElseThrow(() -> new DataNotFoundException("Attendance not found with this id: " + checkAttendanceDTO.getAttendanceId()));
+
+
         if (attendanceEntity.getStatus() == CHECKED) {
             throw new DataAlreadyExistsException("Attendance has already been checked");
         }
-        int score = checkAttendanceDTO.getScore();
+
         StudentInfo studentInfo = attendanceEntity.getStudent();
         if (studentInfo == null) {
             throw new DataNotFoundException("Student not found for this attendance");
         }
+
         int currentCoin = studentInfo.getCoin() != null ? studentInfo.getCoin() : 0;
         int totalScore = studentInfo.getTotalScore() != null ? studentInfo.getTotalScore() : 0;
+        int score = checkAttendanceDTO.getScore();
 
-        if (score < 70) {
-            attendanceEntity.setStatus(CHECKED);
-            attendanceEntity.setCoin(attendanceEntity.getCoin() - ((70 - score) / 10));
-            currentCoin -= (70 - score) / 10;
-        } else {
-            attendanceEntity.setStatus(CHECKED);
-            attendanceEntity.setScore(score);
-            attendanceEntity.setCoin(attendanceEntity.getCoin() + ((score + 5) / 10));
-            currentCoin += (score + 5) / 10;
-            totalScore += score;
-        }
-        studentInfo.setCoin(currentCoin);
-        studentInfo.setTotalScore(totalScore);
+
+        attendanceEntity.setStatus(CHECKED);
+        attendanceEntity.setScore(score);
         attendanceEntity.setFeedBack(checkAttendanceDTO.getFeedBack());
         attendanceEntity.setUpdatedDate(LocalDateTime.now());
         attendanceEntity.setTeacher(teacher);
+
+        if (score < 70) {
+            int coinPenalty = (70 - score) / 10;
+            attendanceEntity.setCoin(attendanceEntity.getCoin() - coinPenalty);
+            currentCoin -= coinPenalty;
+        } else {
+            int coinBonus = (score + 5) / 10;
+            attendanceEntity.setCoin(attendanceEntity.getCoin() + coinBonus);
+            currentCoin += coinBonus;
+            totalScore += score;
+        }
+
+
+        studentInfo.setCoin(currentCoin);
+        studentInfo.setTotalScore(totalScore);
+
+        // Save studentInfo and attendanceEntity in a single transaction
         studentRepository.save(studentInfo);
         attendanceRepository.save(attendanceEntity);
-        return "Attendance successfully checked";
 
+        return "Attendance successfully checked";
     }
+
 
     @Transactional
     public AttendanceResponse getAttendanceByLessonId(UUID userId, UUID lessonId) {
