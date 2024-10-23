@@ -45,7 +45,9 @@ public class SubjectService {
             moduleEntity.setNumber(i);
             moduleRepository.save(moduleEntity);
         }
-        return modelMapper.map(createRequest, SubjectResponse.class);
+        SubjectResponse subjectResponse = modelMapper.map(createRequest, SubjectResponse.class);
+        subjectResponse.setId(subjectEntity.getId());
+        return subjectResponse;
     }
 
     public String delete(UUID subjectId){
