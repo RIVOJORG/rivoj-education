@@ -55,8 +55,6 @@ public class BaseControllerAdminTeacher {
     public ResponseEntity<String> updateLesson(
             @RequestParam("id") UUID id,
             @RequestParam("title") String title,
-            @RequestParam("teacherId") UUID teacherId,
-            @RequestParam("moduleId") UUID moduleId,
             @RequestParam("description") String description,
             @RequestParam("additionalLinks") List<String> additionalLinks,
             @RequestParam("coverOfLesson") MultipartFile coverOfLesson,

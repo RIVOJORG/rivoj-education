@@ -168,8 +168,10 @@ public class UserService {
                 TeacherResponse teacherResponse = modelMapper.map(teacherEntity, TeacherResponse.class);
                 TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(teacherEntity.getId())
                         .orElseThrow(() -> new DataNotFoundException("Teacher not found " + teacherEntity.getId()));
-                SubjectResponse subjectResponse = new SubjectResponse(teacherInfo.getSubject().getTitle(), teacherInfo.getSubject().getId());
-                teacherResponse.setSubject(subjectResponse);
+                if(teacherInfo.getSubject() != null){
+                    SubjectResponse subjectResponse = new SubjectResponse(teacherInfo.getSubject().getTitle(), teacherInfo.getSubject().getId());
+                    teacherResponse.setSubject(subjectResponse);
+                }
                 teacherResponse.setBirthday(teacherInfo.getBirthday());
                 teacherResponse.setAbout(teacherInfo.getAbout());
                 teacherResponse.setStatus(teacherEntity.getUserStatus());
