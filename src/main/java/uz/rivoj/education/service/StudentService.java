@@ -176,24 +176,54 @@ public class StudentService {
                 .orElseThrow(() -> new DataNotFoundException("Student not found!"));
         LessonEntity lesson = lessonRepository.findById(attendanceCR.getLessonId())
                 .orElseThrow(() -> new DataNotFoundException("Lesson not found!"));
-        List<String> homeworkPaths = new ArrayList<>();
-        for (MultipartFile multipartFile : files) {
-            String fileName = user.getName() + "'s_homework";
-            try {
-                homeworkPaths.add(uploadService.uploadFile(multipartFile, fileName));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+        Optional<AttendanceEntity> attendance = attendanceRepository.findByStudentIdAndLessonId(userId, lesson.getId());
+        AttendanceEntity attendanceEntity ;
+        if (attendance.isPresent() && attendance.get().getAttemptsNumber() < 3) {
+            List<String> homeworkPaths = new ArrayList<>();
+            for (MultipartFile multipartFile : files) {
+                String fileName = user.getName() + "'s_homework";
+                try {
+                    homeworkPaths.add(uploadService.uploadFile(multipartFile, fileName));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
+            attendanceEntity = AttendanceEntity.builder()
+                    .answers(homeworkPaths)
+                    .coin(0)
+                    .lesson(lesson)
+                    .student(student)
+                    .attemptsNumber(attendance.get().getAttemptsNumber()+1)
+                    .status(UNCHECKED)
+                    .build();
+            attendanceRepository.save(attendanceEntity);
+            return "Uploaded!";
         }
-        AttendanceEntity attendanceEntity = AttendanceEntity.builder()
-                .answers(homeworkPaths)
-                .coin(0)
-                .lesson(lesson)
-                .student(student)
-                .status(UNCHECKED)
-                .build();
-        attendanceRepository.save(attendanceEntity);
-        return "Uploaded!";
+        else if (attendance.isEmpty() ) {
+            List<String> homeworkPaths = new ArrayList<>();
+            for (MultipartFile multipartFile : files) {
+                String fileName = user.getName() + "'s_homework";
+                try {
+                    homeworkPaths.add(uploadService.uploadFile(multipartFile, fileName));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            attendanceEntity = AttendanceEntity.builder()
+                    .answers(homeworkPaths)
+                    .coin(0)
+                    .lesson(lesson)
+                    .student(student)
+                    .attemptsNumber(1)
+                    .status(UNCHECKED)
+                    .build();
+            attendanceRepository.save(attendanceEntity);
+            return "Uploaded!";
+        }
+        else {
+            throw new DataNotFoundException("Attempts more than 3 times you cannot upload!");
+        }
+
     }
 
 
