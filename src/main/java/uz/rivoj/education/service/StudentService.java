@@ -386,6 +386,40 @@ public Map<String, Object> getStatistics(UUID moduleId, String searchTerm, int p
     }
 
 
+    public Map<String, Object> getStatistics2(UUID moduleId, String searchTerm, int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
+        Page<StudentInfo> studentInfoPage;
+        moduleRepository.findById(moduleId)
+                .orElseThrow(() -> new DataNotFoundException("Module not found!"));
+        SubjectEntity subjectEntity = subjectRepository.findByModules_Id(moduleId)
+                .orElseThrow(() -> new DataNotFoundException("Subject not found!"));
+        if(searchTerm != null){
+            studentInfoPage = studentInfoRepository.findBySubject_IdWithSearchTerm(subjectEntity.getId(), searchTerm, pageable);
+        }else {
+            studentInfoPage = studentInfoRepository.findBySubject_Id(subjectEntity.getId(),pageable);
+        }
 
+        List<StudentStatisticsDTO2> studentStatisticsDTOList = new ArrayList<>();
 
+        studentInfoPage.getContent().forEach(studentInfo ->{
+            StudentStatisticsDTO2 studentStatisticsDTO = new StudentStatisticsDTO2();
+            studentStatisticsDTO.setStudentName(studentInfo.getStudent().getName());
+            studentStatisticsDTO.setStudentSurname(studentInfo.getStudent().getSurname());
+            studentStatisticsDTO.setAvatar(studentInfo.getStudent().getAvatar());
+            studentStatisticsDTO.setAttendanceDTOList(attendanceRepository.findAttendanceByStudentIdAndModuleId(studentInfo.getId(),moduleId));
+            studentStatisticsDTOList.add(studentStatisticsDTO);
+        });
+
+        Map<String, Object> responseMap = new LinkedHashMap<>();
+        responseMap.put("pageNumber", studentInfoPage.getNumber() + 1);
+        responseMap.put("totalPages", studentInfoPage.getTotalPages());
+        responseMap.put("totalCount", studentInfoPage.getTotalElements());
+        responseMap.put("pageSize", studentInfoPage.getSize());
+        responseMap.put("hasPreviousPage", studentInfoPage.hasPrevious());
+        responseMap.put("hasNextPage", studentInfoPage.hasNext());
+        responseMap.put("lessonCount", lessonRepository.getLessonCount(moduleId)+1);
+        responseMap.put("data", studentStatisticsDTOList);
+
+        return responseMap;
+    }
 }

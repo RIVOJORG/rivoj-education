@@ -23,7 +23,7 @@ public class AttendanceEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "lesson_id", referencedColumnName = "id")
     private LessonEntity lesson;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "attendance_answers", joinColumns = @JoinColumn(name = "attendance_id"))
     @Column(name = "answer")
     private List<String> answers;

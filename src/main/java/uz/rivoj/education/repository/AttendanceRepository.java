@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import uz.rivoj.education.dto.response.AttendanceDTO;
 import uz.rivoj.education.entity.AttendanceEntity;
 import uz.rivoj.education.entity.LessonEntity;
 import uz.rivoj.education.entity.enums.AttendanceStatus;
@@ -26,9 +27,14 @@ public interface AttendanceRepository extends JpaRepository<AttendanceEntity, UU
             "JOIN a.lesson l " +
             "JOIN l.module m " +
             "JOIN m.subject s " +
-            "WHERE s.id = :subjectId " +
-            "AND a.status = 'UNCHECKED'")
-    List<AttendanceEntity> findUncheckedBySubjectId(@Param("subjectId") String subjectId);
+            "WHERE s.id = :subjectId AND a.status = 'UNCHECKED'")
+    Optional<List<AttendanceEntity>> findUncheckedAttendanceBySubjectId(@Param("subjectId") UUID subjectId);
 
+    @Query("SELECT new uz.rivoj.education.dto.response.AttendanceDTO(a.id, a.score) FROM attendance a " +
+            "JOIN a.lesson l " +
+            "JOIN l.module m " +
+            "WHERE a.student.id = :studentId AND m.id = :moduleId " +
+            "ORDER BY l.number")
+    List<AttendanceDTO> findAttendanceByStudentIdAndModuleId(@Param("studentId") UUID studentId, @Param("moduleId") UUID moduleId);
 
 }

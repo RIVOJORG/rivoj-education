@@ -23,31 +23,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequiredArgsConstructor
 public class TeacherController {
     private final AttendanceService attendanceService;
-    private final ModuleService moduleService;
     private final TeacherService teacherService;
-
-
-    @GetMapping("/get-attendance-by-status")
-    public List<AttendanceResponse> getAllAttendanceByStatus(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam AttendanceStatus status){
-        return attendanceService.getAllAttendanceByStatus(page, size, status);
-    }
 
     @PutMapping("/check-attendance")
     public ResponseEntity<String> checkAttendance(@RequestBody CheckAttendanceDTO checkAttendanceDTO,Principal principal) {
         return ResponseEntity.status(200).body(attendanceService.checkAttendance(checkAttendanceDTO,UUID.fromString(principal.getName())));
     }
 
-    @GetMapping("/get-all-attendance-by-userId{userId}")
-    public ResponseEntity<List<AttendanceResponse>> getAllUserAttendance(@PathVariable UUID userId){
-        return ResponseEntity.ok(attendanceService.getAllUserAttendance(userId));
-    }
-    @GetMapping("/get-attendance/{id}")
-    public ResponseEntity<AttendanceResponse> getAttendanceById(@PathVariable UUID id) {
-        return ResponseEntity.ok(attendanceService.findByAttendanceId(id));
-    }
 
     @PutMapping(value = "/update_profile", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<TeacherResponse> createComment(
@@ -56,22 +38,9 @@ public class TeacherController {
             @RequestPart(value = "ProfilePicture",required = false) MultipartFile picture){
         return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.updateProfile(teacherUpdate,picture, UUID.fromString(principal.getName())));
     }
-    @PostMapping("/create-module")
-    public ResponseEntity<ModuleResponse> createModule(@RequestBody Integer moduleNumber, Principal principal){
-        return ResponseEntity.status(HttpStatus.CREATED).body(moduleService.create(moduleNumber, UUID.fromString(principal.getName())));
-    }
 
-    @GetMapping("/getAllLessonsByModule/{moduleId}")
-    public ResponseEntity<List<LessonResponse>> getAllLessonsByModule(@PathVariable UUID moduleId){
-        return ResponseEntity.status(200).body(moduleService.getAllLessonsByModule(moduleId));
-    }
-    @GetMapping("/getUncheckedAttendanceResponse{attendanceId}")
-    public ResponseEntity<UncheckedAttendanceResponse> getUncheckedAttendanceResponse(@PathVariable UUID attendanceId){
-        return ResponseEntity.status(200).body(attendanceService.getUncheckedAttendanceResponse(attendanceId));
-    }
-
-    @GetMapping("/get-unchecked-attendances-by-subjectId{subjectId}")
-    public ResponseEntity<List<AttendanceResponse>> getUncheckedAttendancesBySubjectId(@PathVariable UUID subjectId){
-        return ResponseEntity.status(200).body(attendanceService.getUncheckedAttendancesBySubjectId(subjectId));
+    @GetMapping("/get-unchecked-attendances")
+    public ResponseEntity<List<UncheckedAttendanceResponse>> getUncheckedAttendancesBySubjectId(Principal principal){
+        return ResponseEntity.status(200).body(attendanceService.getUncheckedAttendances(UUID.fromString(principal.getName())));
     }
 }

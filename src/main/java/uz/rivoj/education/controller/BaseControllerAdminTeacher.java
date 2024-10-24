@@ -9,10 +9,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.LessonCR;
-import uz.rivoj.education.dto.response.LessonResponse;
-import uz.rivoj.education.dto.response.ModuleResponse;
-import uz.rivoj.education.dto.response.SpecialLessonResponse;
-import uz.rivoj.education.dto.response.StudentStatisticsDTO;
+import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.dto.update.LessonUpdateDTO;
 import uz.rivoj.education.entity.UserRole;
 import uz.rivoj.education.service.*;
@@ -113,8 +110,22 @@ public class BaseControllerAdminTeacher {
             @RequestParam(defaultValue = "20") int pageSize) {
         return ResponseEntity.ok(studentService.getStatistics(moduleId, searchTerm, pageNumber, pageSize));
     }
+
+    @GetMapping("/getStatistics2")
+    public ResponseEntity<Map<String, Object>> getStatistics2(
+            @RequestParam(required = false) UUID moduleId,
+            @RequestParam(required = false) String searchTerm,
+            @RequestParam(defaultValue = "1") int pageNumber,
+            @RequestParam(defaultValue = "20") int pageSize) {
+        return ResponseEntity.ok(studentService.getStatistics2(moduleId, searchTerm, pageNumber, pageSize));
+    }
     @DeleteMapping("/delete-attendance{id}")
     public ResponseEntity<String> deleteAttendance(@PathVariable UUID id){
         return ResponseEntity.status(200).body(attendanceService.delete(id));
+    }
+
+    @GetMapping("/get-attendance/{id}")
+    public ResponseEntity<AttendanceResponse> getAttendanceById(@PathVariable UUID id) {
+        return ResponseEntity.ok(attendanceService.findByAttendanceId(id));
     }
 }

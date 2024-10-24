@@ -3,6 +3,7 @@ package uz.rivoj.education.service;
 import jakarta.persistence.Version;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +32,7 @@ public class AttendanceService {
     private final TeacherInfoRepository teacherInfoRepository;
     private final ModelMapper modelMapper;
     private final LessonRepository lessonRepository;
+    private final UserRepository userRepository;
 
     public AttendanceResponse getAttendance(UUID id) {
         AttendanceEntity attendance = attendanceRepository.findById(id)
@@ -38,11 +40,14 @@ public class AttendanceService {
         return modelMapper.map(attendance, AttendanceResponse.class);
     }
 
+    @Transactional
     public AttendanceResponse findByAttendanceId(UUID attendanceId) {
         AttendanceEntity attendanceEntity = attendanceRepository.findById(attendanceId)
                 .orElseThrow(() -> new DataNotFoundException("Attendance not found with this id: " + attendanceId));
+        Hibernate.initialize(attendanceEntity.getAnswers());
         return AttendanceResponse.builder()
                 .coin(attendanceEntity.getCoin())
+                .id(attendanceEntity.getId())
                 .feedBack(attendanceEntity.getFeedBack())
                 .status(attendanceEntity.getStatus())
                 .lesson_id(attendanceEntity.getLesson().getId())
@@ -59,11 +64,7 @@ public class AttendanceService {
         return "Successfully Deleted!";
     }
 
-    public List<AttendanceResponse> getAllUserAttendance(UUID userId) {
-        Optional<List<AttendanceEntity>> attendanceEntityList = attendanceRepository.findByStudentId(userId);
-        return getAttendanceResponses(attendanceEntityList);
 
-    }
 
     private List<AttendanceResponse> getAttendanceResponses(Optional<List<AttendanceEntity>> attendanceEntityList) {
         if(attendanceEntityList.isPresent()) {
@@ -83,7 +84,6 @@ public class AttendanceService {
                         .build());
             }
             return attendanceResponseList;
-
         }else {
             throw new DataNotFoundException("Attendance not found!");
         }
@@ -91,11 +91,7 @@ public class AttendanceService {
 
 
 
-    public List<AttendanceResponse> getAllAttendanceByStatus(int page, int size, AttendanceStatus status) {
-        Pageable pageable = PageRequest.of(page, size);
-        Optional<Page<AttendanceEntity>> attendanceEntityList = attendanceRepository.findByStatus(pageable, status);
-        return getAttendanceResponses(attendanceEntityList.map(Page::getContent));
-    }
+
     @Version
     @SneakyThrows
     public String checkAttendance(CheckAttendanceDTO checkAttendanceDTO, UUID teacherId) {
@@ -163,26 +159,30 @@ public class AttendanceService {
         return attendanceResponse;
     }
 
-    public UncheckedAttendanceResponse getUncheckedAttendanceResponse(UUID attendanceId) {
-        AttendanceEntity attendanceEntity = attendanceRepository.findById(attendanceId)
-                .orElseThrow(() -> new DataNotFoundException("Attendance not found with this id: " + attendanceId));
-       return UncheckedAttendanceResponse.builder()
-                .attendanceId(attendanceEntity.getId())
-                .attendanceSource(attendanceEntity.getLesson().getSource())
-                .attendanceCover(attendanceEntity.getLesson().getCover())
-                .currentModule(attendanceEntity.getStudent().getCurrentModule().getNumber())
-                .currentLesson(attendanceEntity.getStudent().getLesson().getNumber())
-                .studentName(attendanceEntity.getStudent().getStudent().getName())
-                .studentSurname(attendanceEntity.getStudent().getStudent().getSurname()).build();
+
+
+
+    public List<UncheckedAttendanceResponse> getUncheckedAttendances(UUID teacherId) {
+        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(teacherId)
+                .orElseThrow(() -> new DataNotFoundException("Teacher not found with this id: " + teacherId));
+
+        List<UncheckedAttendanceResponse> attendanceResponseList = new ArrayList<>();
+        Optional<List<AttendanceEntity>> uncheckedAttendanceList = attendanceRepository.findUncheckedAttendanceBySubjectId(teacherInfo.getSubject().getId());
+        uncheckedAttendanceList.ifPresent(attendanceEntities -> attendanceEntities.forEach(attendanceEntity -> {
+            UncheckedAttendanceResponse attendanceResponse = new UncheckedAttendanceResponse();
+            attendanceResponse.setAttendanceId(attendanceEntity.getId());
+            attendanceResponse.setAnswerList(attendanceEntity.getAnswers());
+            attendanceResponse.setModuleNumber(attendanceEntity.getStudent().getCurrentModule().getNumber());
+            attendanceResponse.setAvatar(attendanceEntity.getStudent().getStudent().getAvatar());
+            attendanceResponse.setLessonNumber(attendanceEntity.getLesson().getNumber());
+            attendanceResponse.setStudentName(attendanceEntity.getStudent().getStudent().getName());
+            attendanceResponse.setStudentSurname(attendanceEntity.getStudent().getStudent().getSurname());
+            attendanceResponse.setStudentId(attendanceEntity.getStudent().getStudent().getId());
+            attendanceResponse.setAvatar(attendanceEntity.getStudent().getStudent().getAvatar());
+            attendanceResponseList.add(attendanceResponse);
+        }));
+        return attendanceResponseList;
+
+
     }
-
-    public List<AttendanceResponse> getUncheckedAttendancesBySubjectId(UUID subjectId){
-        List<AttendanceResponse> list = new ArrayList<>();
-        for (AttendanceEntity attendanceEntity : attendanceRepository.findUncheckedBySubjectId(subjectId.toString())) {
-            list.add(modelMapper.map(attendanceEntity, AttendanceResponse.class));
-        }
-        return list;
-    }
-
-
 }
