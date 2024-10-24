@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.rivoj.education.dto.response.AttendanceResponse;
+import uz.rivoj.education.dto.response.AttendanceSpecialResponse;
 import uz.rivoj.education.dto.response.UncheckedAttendanceResponse;
 import uz.rivoj.education.dto.update.CheckAttendanceDTO;
 import uz.rivoj.education.entity.*;
@@ -41,22 +42,16 @@ public class AttendanceService {
     }
 
     @Transactional
-    public AttendanceResponse findByAttendanceId(UUID attendanceId) {
-        AttendanceEntity attendanceEntity = attendanceRepository.findById(attendanceId)
+    public AttendanceSpecialResponse findByAttendanceId(UUID attendanceId) {
+        AttendanceEntity attendance = attendanceRepository.findById(attendanceId)
                 .orElseThrow(() -> new DataNotFoundException("Attendance not found with this id: " + attendanceId));
-        Hibernate.initialize(attendanceEntity.getAnswers());
-        return AttendanceResponse.builder()
-                .coin(attendanceEntity.getCoin())
-                .id(attendanceEntity.getId())
-                .feedBack(attendanceEntity.getFeedBack())
-                .status(attendanceEntity.getStatus())
-                .lesson_id(attendanceEntity.getLesson().getId())
-                .answers(attendanceEntity.getAnswers())
-                .score(attendanceEntity.getScore())
-                .student_id(attendanceEntity.getStudent().getId())
-                .teacher_id(attendanceEntity.getTeacher().getId())
-                .answers(attendanceEntity.getAnswers())
-                .build();
+
+        AttendanceSpecialResponse response = attendanceRepository.findAttendanceDetailsById(attendanceId);
+
+        List<String> answers = attendance.getAnswers();
+        response.setAnswers(answers);
+
+        return response;
     }
 
     public String delete(UUID id) {

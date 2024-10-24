@@ -125,7 +125,7 @@ public class BaseControllerAdminTeacher {
     }
 
     @GetMapping("/get-attendance/{id}")
-    public ResponseEntity<AttendanceResponse> getAttendanceById(@PathVariable UUID id) {
+    public ResponseEntity<AttendanceSpecialResponse> getAttendanceById(@PathVariable UUID id) {
         return ResponseEntity.ok(attendanceService.findByAttendanceId(id));
     }
 }

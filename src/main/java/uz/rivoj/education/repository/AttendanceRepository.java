@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import uz.rivoj.education.dto.response.AttendanceDTO;
+import uz.rivoj.education.dto.response.AttendanceSpecialResponse;
 import uz.rivoj.education.entity.AttendanceEntity;
 import uz.rivoj.education.entity.LessonEntity;
 import uz.rivoj.education.entity.enums.AttendanceStatus;
@@ -36,5 +37,19 @@ public interface AttendanceRepository extends JpaRepository<AttendanceEntity, UU
             "WHERE a.student.id = :studentId AND m.id = :moduleId " +
             "ORDER BY l.number")
     List<AttendanceDTO> findAttendanceByStudentIdAndModuleId(@Param("studentId") UUID studentId, @Param("moduleId") UUID moduleId);
+
+    @Query("SELECT new uz.rivoj.education.dto.response.AttendanceSpecialResponse(" +
+            "s.student.name AS studentName, s.student.surname AS studentSurname, s.student.avatar AS studentAvatar, " +
+            "t.teacher.name AS teacherName, t.teacher.surname AS teacherSurname, t.teacher.avatar AS teacherAvatar, " +
+            "m.number AS moduleNumber, l.number AS lessonNumber, subj.title AS subject, " +
+            "a.feedBack AS feedBack, a.score AS score, a.coin AS coin, a.status AS status) " +
+            "FROM attendance a " +
+            "JOIN a.student s " +
+            "JOIN a.teacher t " +
+            "JOIN a.lesson l " +
+            "JOIN l.module m " +
+            "JOIN m.subject subj " +
+            "WHERE a.id = :attendanceId")
+    AttendanceSpecialResponse findAttendanceDetailsById(@Param("attendanceId") UUID attendanceId);
 
 }
