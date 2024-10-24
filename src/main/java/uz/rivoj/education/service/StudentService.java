@@ -74,7 +74,6 @@ public class StudentService {
                 .build();
 
         StudentInfo student = StudentInfo.builder()
-                .birthday(studentCR.getBirthday())
                 .coin(0)
                 .student(userEntity)
                 .subject(subject)
@@ -97,7 +96,7 @@ public class StudentService {
         UserEntity userEntity = userRepository.findById(studentId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found!"));
         if (studentUpdate.getBirthday() != null) {
-            studentInfo.setBirthday(studentUpdate.getBirthday());
+            studentInfo.getStudent().setBirthday(studentUpdate.getBirthday());
         }
         if (studentUpdate.getSurname() != null) {
             userEntity.setSurname(studentUpdate.getSurname());
@@ -116,7 +115,7 @@ public class StudentService {
         userRepository.save(userEntity);
         studentInfoRepository.save(studentInfo);
         StudentResponse response = modelMapper.map(userEntity, StudentResponse.class);
-        response.setBirth(studentInfo.getBirthday());
+        response.setBirth(studentInfo.getStudent().getBirthday());
         response.setSubjectId(studentInfo.getSubject().getId());
         response.setCurrentLessonId(studentInfo.getLesson().getId());
         return response;
@@ -153,9 +152,9 @@ public class StudentService {
                 studentInfo.getStudent().getId(),
                 studentInfo.getStudent().getName(),
                 studentInfo.getStudent().getSurname(),
-                studentInfo.getAvatar(),
+                studentInfo.getStudent().getAvatar(),
                 studentInfo.getStudent().getPhoneNumber(),
-                studentInfo.getBirthday(),
+                studentInfo.getStudent().getBirthday(),
                 studentInfo.getSubject().getId(),
                 studentInfo.getSubject().getTitle(),
                 studentInfo.getLesson().getId(),
@@ -363,7 +362,7 @@ public Map<String, Object> getStatistics(UUID moduleId, String searchTerm, int p
             StudentStatisticsDTO studentStatisticsDTO = new StudentStatisticsDTO();
             studentStatisticsDTO.setStudentName(studentInfo.getStudent().getName());
             studentStatisticsDTO.setStudentSurname(studentInfo.getStudent().getSurname());
-            studentStatisticsDTO.setAvatar(studentInfo.getAvatar());
+            studentStatisticsDTO.setAvatar(studentInfo.getStudent().getAvatar());
 
 
             Optional<List<LessonEntity>> lessons = lessonRepository.findAllByModule_IdOrderByNumberAsc(moduleId);

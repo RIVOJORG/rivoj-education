@@ -4,15 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import uz.rivoj.education.dto.request.LessonCR;
 import uz.rivoj.education.dto.request.TeacherUpdate;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.dto.update.CheckAttendanceDTO;
-import uz.rivoj.education.dto.update.LessonUpdateDTO;
-import uz.rivoj.education.entity.ChatEntity;
 import uz.rivoj.education.entity.enums.AttendanceStatus;
 import uz.rivoj.education.service.*;
 
@@ -27,9 +23,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequiredArgsConstructor
 public class TeacherController {
     private final AttendanceService attendanceService;
-    private final StudentService studentService;
-    private final LessonService lessonService;
-    private final ChatService chatService;
     private final ModuleService moduleService;
     private final TeacherService teacherService;
 

@@ -111,7 +111,7 @@ public class ProgressService {
         for (StudentInfo s : list) {
             UserEntity user = s.getStudent();
             BestStudentResponse bestStudent = BestStudentResponse.builder()
-                    .avatar(s.getAvatar())
+                    .avatar(s.getStudent().getAvatar())
                     .name(user.getName())
                     .percentage(s.getTotalScore())
                     .surname(user.getSurname())

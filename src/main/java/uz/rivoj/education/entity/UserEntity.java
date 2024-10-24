@@ -8,6 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import uz.rivoj.education.entity.enums.UserStatus;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,6 +30,7 @@ public class UserEntity extends BaseEntity implements UserDetails {
     private UserRole role;
     @Enumerated(EnumType.STRING)
     private UserStatus userStatus;
+    private LocalDate birthday;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return new HashSet<>(Set.of(new SimpleGrantedAuthority("ROLE_" + role.name())));

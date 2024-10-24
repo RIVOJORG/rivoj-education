@@ -133,13 +133,13 @@ public class UserService {
             teacherResponse.setSubject(SubjectResponse.builder().title(teacherInfo.getSubject().getTitle()).id(teacherInfo.getSubject().getId()).build());
             teacherResponse.setAbout(teacherInfo.getAbout());
             teacherResponse.setId(teacherInfo.getId());
-            teacherResponse.setBirthday(teacherInfo.getBirthday());
+            teacherResponse.setBirthday(teacherInfo.getTeacher().getBirthday());
             return teacherResponse;
         } else {
             StudentInfo studentInfo = studentInfoRepository.findByStudentId(userId)
                     .orElseThrow(() -> new DataNotFoundException("User not found"));
             StudentResponse studentResponse = modelMapper.map(user, StudentResponse.class);
-            studentResponse.setBirth(studentInfo.getBirthday());
+            studentResponse.setBirth(studentInfo.getStudent().getBirthday());
             studentResponse.setSubjectId(studentInfo.getSubject().getId());
             studentResponse.setCurrentLessonId(studentInfo.getLesson().getId());
             studentResponse.setId(studentInfo.getId());
@@ -172,7 +172,7 @@ public class UserService {
                     SubjectResponse subjectResponse = new SubjectResponse(teacherInfo.getSubject().getTitle(), teacherInfo.getSubject().getId());
                     teacherResponse.setSubject(subjectResponse);
                 }
-                teacherResponse.setBirthday(teacherInfo.getBirthday());
+                teacherResponse.setBirthday(teacherInfo.getTeacher().getBirthday());
                 teacherResponse.setAbout(teacherInfo.getAbout());
                 teacherResponse.setStatus(teacherEntity.getUserStatus());
                 teacherResponseList.add(teacherResponse);
@@ -184,7 +184,7 @@ public class UserService {
                 StudentInfo studentInfo = studentInfoRepository.findByStudentId(student.getId())
                         .orElseThrow(() -> new DataNotFoundException("User not found"));
                 StudentResponse studentResponse = modelMapper.map(student, StudentResponse.class);
-                studentResponse.setBirth(studentInfo.getBirthday());
+                studentResponse.setBirth(studentInfo.getStudent().getBirthday());
                 studentResponse.setCurrentLessonId(studentInfo.getLesson() != null ? studentInfo.getLesson().getId() : null);
                 studentResponse.setCurrentModuleId(studentInfo.getCurrentModule() != null ? studentInfo.getCurrentModule().getId() : null);
                 studentResponse.setSubjectId(studentInfo.getSubject() != null ? studentInfo.getSubject().getId() : null);

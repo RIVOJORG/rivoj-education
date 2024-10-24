@@ -43,7 +43,7 @@ public class CommentService {
         commentRepository.save(comment);
         return CommentResponse.builder()
                 .commentId(comment.getId())
-                .avatar(studentInfo.getAvatar())
+                .avatar(studentInfo.getStudent().getAvatar())
                 .description(comment.getDescription())
                 .lessonId(lessonEntity.getId())
                 .name(owner.getName())

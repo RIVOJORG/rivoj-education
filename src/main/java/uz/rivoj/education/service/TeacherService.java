@@ -61,7 +61,7 @@ public class TeacherService {
         UserEntity userEntity = userRepository.findById(teacherId)
                 .orElseThrow(() -> new DataNotFoundException("Teacher not found!"));
         if(teacherUpdate.getBirthday() != null){
-            teacherInfo.setBirthday(teacherInfo.getBirthday());}
+            userEntity.setBirthday(teacherUpdate.getBirthday());}
         if(teacherUpdate.getSurname() != null){
             userEntity.setSurname(teacherUpdate.getSurname());}
         if(teacherUpdate.getPhoneNumber() != null){
@@ -79,7 +79,7 @@ public class TeacherService {
         userRepository.save(userEntity);
         teacherInfoRepository.save(teacherInfo);
         TeacherResponse response = modelMapper.map(userEntity, TeacherResponse.class);
-        response.setBirthday(teacherInfo.getBirthday());
+        response.setBirthday(teacherInfo.getTeacher().getBirthday());
         response.setSubject(SubjectResponse.builder().title(teacherInfo.getSubject().getTitle()).id(teacherInfo.getSubject().getId()).build());
         return  response;
     }

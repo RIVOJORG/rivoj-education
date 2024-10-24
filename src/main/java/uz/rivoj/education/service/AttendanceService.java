@@ -141,7 +141,6 @@ public class AttendanceService {
         studentInfo.setCoin(currentCoin);
         studentInfo.setTotalScore(totalScore);
 
-        // Save studentInfo and attendanceEntity in a single transaction
         studentRepository.save(studentInfo);
         attendanceRepository.save(attendanceEntity);
 
