@@ -90,8 +90,8 @@ public class ProgressService {
 
 
     public RankingPageResponse getTop10Students() {
-        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "totalScore"));
-        Page<StudentInfo> page = studentInfoRepository.findAll(pageRequest);
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<StudentInfo> page = studentInfoRepository.findTop10ByOrderByTotalScoreDesc(pageRequest);
         List<StudentInfo> sortedStudents = page.getContent();
         return mapToBestStudentResponse(sortedStudents);
     }

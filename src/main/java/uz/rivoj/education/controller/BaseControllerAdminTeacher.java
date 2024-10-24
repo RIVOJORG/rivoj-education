@@ -28,7 +28,6 @@ public class BaseControllerAdminTeacher {
     private final StudentService studentService;
     private final LessonService lessonService;
     private final ModuleService moduleService;
-    private final TeacherService teacherService;
     private final UserService userService;
 
 

@@ -16,8 +16,7 @@ public interface StudentInfoRepository extends JpaRepository<StudentInfo, UUID> 
     Optional<List<StudentInfo>> findByCurrentModule_Id(UUID currentModule_id);
     Page<StudentInfo> findBySubject_Id(UUID subjectId, Pageable pageable);
     Optional<List<StudentInfo>> findTop10BySubject_idOrderByTotalScoreDesc(UUID subjectId, Pageable pageable);
-    Optional<List<StudentInfo>> findTop10ByOrderByTotalScoreAsc();
-    Optional<List<StudentInfo>> findBySubjectId(UUID subjectId);
+    Page<StudentInfo> findTop10ByOrderByTotalScoreDesc(Pageable pageable);
     StudentInfo findByStudent_Id(UUID studentId);
     Optional<List<StudentInfo>> findBySubject_Id(UUID subjectId);
 
