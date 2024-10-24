@@ -27,10 +27,8 @@ public class LessonService {
     private final ModuleRepository moduleRepository;
     private final ModelMapper modelMapper;
     private final UploadService uploadService;
-    private final CommentService commentService;
     private final CommentRepository commentRepository;
     private final TeacherInfoRepository teacherInfoRepository;
-    private final UserRepository userRepository;
 
     @SneakyThrows
     public LessonResponse create(LessonCR createRequest)  {

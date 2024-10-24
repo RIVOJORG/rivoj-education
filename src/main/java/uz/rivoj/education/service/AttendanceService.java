@@ -32,14 +32,8 @@ public class AttendanceService {
     private final StudentInfoRepository studentRepository;
     private final TeacherInfoRepository teacherInfoRepository;
     private final ModelMapper modelMapper;
-    private final LessonRepository lessonRepository;
-    private final UserRepository userRepository;
 
-    public AttendanceResponse getAttendance(UUID id) {
-        AttendanceEntity attendance = attendanceRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException("Attendance not found!"));
-        return modelMapper.map(attendance, AttendanceResponse.class);
-    }
+
 
     @Transactional
     public AttendanceSpecialResponse findByAttendanceId(UUID attendanceId) {
@@ -59,30 +53,6 @@ public class AttendanceService {
         return "Successfully Deleted!";
     }
 
-
-
-    private List<AttendanceResponse> getAttendanceResponses(Optional<List<AttendanceEntity>> attendanceEntityList) {
-        if(attendanceEntityList.isPresent()) {
-            List<AttendanceResponse> attendanceResponseList = new ArrayList<>();
-            List<AttendanceEntity> attendanceEntities = attendanceEntityList.get();
-            for (AttendanceEntity studentAttendance : attendanceEntities) {
-                attendanceResponseList.add(AttendanceResponse.builder()
-                        .coin(studentAttendance.getCoin())
-                        .feedBack(studentAttendance.getFeedBack())
-                        .status(studentAttendance.getStatus())
-                        .lesson_id(studentAttendance.getLesson().getId())
-                        .answers(studentAttendance.getAnswers())
-                        .score(studentAttendance.getScore())
-                        .student_id(studentAttendance.getStudent().getId())
-                        .teacher_id(studentAttendance.getTeacher().getId())
-                        .answers(studentAttendance.getAnswers())
-                        .build());
-            }
-            return attendanceResponseList;
-        }else {
-            throw new DataNotFoundException("Attendance not found!");
-        }
-    }
 
 
 
@@ -153,8 +123,6 @@ public class AttendanceService {
         }
         return attendanceResponse;
     }
-
-
 
 
     public List<UncheckedAttendanceResponse> getUncheckedAttendances(UUID teacherId) {
