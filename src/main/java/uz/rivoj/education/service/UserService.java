@@ -175,6 +175,7 @@ public class UserService {
                 teacherResponse.setBirthday(teacherInfo.getTeacher().getBirthday());
                 teacherResponse.setAbout(teacherInfo.getAbout());
                 teacherResponse.setStatus(teacherEntity.getUserStatus());
+                teacherResponse.setPhoneNumber(teacherEntity.getPhoneNumber());
                 teacherResponseList.add(teacherResponse);
             });
             responseList = teacherResponseList;
