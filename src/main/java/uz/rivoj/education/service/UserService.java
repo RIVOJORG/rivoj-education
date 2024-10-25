@@ -30,6 +30,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final TeacherInfoRepository teacherInfoRepository;
+    private final AttendanceRepository attendanceRepository;
 
 
     public String add(UserCR dto) {
@@ -218,5 +219,20 @@ public class UserService {
 
     public List<TeacherDTO> getTeachers() {
         return userRepository.findByRole(UserRole.TEACHER);
+    }
+
+    public String deleteUser(UUID userId) {
+        UserEntity user = userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("User not found"));
+        if(user.getRole().equals(UserRole.STUDENT)){
+            StudentInfo studentInfo = studentInfoRepository.findByStudentId(userId).orElseThrow(() -> new DataNotFoundException("User not found"));
+            attendanceRepository.deleteByStudentId(studentInfo.getId());
+            studentInfoRepository.delete(studentInfo);
+            userRepository.delete(user);
+        } else if (user.getRole() == UserRole.TEACHER) {
+            userRepository.delete(user);
+        }else {
+            userRepository.delete(user);
+        }
+        return "Deleted!";
     }
 }

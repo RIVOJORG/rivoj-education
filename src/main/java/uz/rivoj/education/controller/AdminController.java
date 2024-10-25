@@ -94,12 +94,17 @@ public class AdminController {
     public ResponseEntity<String> deleteComment(@PathVariable UUID commentId){
         return ResponseEntity.status(200).body(commentService.delete(commentId));
     }
+    @DeleteMapping("delete-user{userId}")
+    public ResponseEntity<String> deleteUser(@PathVariable UUID userId){
+        return ResponseEntity.status(204).body(userService.deleteUser(userId));
+    }
 
 
     @GetMapping("/getTeachers")
     public ResponseEntity<List<TeacherDTO>> getTeachers(){
         return ResponseEntity.status(200).body(userService.getTeachers());
     }
+
 
 
 

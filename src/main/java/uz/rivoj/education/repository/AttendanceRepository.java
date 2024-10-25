@@ -52,4 +52,5 @@ public interface AttendanceRepository extends JpaRepository<AttendanceEntity, UU
             "WHERE a.id = :attendanceId")
     AttendanceSpecialResponse findAttendanceDetailsById(@Param("attendanceId") UUID attendanceId);
 
+    void deleteByStudentId(UUID id);
 }
