@@ -104,8 +104,8 @@ public class BaseControllerAdminTeacher {
 
 
 
-    @GetMapping("/getStatistics2")
-    public ResponseEntity<Map<String, Object>> getStatistics2(
+    @GetMapping("/getStatistics")
+    public ResponseEntity<Map<String, Object>> getStatistics(
             @RequestParam(required = false) UUID moduleId,
             @RequestParam(required = false) String searchTerm,
             @RequestParam(defaultValue = "1") int pageNumber,
