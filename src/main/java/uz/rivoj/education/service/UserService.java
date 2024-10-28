@@ -80,14 +80,6 @@ public class UserService {
         return list;
     }
 
-    public UserResponse getUser(UUID id) {
-        UserEntity userEntity = userRepository.findById(id).orElseThrow(
-                () -> new DataNotFoundException("user not found")
-        );
-        UserResponse userResponse = modelMapper.map(userEntity, UserResponse.class);
-        userResponse.setId(userEntity.getId());
-        return userResponse;
-    }
 
 
     public String changePhoneNumber(UUID userId, String newPhoneNumber) {
@@ -218,7 +210,7 @@ public class UserService {
     }
 
     public List<TeacherDTO> getTeachers() {
-        return userRepository.findByRole(UserRole.TEACHER);
+        return userRepository.findTeachers(UserRole.TEACHER);
     }
 
     public String deleteUser(UUID userId) {
@@ -234,5 +226,32 @@ public class UserService {
             userRepository.delete(user);
         }
         return "Deleted!";
+    }
+
+
+
+    public Map<String, Object> getUsersByRoleAndSubjectId(UserRole role, UUID subjectId, Pageable pageable) {
+        Page<UserDetailsDTO> userPage;
+
+        if (role == UserRole.TEACHER) {
+            userPage = userRepository.findTeachersByRoleAndSubjectId(role, subjectId, pageable);
+        } else if (role == UserRole.STUDENT) {
+            userPage = userRepository.findStudentsByRoleAndSubjectId(role, subjectId, pageable);
+        } else if (role == UserRole.ADMIN) {
+            userPage = userRepository.findByRole(role, pageable);
+        } else {
+            throw new IllegalArgumentException("Invalid role type");
+        }
+
+        List<UserDetailsDTO> responseList = userPage.getContent();
+        Map<String, Object> responseMap = new LinkedHashMap<>();
+        responseMap.put("pageNumber", userPage.getNumber() + 1);
+        responseMap.put("totalPages", userPage.getTotalPages());
+        responseMap.put("totalCount", userPage.getTotalElements());
+        responseMap.put("pageSize", userPage.getSize());
+        responseMap.put("hasPreviousPage", userPage.hasPrevious());
+        responseMap.put("hasNextPage", userPage.hasNext());
+        responseMap.put("data", responseList);
+        return responseMap;
     }
 }

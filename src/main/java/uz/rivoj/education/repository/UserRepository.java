@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import uz.rivoj.education.dto.response.TeacherDTO;
+import uz.rivoj.education.dto.response.UserDetailsDTO;
 import uz.rivoj.education.entity.UserEntity;
 import uz.rivoj.education.entity.UserRole;
 
@@ -37,8 +38,24 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
                                                 Pageable pageable);
 
     @Query("SELECT new uz.rivoj.education.dto.response.TeacherDTO(u.name, u.surname, u.id) FROM users u WHERE u.role = :role")
-    List<TeacherDTO> findByRole(@Param("role") UserRole role);
+    List<TeacherDTO> findTeachers(@Param("role") UserRole role);
 
 
+    @Query("SELECT new uz.rivoj.education.dto.response.UserDetailsDTO(u.phoneNumber, u.avatar, u.name, u.surname) " +
+            "FROM users u " +
+            "JOIN teacher_info t ON t.teacher.id = u.id " +
+            "WHERE u.role = :role AND t.subject.id = :subjectId")
+    Page<UserDetailsDTO> findTeachersByRoleAndSubjectId(UserRole role, UUID subjectId, Pageable pageable);
+
+    @Query("SELECT new uz.rivoj.education.dto.response.UserDetailsDTO(u.phoneNumber, u.avatar, u.name, u.surname) " +
+            "FROM users u " +
+            "JOIN student_info s ON s.student.id = u.id " +
+            "WHERE u.role = :role AND s.subject.id = :subjectId")
+    Page<UserDetailsDTO> findStudentsByRoleAndSubjectId(UserRole role, UUID subjectId, Pageable pageable);
+
+    @Query("SELECT new uz.rivoj.education.dto.response.UserDetailsDTO(u.phoneNumber, u.avatar, u.name, u.surname) " +
+            "FROM users u " +
+            "WHERE u.role = :role")
+    Page<UserDetailsDTO> findByRole(UserRole role, Pageable pageable);
 }
 

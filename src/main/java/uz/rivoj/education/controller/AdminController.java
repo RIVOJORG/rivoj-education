@@ -1,6 +1,8 @@
 package uz.rivoj.education.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -71,6 +73,7 @@ public class AdminController {
     }
 
 
+
     @GetMapping("/get-all-subjects")
     public List<SubjectResponse> getAllSubject(){
         return subjectService.getAll();
@@ -103,6 +106,17 @@ public class AdminController {
     @GetMapping("/getTeachers")
     public ResponseEntity<List<TeacherDTO>> getTeachers(){
         return ResponseEntity.status(200).body(userService.getTeachers());
+    }
+
+    @GetMapping("/get-phoneNumbers-byRole")
+    public ResponseEntity<Map<String, Object>> getAllByRole(
+            @RequestParam UserRole role,
+            @RequestParam(required = false) UUID subjectId,
+            @RequestParam(defaultValue = "1") int pageNumber,
+            @RequestParam(defaultValue = "20") int pageSize) {
+
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
+        return ResponseEntity.ok(userService.getUsersByRoleAndSubjectId(role, subjectId, pageable));
     }
 
 
