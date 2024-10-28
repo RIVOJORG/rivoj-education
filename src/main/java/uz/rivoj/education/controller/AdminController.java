@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.*;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.entity.*;
@@ -17,6 +19,8 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 
 @RestController
@@ -118,6 +122,23 @@ public class AdminController {
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
         return ResponseEntity.ok(userService.getUsersByRoleAndSubjectId(role, subjectId, pageable));
     }
+    @PutMapping("/change-SubjectTitle/{subjectId}/{subjectName}")
+    public ResponseEntity<String> changeSubjectTitle(
+            @PathVariable UUID subjectId,
+            @PathVariable String subjectName) {
+        return ResponseEntity.status(HttpStatus.OK).body(subjectService.changeSubjectTitle(subjectId,subjectName));
+    }
+
+    @PutMapping(value = "/update-profile")
+    public ResponseEntity<String > updateProfile(
+            @ModelAttribute AdminCR adminUpdate,
+            Principal principal
+    ){
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(userService.updateProfile(adminUpdate, UUID.fromString(principal.getName())));
+    }
+
+
 
 
 

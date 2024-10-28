@@ -120,16 +120,7 @@ public class StudentService {
     }
 
 
-    @SneakyThrows
-    public String updateProfilePicture(MultipartFile picture, UUID userId)  {
-        UserEntity userEntity = userRepository.findById(userId)
-                .orElseThrow(() -> new DataNotFoundException("Student not found!"));
-        String filename = userEntity.getName() + "_ProfilePicture";
-        String avatarPath = uploadService.uploadFile(picture, filename);
-        userEntity.setAvatar(avatarPath);
-        userRepository.save(userEntity);
-        return "Profile picture changed";
-    }
+
 
     public List<StudentResponse> getAllMyStudent(int page, int size, UUID teacherId) {
         TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(teacherId)

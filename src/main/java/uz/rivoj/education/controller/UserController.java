@@ -2,8 +2,10 @@ package uz.rivoj.education.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.CommentCR;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.service.*;
@@ -49,6 +51,17 @@ public class UserController {
     @DeleteMapping("/delete-comment")
     public void editComment(Principal principal,@RequestParam UUID commentId){
         commentService.deleteComment(UUID.fromString(principal.getName()), commentId);
+    }
+
+    @PutMapping(value = "/update-profile-picture",
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
+    )
+    public ResponseEntity<String> updateProfilePicture(
+            Principal principal,
+            @RequestParam("picture") MultipartFile picture
+    ) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(userService.updateProfilePicture(picture, UUID.fromString(principal.getName())));
     }
 
 }

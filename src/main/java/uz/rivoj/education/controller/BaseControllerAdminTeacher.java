@@ -82,8 +82,8 @@ public class BaseControllerAdminTeacher {
     }
 
     @PostMapping("/add-module")
-    public ResponseEntity<?> createModule(@RequestParam UUID subjectId){
-        return ResponseEntity.status(HttpStatus.CREATED).body(moduleService.addModule(subjectId));
+    public ResponseEntity<?> createModule(@RequestParam UUID subjectId,@RequestParam Integer moduleNumber){
+        return ResponseEntity.status(HttpStatus.CREATED).body(moduleService.addModule(subjectId,moduleNumber));
     }
 
     @GetMapping("/getAllModulesOfSubject{subjectId}")
@@ -126,5 +126,11 @@ public class BaseControllerAdminTeacher {
     @GetMapping("/get-attendance/{id}")
     public ResponseEntity<AttendanceSpecialResponse> getAttendanceById(@PathVariable UUID id) {
         return ResponseEntity.ok(attendanceService.findByAttendanceId(id));
+    }
+    @PutMapping("/change-ModuleNumber/{moduleId}/{moduleNumber}")
+    public ResponseEntity<String> changeModuleNumber(
+            @PathVariable UUID moduleId,
+            @PathVariable Integer moduleNumber) {
+        return ResponseEntity.status(HttpStatus.OK).body(moduleService.changeModuleNumber(moduleId,moduleNumber));
     }
 }

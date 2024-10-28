@@ -88,4 +88,12 @@ public class SubjectService {
         return subjectEntity.getTitle();
 
     }
+
+    public String changeSubjectTitle(UUID subjectId, String subjectName) {
+        SubjectEntity subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> new DataNotFoundException("Subject not found with this id: " + subjectId));
+        subject.setTitle(subjectName);
+        subjectRepository.save(subject);
+        return "Successfully changed!";
+    }
 }

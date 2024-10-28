@@ -1,6 +1,7 @@
 package uz.rivoj.education.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
@@ -9,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import uz.rivoj.education.dto.request.AdminCR;
 import uz.rivoj.education.dto.request.AuthDto;
 import uz.rivoj.education.dto.request.UserCR;
 import uz.rivoj.education.dto.response.*;
@@ -31,6 +34,7 @@ public class UserService {
     private final JwtUtil jwtUtil;
     private final TeacherInfoRepository teacherInfoRepository;
     private final AttendanceRepository attendanceRepository;
+    private final UploadService uploadService;
 
 
     public String add(UserCR dto) {
@@ -253,5 +257,35 @@ public class UserService {
         responseMap.put("hasNextPage", userPage.hasNext());
         responseMap.put("data", responseList);
         return responseMap;
+    }
+
+    @SneakyThrows
+    public String updateProfilePicture(MultipartFile picture, UUID userId)  {
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("user not found!"));
+        if(userEntity.getAvatar() != null){
+            uploadService.deleteFile(userEntity.getAvatar());
+        }
+        String filename = userEntity.getName() + "_ProfilePicture";
+        String avatarPath = uploadService.uploadFile(picture, filename);
+        userEntity.setAvatar(avatarPath);
+        userRepository.save(userEntity);
+        return "Profile picture changed";
+    }
+
+    public String updateProfile(AdminCR adminUpdate, UUID userId) {
+        UserEntity admin = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("user not found!"));
+        if(adminUpdate.getName() != null){
+            admin.setName(adminUpdate.getName());
+        }if(adminUpdate.getPassword() != null){
+            admin.setPassword(adminUpdate.getPassword());
+        }if(adminUpdate.getSurname() != null){
+            admin.setSurname(adminUpdate.getSurname());
+        }if(adminUpdate.getPhoneNumber() != null){
+            admin.setPhoneNumber(adminUpdate.getPhoneNumber());
+        }
+        userRepository.save(admin);
+        return "Profile successfully changed!";
     }
 }

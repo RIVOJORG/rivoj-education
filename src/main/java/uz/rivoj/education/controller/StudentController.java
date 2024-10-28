@@ -58,16 +58,6 @@ public class StudentController {
                 .body(studentService.updateProfile(studentUpdate, UUID.fromString(principal.getName())));
     }
 
-    @PutMapping(value = "/update-profile-picture",
-            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
-    )
-    public ResponseEntity<String> updateProfilePicture(
-            Principal principal,
-            @RequestParam("picture") MultipartFile picture
-    ) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(studentService.updateProfilePicture(picture, UUID.fromString(principal.getName())));
-    }
 
     @GetMapping("/get-homework-by-lesson-id")
     public  ResponseEntity<AttendanceResponse>  getHomeworkByLessonId(Principal principal,@RequestParam UUID lessonId){

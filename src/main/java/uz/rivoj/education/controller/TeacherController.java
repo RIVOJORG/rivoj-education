@@ -32,11 +32,10 @@ public class TeacherController {
 
 
     @PutMapping(value = "/update_profile", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<TeacherResponse> createComment(
+    public ResponseEntity<TeacherResponse> updateProfile(
             @ModelAttribute TeacherUpdate teacherUpdate,
-            Principal principal,
-            @RequestPart(value = "ProfilePicture",required = false) MultipartFile picture){
-        return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.updateProfile(teacherUpdate,picture, UUID.fromString(principal.getName())));
+            Principal principal){
+        return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.updateProfile(teacherUpdate, UUID.fromString(principal.getName())));
     }
 
     @GetMapping("/get-unchecked-attendances")

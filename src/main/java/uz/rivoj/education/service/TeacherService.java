@@ -55,7 +55,7 @@ public class TeacherService {
 
 
     @SneakyThrows
-    public TeacherResponse updateProfile(TeacherUpdate teacherUpdate, MultipartFile picture, UUID teacherId) {
+    public TeacherResponse updateProfile(TeacherUpdate teacherUpdate, UUID teacherId) {
         TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(teacherId)
                 .orElseThrow(() -> new DataNotFoundException("Teacher not found!"));
         UserEntity userEntity = userRepository.findById(teacherId)
@@ -70,11 +70,6 @@ public class TeacherService {
             userEntity.setName(teacherUpdate.getName());}
         if(teacherUpdate.getPassword() != null){
             userEntity.setPassword(passwordEncoder.encode(teacherUpdate.getPassword()));
-        }
-        if(!picture.isEmpty()){
-            String filename = userEntity.getName() + "_ProfilePicture";
-            String avatarPath = uploadService.uploadFile(picture, filename);
-            userEntity.setAvatar(avatarPath);
         }
         userRepository.save(userEntity);
         teacherInfoRepository.save(teacherInfo);

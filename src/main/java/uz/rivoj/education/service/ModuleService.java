@@ -161,18 +161,19 @@ public class ModuleService {
         return getModuleResponses(modulesBySubject);
     }
 
-    public Object addModule(UUID subjectId) {
+    public Object addModule(UUID subjectId,Integer moduleNumber) {
         SubjectEntity subject = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> new DataNotFoundException("Subject not found with this id => " + subjectId));
-        Optional<ModuleEntity> module = moduleRepository.findTopBySubjectIdOrderByNumberDesc(subjectId);
-        ModuleEntity moduleEntity;
-        if (module.isPresent()) {
-            moduleEntity = new ModuleEntity(subject,module.get().getNumber()+1);
-            moduleRepository.save(moduleEntity);
-        }else {
-             moduleEntity = new ModuleEntity(subject,1);
-        }
-        moduleRepository.save(moduleEntity);
+        ModuleEntity module = new ModuleEntity(subject,moduleNumber);
+        moduleRepository.save(module);
         return "Successfully created";
+    }
+
+    public String changeModuleNumber(UUID moduleId, Integer moduleNumber) {
+        ModuleEntity module = moduleRepository.findById(moduleId)
+                .orElseThrow(() -> new DataNotFoundException("Module not found with this id => " + moduleId));
+        module.setNumber(moduleNumber);
+        moduleRepository.save(module);
+        return "Successfully changed";
     }
 }
