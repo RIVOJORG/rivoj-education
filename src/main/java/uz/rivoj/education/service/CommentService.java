@@ -33,8 +33,6 @@ public class CommentService {
                 .orElseThrow(() -> new ClassCastException("Comment not found with ID: " + createRequest.getLessonId()));
         UserEntity owner = userRepository.findById(ownerId)
                 .orElseThrow(() -> new DataNotFoundException("user not found with this id: " + ownerId));
-        StudentInfo studentInfo = studentInfoRepository.findByStudentId(ownerId)
-                .orElseThrow(() -> new DataNotFoundException("Student not found with this id: " + ownerId));
         CommentEntity comment = new CommentEntity();
         comment.setLesson(lessonEntity);
         comment.setCreatedDate(LocalDateTime.now());
@@ -43,7 +41,7 @@ public class CommentService {
         commentRepository.save(comment);
         return CommentResponse.builder()
                 .commentId(comment.getId())
-                .avatar(studentInfo.getStudent().getAvatar())
+                .avatar(owner.getAvatar())
                 .description(comment.getDescription())
                 .lessonId(lessonEntity.getId())
                 .name(owner.getName())
