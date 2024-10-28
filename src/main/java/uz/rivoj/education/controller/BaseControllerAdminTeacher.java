@@ -55,8 +55,8 @@ public class BaseControllerAdminTeacher {
             @RequestParam("title") String title,
             @RequestParam("description") String description,
             @RequestParam("additionalLinks") List<String> additionalLinks,
-            @RequestParam("coverOfLesson") MultipartFile coverOfLesson,
-            @RequestParam("lessonVideo") MultipartFile lessonVideo
+            @RequestParam(value = "coverOfLesson",required = false) MultipartFile coverOfLesson,
+            @RequestParam(value = "lessonVideo",required = false) MultipartFile lessonVideo
 
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(lessonService.updateLesson(new LessonUpdateDTO(id,title,description,additionalLinks,coverOfLesson,lessonVideo)));
