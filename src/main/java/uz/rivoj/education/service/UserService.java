@@ -7,6 +7,7 @@ import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -154,7 +155,7 @@ public class UserService {
     }
 
     public Map<String, Object> getAllByRole(UserRole role, String searchTerm, int pageNumber, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by(Sort.Direction.ASC, "name"));
         Page<UserEntity> userPage;
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
             userPage = userRepository.findAllByRole(role, pageable);

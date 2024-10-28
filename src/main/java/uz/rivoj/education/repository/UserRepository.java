@@ -23,11 +23,11 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     Optional<UserEntity> findByPhoneNumber(String phoneNumber);
 
 
-    Page<UserEntity> findAllByRole(UserRole userRole, Pageable pageable);
+
 
     boolean existsByPhoneNumber(String phoneNumber);
 
-
+    Page<UserEntity> findAllByRole(UserRole userRole, Pageable pageable);
     @Query("SELECT u FROM users u WHERE u.role = :role AND " +
             "(COALESCE(:searchTerm, '') = '' OR " +
             "LOWER(u.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
