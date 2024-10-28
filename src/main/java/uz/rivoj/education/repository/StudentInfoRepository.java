@@ -30,4 +30,5 @@ public interface StudentInfoRepository extends JpaRepository<StudentInfo, UUID> 
                                                      @Param("searchTerm") String searchTerm,
                                                      Pageable pageable);
 
+    Optional<List<StudentInfo>> findByLesson_Id(UUID lessonId);
 }

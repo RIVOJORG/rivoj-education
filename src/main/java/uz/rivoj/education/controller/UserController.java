@@ -42,7 +42,7 @@ public class UserController {
     @GetMapping("/get-comments")
     public  ResponseEntity<Map<String, Object>>  getCommentsOfLesson(
             @RequestParam UUID lessonId,
-            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "1") int pageNumber,
             @RequestParam(defaultValue = "20") int pageSize){
         return ResponseEntity.ok(commentService.getCommentsOfLesson(lessonId,pageNumber,pageSize));
     }

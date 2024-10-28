@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import uz.rivoj.education.dto.response.AttendanceDTO;
 import uz.rivoj.education.dto.response.AttendanceSpecialResponse;
 import uz.rivoj.education.entity.AttendanceEntity;
-import uz.rivoj.education.entity.LessonEntity;
 import uz.rivoj.education.entity.enums.AttendanceStatus;
 
 import java.util.List;
@@ -55,4 +54,6 @@ public interface AttendanceRepository extends JpaRepository<AttendanceEntity, UU
     void deleteByStudentId(UUID id);
 
     Optional<List<AttendanceEntity>> findAllByTeacherId(UUID teacherId);
+
+    void deleteALlByLessonId(UUID lesson_id);
 }

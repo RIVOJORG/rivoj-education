@@ -22,4 +22,7 @@ public interface LessonRepository extends JpaRepository<LessonEntity, UUID> {
     int getLessonCount(@Param("moduleId") UUID moduleId);
     Optional<List<LessonEntity>> findByTeacherInfoId(UUID teacherInfoId);
 
+    Optional<LessonEntity> findTopByModuleAndNumberLessThanOrderByNumberDesc(ModuleEntity module, Integer lessonNumber);
+
+    Optional<LessonEntity> findTopByModuleIdOrderByNumberDesc(UUID id);
 }

@@ -103,14 +103,6 @@ public class BaseControllerAdminTeacher {
     }
 
 
-    @GetMapping("/getStatistics")
-    public ResponseEntity<Map<String, Object>> getStatistics(
-            @RequestParam(required = false) UUID moduleId,
-            @RequestParam(required = false) String searchTerm,
-            @RequestParam(defaultValue = "1") int pageNumber,
-            @RequestParam(defaultValue = "20") int pageSize) {
-        return ResponseEntity.ok(studentService.getStatistics(moduleId, searchTerm, pageNumber, pageSize));
-    }
 
     @GetMapping("/getStatistics2")
     public ResponseEntity<Map<String, Object>> getStatistics2(

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import uz.rivoj.education.entity.ModuleEntity;
+import uz.rivoj.education.entity.SubjectEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,5 +20,7 @@ public interface ModuleRepository extends JpaRepository<ModuleEntity, UUID> {
 
 
     Optional<ModuleEntity> findTopBySubjectIdOrderByNumberDesc(UUID subjectId);
+
+    Optional<ModuleEntity> findTopBySubjectAndNumberLessThanOrderByNumberDesc(SubjectEntity subject, Integer number);
 }
 

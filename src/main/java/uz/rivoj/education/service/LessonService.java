@@ -29,6 +29,8 @@ public class LessonService {
     private final UploadService uploadService;
     private final CommentRepository commentRepository;
     private final TeacherInfoRepository teacherInfoRepository;
+    private final AttendanceRepository attendanceRepository;
+    private final StudentInfoRepository studentInfoRepository;
 
     @SneakyThrows
     public LessonResponse create(LessonCR createRequest)  {
@@ -68,11 +70,57 @@ public class LessonService {
     }
 
 
-    public String delete(UUID lessonId){
-        LessonEntity lesson = getLesson(lessonId);
-        lessonRepository.deleteById(lesson.getId());
-        return "Successfully deleted: ";
+    @Transactional
+    public String delete(UUID lessonId) {
+        LessonEntity lessonToDelete = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new IllegalArgumentException("Lesson not found with id: " + lessonId));
+
+        commentRepository.deleteAllByLessonId(lessonId);
+
+        List<AttendanceEntity> attendanceEntities = attendanceRepository.findAllByLesson_Id(lessonId).orElse(new ArrayList<>());
+        attendanceEntities.forEach(attendanceEntity -> {
+            attendanceEntity.getAnswers().forEach(uploadService::deleteFile);
+            attendanceRepository.delete(attendanceEntity);
+        });
+
+        ModuleEntity currentModule = lessonToDelete.getModule();
+        Integer lessonNumber = lessonToDelete.getNumber();
+
+        Optional<LessonEntity> previousLesson = lessonRepository.findTopByModuleAndNumberLessThanOrderByNumberDesc(currentModule, lessonNumber);
+
+        if (previousLesson.isPresent()) {
+            List<StudentInfo> studentInfos = studentInfoRepository.findByLesson_Id(lessonId).orElse(new ArrayList<>());
+            studentInfos.forEach(studentInfo -> {
+                studentInfo.setLesson(previousLesson.get());
+                studentInfoRepository.save(studentInfo);
+            });
+        } else {
+            Optional<ModuleEntity> previousModule = moduleRepository.findTopBySubjectAndNumberLessThanOrderByNumberDesc(
+                    currentModule.getSubject(), currentModule.getNumber());
+
+            if (previousModule.isPresent()) {
+                Optional<LessonEntity> lastLessonInPreviousModule = lessonRepository.findTopByModuleIdOrderByNumberDesc(previousModule.get().getId());
+                lastLessonInPreviousModule.ifPresent(lessonEntity -> {
+                    List<StudentInfo> studentInfos = studentInfoRepository.findByLesson_Id(lessonId).orElse(new ArrayList<>());
+                    studentInfos.forEach(studentInfo -> {
+                        studentInfo.setLesson(lessonEntity);
+                        studentInfoRepository.save(studentInfo);
+                    });
+                });
+            } else {
+                List<StudentInfo> studentInfos = studentInfoRepository.findByLesson_Id(lessonId).orElse(new ArrayList<>());
+                studentInfos.forEach(studentInfo -> {
+                    studentInfo.setLesson(null);
+                    studentInfoRepository.save(studentInfo);
+                });
+            }
+        }
+
+        lessonRepository.delete(lessonToDelete);
+
+        return "Deleted!";
     }
+
     public LessonEntity getLesson(UUID lessonId){
         return lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new DataNotFoundException("Lesson not found with this id: " + lessonId));
