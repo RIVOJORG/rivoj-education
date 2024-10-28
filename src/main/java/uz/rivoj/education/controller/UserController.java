@@ -1,6 +1,8 @@
 package uz.rivoj.education.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.CommentCR;
 import uz.rivoj.education.dto.response.*;
+import uz.rivoj.education.entity.UserRole;
 import uz.rivoj.education.service.*;
 
 import java.security.Principal;
@@ -63,5 +66,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userService.updateProfilePicture(picture, UUID.fromString(principal.getName())));
     }
+
+
 
 }

@@ -68,6 +68,7 @@ public class StudentService {
                 .phoneNumber(studentCR.getPhoneNumber())
                 .role(UserRole.STUDENT)
                 .userStatus(UserStatus.UNBLOCK)
+                .birthday(studentCR.getBirthday())
                 .surname(studentCR.getSurname())
                 .build();
 

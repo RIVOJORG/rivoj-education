@@ -93,10 +93,7 @@ public class AdminController {
         return ResponseEntity.status(200).body(subjectService.delete(subjectId));
     }
 
-    @DeleteMapping("/delete-attendance{id}")
-    public ResponseEntity<String> deleteAttendance(@PathVariable UUID id){
-        return ResponseEntity.status(200).body(attendanceService.delete(id));
-    }
+
     @DeleteMapping("/delete-comment{commentId}")
     public ResponseEntity<String> deleteComment(@PathVariable UUID commentId){
         return ResponseEntity.status(200).body(commentService.delete(commentId));
@@ -112,16 +109,7 @@ public class AdminController {
         return ResponseEntity.status(200).body(userService.getTeachers());
     }
 
-    @GetMapping("/get-phoneNumbers-byRole")
-    public ResponseEntity<Map<String, Object>> getAllByRole(
-            @RequestParam UserRole role,
-            @RequestParam(required = false) UUID subjectId,
-            @RequestParam(defaultValue = "1") int pageNumber,
-            @RequestParam(defaultValue = "20") int pageSize) {
 
-        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
-        return ResponseEntity.ok(userService.getUsersByRoleAndSubjectId(role, subjectId, pageable));
-    }
     @PutMapping("/change-SubjectTitle/{subjectId}/{subjectName}")
     public ResponseEntity<String> changeSubjectTitle(
             @PathVariable UUID subjectId,

@@ -20,5 +20,6 @@ public interface LessonRepository extends JpaRepository<LessonEntity, UUID> {
     Optional<List<LessonEntity>> findAllByModule_IdOrderByNumberAsc(UUID moduleId);
     @Query("SELECT COUNT(l) FROM lesson l WHERE l.module.id = :moduleId")
     int getLessonCount(@Param("moduleId") UUID moduleId);
+    Optional<List<LessonEntity>> findByTeacherInfoId(UUID teacherInfoId);
 
 }

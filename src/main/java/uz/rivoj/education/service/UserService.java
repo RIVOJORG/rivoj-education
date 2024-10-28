@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.AdminCR;
 import uz.rivoj.education.dto.request.AuthDto;
@@ -35,6 +36,8 @@ public class UserService {
     private final TeacherInfoRepository teacherInfoRepository;
     private final AttendanceRepository attendanceRepository;
     private final UploadService uploadService;
+    private final LessonRepository lessonRepository;
+    private final CommentRepository commentRepository;
 
 
     public String add(UserCR dto) {
@@ -217,20 +220,7 @@ public class UserService {
         return userRepository.findTeachers(UserRole.TEACHER);
     }
 
-    public String deleteUser(UUID userId) {
-        UserEntity user = userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("User not found"));
-        if(user.getRole().equals(UserRole.STUDENT)){
-            StudentInfo studentInfo = studentInfoRepository.findByStudentId(userId).orElseThrow(() -> new DataNotFoundException("User not found"));
-            attendanceRepository.deleteByStudentId(studentInfo.getId());
-            studentInfoRepository.delete(studentInfo);
-            userRepository.delete(user);
-        } else if (user.getRole() == UserRole.TEACHER) {
-            userRepository.delete(user);
-        }else {
-            userRepository.delete(user);
-        }
-        return "Deleted!";
-    }
+
 
 
 
@@ -279,7 +269,7 @@ public class UserService {
         if(adminUpdate.getName() != null){
             admin.setName(adminUpdate.getName());
         }if(adminUpdate.getPassword() != null){
-            admin.setPassword(adminUpdate.getPassword());
+            admin.setPassword(passwordEncoder.encode(adminUpdate.getPassword()));
         }if(adminUpdate.getSurname() != null){
             admin.setSurname(adminUpdate.getSurname());
         }if(adminUpdate.getPhoneNumber() != null){
@@ -288,4 +278,69 @@ public class UserService {
         userRepository.save(admin);
         return "Profile successfully changed!";
     }
+
+    @Transactional
+    public String deleteUser(UUID userId) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+
+        UserRole role = user.getRole();
+
+        switch (role) {
+            case ADMIN:
+                userRepository.deleteById(userId);
+                break;
+
+            case TEACHER:
+
+                TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(user.getId())
+                        .orElseThrow(() -> new IllegalArgumentException("Teacher info not found for user id: " + userId));
+
+                Optional<List<AttendanceEntity>> attendanceEntityList = attendanceRepository.findAllByTeacherId(teacherInfo.getId());
+                attendanceEntityList.ifPresent(attendanceEntities -> attendanceEntities.forEach(
+                        attendanceEntity -> {
+                            attendanceEntity.setTeacher(null);
+                            attendanceRepository.save(attendanceEntity);
+                        }
+                ));
+
+                Optional<List<LessonEntity>> lessons = lessonRepository.findByTeacherInfoId(teacherInfo.getId());
+                if(lessons.isPresent()){
+                    for (LessonEntity lesson : lessons.get()) {
+                        lesson.setTeacherInfo(null);
+                        lessonRepository.save(lesson);
+                    }
+                }
+
+
+                Optional<List<CommentEntity>> comments = commentRepository.findByOwnerId(user.getId());
+                comments.ifPresent(commentRepository::deleteAll);
+                uploadService.deleteFile(user.getAvatar());
+                teacherInfoRepository.delete(teacherInfo);
+                userRepository.delete(user);
+                break;
+
+            case STUDENT:
+                StudentInfo studentInfo = studentInfoRepository.findByStudentId(user.getId())
+                        .orElseThrow(() -> new IllegalArgumentException("Student info not found for user id: " + userId));
+                Optional<List<AttendanceEntity>> attendances = attendanceRepository.findByStudentId(studentInfo.getId());
+                attendances.ifPresent(attendanceEntities -> attendanceEntities.forEach(
+                        attendanceEntity -> {
+                            attendanceEntity.getAnswers().forEach(uploadService::deleteFile);
+                            attendanceRepository.delete(attendanceEntity);
+                        }
+                ));
+                Optional<List<CommentEntity>> studentComments = commentRepository.findByOwnerId(user.getId());
+                studentComments.ifPresent(commentRepository::deleteAll);
+                uploadService.deleteFile(user.getAvatar());
+                studentInfoRepository.delete(studentInfo);
+                userRepository.delete(user);
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unsupported role for deletion: " + role);
+        }
+        return "Deleted!";
+    }
 }
+
