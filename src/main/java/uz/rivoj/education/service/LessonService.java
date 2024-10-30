@@ -227,11 +227,8 @@ public class LessonService {
         TeacherInfo teacherInfo = lessonEntity.getTeacherInfo();
         if(teacherInfo != null){
             UserEntity teacher = teacherInfo.getTeacher();
-            response.setTeacherInfo(new TeacherInfoResponse(teacher.getName(),teacher.getSurname(),teacher.getAvatar(),teacherInfo.getSubject().getTitle(),teacherInfo.getAbout()));
+            response.setTeacherInfo(new TeacherInfoResponse(teacher.getId(),teacher.getName(),teacher.getSurname(),teacher.getAvatar(),teacherInfo.getSubject().getTitle(),teacherInfo.getAbout()));
         }
-
         return  response;
-
-
     }
 }

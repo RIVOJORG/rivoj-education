@@ -18,6 +18,7 @@ import java.util.UUID;
 @ToString
 public class LessonResponse {
     private UUID id;
+    private UUID teacherId;
     private Integer number;
     private String title;
     private String source;
