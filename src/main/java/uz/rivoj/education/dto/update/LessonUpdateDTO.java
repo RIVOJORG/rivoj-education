@@ -14,6 +14,7 @@ import java.util.UUID;
 @ToString
 public class LessonUpdateDTO {
     private UUID id;
+    private UUID teacherId;
     private String title;
     private String description;
     private List<String> additionalLinks;

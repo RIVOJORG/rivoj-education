@@ -52,14 +52,15 @@ public class BaseControllerAdminTeacher {
             produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> updateLesson(
             @RequestParam("id") UUID id,
-            @RequestParam("title") String title,
-            @RequestParam("description") String description,
-            @RequestParam("additionalLinks") List<String> additionalLinks,
+            @RequestParam(value = "teacherId",required = false) UUID teacherId,
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "additionalLinks", required = false) List<String> additionalLinks,
             @RequestParam(value = "coverOfLesson",required = false) MultipartFile coverOfLesson,
             @RequestParam(value = "lessonVideo",required = false) MultipartFile lessonVideo
 
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(lessonService.updateLesson(new LessonUpdateDTO(id,title,description,additionalLinks,coverOfLesson,lessonVideo)));
+        return ResponseEntity.status(HttpStatus.OK).body(lessonService.updateLesson(new LessonUpdateDTO(id,teacherId,title,description,additionalLinks,coverOfLesson,lessonVideo)));
     }
 
     @GetMapping("/get-all-users-byRole")
@@ -101,8 +102,6 @@ public class BaseControllerAdminTeacher {
     public ResponseEntity<String> deleteLesson(@PathVariable UUID lessonId){
         return ResponseEntity.status(200).body(lessonService.delete(lessonId));
     }
-
-
 
     @GetMapping("/getStatistics")
     public ResponseEntity<Map<String, Object>> getStatistics(

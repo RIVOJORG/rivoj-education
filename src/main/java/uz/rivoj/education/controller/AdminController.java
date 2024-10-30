@@ -30,7 +30,6 @@ public class AdminController {
     private final StudentService studentService;
     private final UserService userService;
     private final TeacherService teacherService;
-    private final AttendanceService attendanceService;
     private final CommentService commentService;
     private final NotificationService notificationService;
     private final SubjectService subjectService;

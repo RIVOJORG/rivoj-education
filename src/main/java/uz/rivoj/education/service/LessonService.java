@@ -196,8 +196,11 @@ public class LessonService {
         if(updateDTO.getDescription() != null){
             lesson.setDescription(updateDTO.getDescription());
         }
+        if(updateDTO.getTeacherId() != null){
+            lesson.setTeacherInfo(teacherInfoRepository.findById(updateDTO.getTeacherId()).get());
+        }
         lessonRepository.save(lesson);
-        return "Successfully updated: ";
+        return "Successfully updated!";
 
     }
     @Transactional
@@ -210,6 +213,7 @@ public class LessonService {
         List<SpecialLessonResponse> list = new ArrayList<>();
         for (LessonEntity lessonEntity : lessonEntityList.get()) {
             SpecialLessonResponse response = modelMapper.map(lessonEntity, SpecialLessonResponse.class);
+            response.setTeacherId(lessonEntity.getTeacherInfo().getId());
             list.add(response);
         }
         return list;

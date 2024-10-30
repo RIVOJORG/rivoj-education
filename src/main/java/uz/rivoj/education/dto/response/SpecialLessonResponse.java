@@ -17,6 +17,7 @@ public class SpecialLessonResponse {
     private String cover;
     private String source;
     private String description;
+    private UUID teacherId;
 
 
 }
