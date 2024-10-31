@@ -15,7 +15,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:1}
-    url: jdbc:postgresql://localhost:5433/rivojstorage
+    url: jdbc:postgresql://db:5433/rivojstorage
 
   jpa:
     open-in-view: false
