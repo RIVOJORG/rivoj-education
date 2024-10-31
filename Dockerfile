@@ -8,4 +8,5 @@ ADD ${JAR_FILE} education
 
 COPY keystore.p12 /app/keystore.p12
 
+
 ENTRYPOINT ["java","-jar", "education"]
