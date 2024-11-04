@@ -197,7 +197,7 @@ public class LessonService {
             lesson.setDescription(updateDTO.getDescription());
         }
         if(updateDTO.getTeacherId() != null){
-            lesson.setTeacherInfo(teacherInfoRepository.findById(updateDTO.getTeacherId()).get());
+            lesson.setTeacherInfo(teacherInfoRepository.findByTeacher_Id(updateDTO.getTeacherId()).get());
         }
         lessonRepository.save(lesson);
         return "Successfully updated!";
