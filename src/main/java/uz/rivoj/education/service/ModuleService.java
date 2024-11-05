@@ -160,6 +160,11 @@ public class ModuleService {
                 .orElseThrow(() -> new DataNotFoundException("Module not found with this subject => " + subjectEntity.getTitle()));
         return getModuleResponses(modulesBySubject);
     }
+    public List<ModuleResponse> getAllModulesOfSubjectForTeacher(UUID TeacherId) {
+        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(TeacherId)
+                .orElseThrow(() -> new DataNotFoundException("Teacher not found with this id => " + TeacherId));
+        return getAllModulesOfSubject(teacherInfo.getSubject().getId());
+    }
 
     public Object addModule(UUID subjectId,Integer moduleNumber) {
         SubjectEntity subject = subjectRepository.findById(subjectId)

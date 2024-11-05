@@ -57,5 +57,21 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
             "FROM users u " +
             "WHERE u.role = :role")
     Page<UserDetailsDTO> findByRole(UserRole role, Pageable pageable);
+
+    @Query("SELECT u " +
+            "FROM users u " +
+            "JOIN student_info s ON s.student.id = u.id " +
+            "WHERE u.role = :role AND s.subject.id = :subjectId " +
+            "AND (LOWER(u.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
+            "OR LOWER(u.surname) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")
+    Page<UserEntity> findStudentsSearchTermAndSubjectId(UserRole role, UUID subjectId, String searchTerm, Pageable pageable);
+
+    @Query("SELECT u " +
+            "FROM users u " +
+            "JOIN student_info s ON s.student.id = u.id " +
+            "WHERE u.role = :role AND s.subject.id = :subjectId")
+    Page<UserEntity> findStudentsBySubjectId(UserRole role, UUID subjectId, Pageable pageable);
+
+
 }
 

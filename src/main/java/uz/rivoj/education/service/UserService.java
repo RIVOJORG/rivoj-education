@@ -343,5 +343,43 @@ public class UserService {
         }
         return "Deleted!";
     }
+
+    public Map<String, Object> getStudentsBySubject(UUID teacherId, String searchTerm, int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
+        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(teacherId)
+                .orElseThrow(() -> new IllegalArgumentException("Teacher not found!"));
+        Page<UserEntity> userPage;
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            userPage = userRepository.findStudentsBySubjectId(UserRole.STUDENT,teacherInfo.getSubject().getId(),pageable);
+        } else {
+            userPage = userRepository.findStudentsSearchTermAndSubjectId(UserRole.STUDENT, teacherInfo.getSubject().getId(),searchTerm,pageable);
+        }
+        List<StudentResponse> studentResponseList = new ArrayList<>();
+        for (UserEntity student : userPage.getContent()) {
+            StudentInfo studentInfo = studentInfoRepository.findByStudentId(student.getId())
+                    .orElseThrow(() -> new DataNotFoundException("User not found"));
+            StudentResponse studentResponse = modelMapper.map(student, StudentResponse.class);
+            studentResponse.setBirth(studentInfo.getStudent().getBirthday());
+            studentResponse.setCurrentLessonId(studentInfo.getLesson() != null ? studentInfo.getLesson().getId() : null);
+            studentResponse.setCurrentModuleId(studentInfo.getCurrentModule() != null ? studentInfo.getCurrentModule().getId() : null);
+            studentResponse.setSubjectId(studentInfo.getSubject() != null ? studentInfo.getSubject().getId() : null);
+            studentResponse.setCurrentLessonNumber(studentInfo.getLesson() != null ? studentInfo.getLesson().getNumber() : null);
+            studentResponse.setCurrentModuleNumber(studentInfo.getCurrentModule() != null ? studentInfo.getCurrentModule().getNumber() : null);
+            studentResponse.setSubjectName(studentInfo.getSubject() != null ? studentInfo.getSubject().getTitle() : null);
+            studentResponse.setTotalCoins(studentInfo.getCoin());
+            studentResponse.setTotalScore(studentInfo.getTotalScore());
+            studentResponse.setStatus(studentInfo.getStudent().getUserStatus());
+            studentResponseList.add(studentResponse);
+        }
+        Map<String, Object> responseMap = new LinkedHashMap<>();
+        responseMap.put("pageNumber", userPage.getNumber() + 1);
+        responseMap.put("totalPages", userPage.getTotalPages());
+        responseMap.put("totalCount", userPage.getTotalElements());
+        responseMap.put("pageSize", userPage.getSize());
+        responseMap.put("hasPreviousPage", userPage.hasPrevious());
+        responseMap.put("hasNextPage", userPage.hasNext());
+        responseMap.put("data", studentResponseList);
+        return responseMap;
+    }
 }
 
