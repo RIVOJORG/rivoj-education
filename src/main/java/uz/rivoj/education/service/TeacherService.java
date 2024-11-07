@@ -5,7 +5,6 @@ import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.TeacherCR;
 import uz.rivoj.education.dto.request.TeacherUpdate;
 import uz.rivoj.education.dto.response.SubjectResponse;
@@ -77,5 +76,13 @@ public class TeacherService {
         response.setBirthday(teacherInfo.getTeacher().getBirthday());
         response.setSubject(SubjectResponse.builder().title(teacherInfo.getSubject().getTitle()).id(teacherInfo.getSubject().getId()).build());
         return  response;
+    }
+
+    public SubjectResponse getSubject(UUID userId) {
+        TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(userId)
+                .orElseThrow(() -> new DataNotFoundException("Teacher not found!"));
+        SubjectEntity subjectEntity = subjectRepository.findById(teacherInfo.getSubject().getId())
+                .orElseThrow(() -> new DataNotFoundException("Subject not found!"));
+        return modelMapper.map(subjectEntity,SubjectResponse.class);
     }
 }

@@ -58,5 +58,9 @@ public class TeacherController {
     public ResponseEntity<List<ModuleResponse>> getAllModulesOfSubject(Principal principal){
         return ResponseEntity.status(200).body(moduleService.getAllModulesOfSubjectForTeacher(UUID.fromString(principal.getName())));
     }
+    @GetMapping("/getSubject")
+    public ResponseEntity<SubjectResponse> getSubject(Principal principal){
+        return ResponseEntity.ok(teacherService.getSubject(UUID.fromString(principal.getName())));
+    }
 
 }
