@@ -19,5 +19,6 @@ public class AdminResponse {
     private String surname;
     private String avatar;
     private String phoneNumber;
+    private LocalDate birthday;
     private UserStatus userStatus;
 }
