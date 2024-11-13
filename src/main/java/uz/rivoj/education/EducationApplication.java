@@ -13,14 +13,18 @@ import java.io.IOException;
 @SpringBootApplication
 public class EducationApplication {
 	public static void main(String[] args) throws IOException {
-		ClassLoader classLoader = EducationApplication.class.getClassLoader();
-		File file = new File(classLoader.getResource("fireBaseKeySDK.json").getFile());
-		FileInputStream serviceAccount = new FileInputStream(file.getAbsolutePath());
-		FirebaseOptions options = new FirebaseOptions.Builder()
-				.setCredentials(GoogleCredentials.fromStream(serviceAccount))
-				.build();
-		FirebaseApp.initializeApp(options);
-		SpringApplication.run(EducationApplication.class, args);
-	}
+        try (FileInputStream serviceAccount = new FileInputStream("/app/fireBaseKeySDK.json")) {
+            FirebaseOptions options = new FirebaseOptions.Builder()
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .build();
+            FirebaseApp.initializeApp(options);
+        } catch (FileNotFoundException e) {
+            System.err.println("fireBaseKeySDK.json fayli topilmadi. Iltimos, fayl joylashuvi va nomini tekshiring.");
+            e.printStackTrace();
+            return;
+        }
+        
+        SpringApplication.run(EducationApplication.class, args);
+    }
 
 }
