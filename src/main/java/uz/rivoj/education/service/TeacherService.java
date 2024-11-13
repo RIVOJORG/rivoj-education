@@ -3,21 +3,30 @@ package uz.rivoj.education.service;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import uz.rivoj.education.dto.request.ChatCR;
 import uz.rivoj.education.dto.request.TeacherCR;
 import uz.rivoj.education.dto.request.TeacherUpdate;
 import uz.rivoj.education.dto.response.SubjectResponse;
 import uz.rivoj.education.dto.response.TeacherResponse;
+import uz.rivoj.education.dto.response.UserDetailsDTO;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.UserStatus;
+import uz.rivoj.education.exception.CustomException;
+import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.SubjectRepository;
 import uz.rivoj.education.repository.TeacherInfoRepository;
 import uz.rivoj.education.repository.UserRepository;
+import uz.rivoj.education.service.firebase.FirebaseService;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
@@ -28,16 +37,15 @@ public class TeacherService {
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final UploadService uploadService;
+    private final FirebaseService firebaseService;
 
-    public String createTeacher(TeacherCR teacherCr) {
+    public ResponseEntity<String> createTeacher(TeacherCR teacherCr) {
         Optional<UserEntity> userByPhoneNumber = userRepository.findByPhoneNumber(teacherCr.getPhoneNumber());
         if(userByPhoneNumber.isPresent()){
-            return ("Phone number already registered!");
+            throw new DataAlreadyExistsException("Phone number already registered!");
         }
-        if (!subjectRepository.existsByTitle(teacherCr.getSubject())){
-            throw new DataNotFoundException("Subject not found with this title: " + teacherCr.getSubject());}
-        SubjectEntity subject = subjectRepository.findByTitle(teacherCr.getSubject())
-                .orElseThrow(() -> new DataNotFoundException("Subject not found with this title: " + teacherCr.getSubject()));
+        SubjectEntity subject = subjectRepository.findById(teacherCr.getSubjectId())
+                .orElseThrow(() -> new DataNotFoundException("Subject not found with this title: " + teacherCr.getSubjectId()));
         UserEntity user = modelMapper.map(teacherCr, UserEntity.class);
         user.setRole(UserRole.TEACHER);
         user.setUserStatus(UserStatus.UNBLOCK);
@@ -47,9 +55,23 @@ public class TeacherService {
                 .subject(subject)
                 .teacher(user)
                 .build();
-        userRepository.save(user);
+        UserEntity savedUser = userRepository.save(user);
         teacherInfoRepository.save(teacher);
-        return "Created";
+        
+        try {
+            firebaseService.createUser(new UserDetailsDTO(String.valueOf(savedUser.getId()),savedUser.getPhoneNumber(),savedUser.getAvatar(),savedUser.getName(),savedUser.getSurname(),String.valueOf(savedUser.getRole())));
+        } catch (ExecutionException | InterruptedException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unable to create user on Firebase! \n" + e.getMessage());
+        }
+        Optional<List<UUID>> optionalStudentIdes = userRepository.findUserIdesIdBySubjectId(UserRole.STUDENT,teacherCr.getSubjectId());
+        optionalStudentIdes.ifPresent(studentIdes -> studentIdes.forEach(studentId -> {
+            try {
+                firebaseService.createChat(new ChatCR(String.valueOf(studentId), String.valueOf(savedUser.getId())), String.valueOf(UUID.randomUUID()));
+            } catch (ExecutionException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }));
+        return ResponseEntity.status(HttpStatus.CREATED).body("Successfully created!");
     }
 
 
@@ -70,11 +92,12 @@ public class TeacherService {
         if(teacherUpdate.getPassword() != null){
             userEntity.setPassword(passwordEncoder.encode(teacherUpdate.getPassword()));
         }
-        userRepository.save(userEntity);
+        UserEntity save = userRepository.save(userEntity);
         teacherInfoRepository.save(teacherInfo);
         TeacherResponse response = modelMapper.map(userEntity, TeacherResponse.class);
         response.setBirthday(teacherInfo.getTeacher().getBirthday());
         response.setSubject(SubjectResponse.builder().title(teacherInfo.getSubject().getTitle()).id(teacherInfo.getSubject().getId()).build());
+        firebaseService.updateUser(new UserDetailsDTO(String.valueOf(save.getId()),save.getPhoneNumber(),save.getAvatar(),save.getName(),save.getSurname(),String.valueOf(save.getRole())));
         return  response;
     }
 

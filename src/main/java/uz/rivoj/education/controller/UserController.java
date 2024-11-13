@@ -67,6 +67,4 @@ public class UserController {
                 .body(userService.updateProfilePicture(picture, UUID.fromString(principal.getName())));
     }
 
-
-
 }

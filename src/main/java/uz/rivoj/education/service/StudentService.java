@@ -5,25 +5,32 @@ import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.AttendanceCR;
+import uz.rivoj.education.dto.request.ChatCR;
 import uz.rivoj.education.dto.request.StudentCR;
 import uz.rivoj.education.dto.request.StudentUpdate;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.UserStatus;
+import uz.rivoj.education.exception.CustomException;
 import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.*;
 import org.springframework.data.domain.Pageable;
+import uz.rivoj.education.service.firebase.FirebaseService;
 import uz.rivoj.education.service.jwt.JwtUtil;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static uz.rivoj.education.entity.enums.AttendanceStatus.CHECKED;
@@ -44,23 +51,22 @@ public class StudentService {
     private final UploadService uploadService;
     private final VerificationRepository verificationRepository;
     private final JwtUtil jwtUtil;
+    private final FirebaseService firebaseService;
 
 
 
-    public String addStudent(StudentCR studentCR) {
+    public ResponseEntity<String> addStudent(StudentCR studentCR) {
         if (userRepository.findByPhoneNumber(studentCR.getPhoneNumber()).isPresent()) {
             throw new DataAlreadyExistsException("Student already exists with this phone number: " + studentCR.getPhoneNumber());
         }
+        SubjectEntity subject = subjectRepository.findById(studentCR.getSubjectId())
+                .orElseThrow(() -> new DataNotFoundException("Subject not found with this id: " + studentCR.getSubjectId()));
 
-        SubjectEntity subject = subjectRepository.findByTitle(studentCR.getSubject())
-                .orElseThrow(() -> new DataNotFoundException("Subject not found with this title: " + studentCR.getSubject()));
-
-        ModuleEntity moduleEntity = moduleRepository.findBySubject_IdAndNumber(subject.getId(), studentCR.getStarterModule())
-                .orElseThrow(() -> new DataNotFoundException("Module not found with subject ID: " + subject.getId()
-                        + " and module number: " + studentCR.getStarterModule()));
+        ModuleEntity moduleEntity = moduleRepository.findById(studentCR.getStarterModuleId())
+                .orElseThrow(() -> new DataNotFoundException("Module not found with subject id: " + subject.getId()));
 
         LessonEntity lesson = lessonRepository.findFirstByModule_IdOrderByNumberAsc(moduleEntity.getId())
-                .orElseThrow(() -> new DataNotFoundException("Lesson not found with module ID: " + moduleEntity.getId()));
+                .orElseThrow(() -> new DataNotFoundException("Lesson not found with module id: " + moduleEntity.getId()));
 
         UserEntity userEntity = UserEntity.builder()
                 .name(studentCR.getName())
@@ -80,11 +86,22 @@ public class StudentService {
                 .currentModule(moduleEntity)
                 .totalScore(0)
                 .build();
-
-        userRepository.save(userEntity);
+        UserEntity savedUser = userRepository.save(userEntity);
         studentInfoRepository.save(student);
-
-        return "Created";
+        try {
+            firebaseService.createUser(new UserDetailsDTO(String.valueOf(savedUser.getId()),savedUser.getPhoneNumber(),savedUser.getAvatar(),savedUser.getName(),savedUser.getSurname(),String.valueOf(savedUser.getRole())));
+        } catch (ExecutionException | InterruptedException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unable to create user on Firebase! \n" + e.getMessage());
+        }
+        Optional<List<UUID>> optionalTeachersId = userRepository.findUserIdesIdBySubjectId(UserRole.TEACHER,studentCR.getSubjectId());
+        optionalTeachersId.ifPresent(teacherIdes -> teacherIdes.forEach(teacherId -> {
+            try {
+                firebaseService.createChat(new ChatCR(String.valueOf(teacherId), String.valueOf(savedUser.getId())), String.valueOf(UUID.randomUUID()));
+            } catch (ExecutionException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }));
+        return ResponseEntity.status(HttpStatus.CREATED).body("Successfully created!");
     }
 
 
@@ -111,12 +128,13 @@ public class StudentService {
         if (studentUpdate.getPassword() != null) {
             userEntity.setPassword(passwordEncoder.encode(studentUpdate.getPassword()));
         }
-        userRepository.save(userEntity);
+        UserEntity save = userRepository.save(userEntity);
         studentInfoRepository.save(studentInfo);
         StudentResponse response = modelMapper.map(userEntity, StudentResponse.class);
         response.setBirth(studentInfo.getStudent().getBirthday());
         response.setSubjectId(studentInfo.getSubject().getId());
         response.setCurrentLessonId(studentInfo.getLesson().getId());
+        firebaseService.updateUser(new UserDetailsDTO(String.valueOf(save.getId()),save.getPhoneNumber(),save.getAvatar(),save.getName(),save.getSurname(),String.valueOf(save.getRole())));
         return response;
     }
 

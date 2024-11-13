@@ -1,10 +1,6 @@
 package uz.rivoj.education.dto.request;
 
 import lombok.*;
-import uz.rivoj.education.dto.response.MessageResponse;
-import uz.rivoj.education.dto.response.UserResponse;
-
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,6 +9,6 @@ import java.util.List;
 @ToString
 @Builder
 public class ChatCR {
-    private List<UserResponse> members;
-    private List<MessageResponse> messages;
+    private String member1;
+    private String member2;
 }

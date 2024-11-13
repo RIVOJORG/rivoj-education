@@ -41,19 +41,20 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     List<TeacherDTO> findTeachers(@Param("role") UserRole role);
 
 
-    @Query("SELECT new uz.rivoj.education.dto.response.UserDetailsDTO(u.phoneNumber, u.avatar, u.name, u.surname) " +
+    @Query("SELECT new uz.rivoj.education.dto.response.UserDetailsDTO(CAST(u.id AS string),u.phoneNumber, u.avatar, u.name, u.surname, CAST(u.role AS string)) " +
             "FROM users u " +
             "JOIN teacher_info t ON t.teacher.id = u.id " +
             "WHERE u.role = :role AND t.subject.id = :subjectId")
     Page<UserDetailsDTO> findTeachersByRoleAndSubjectId(UserRole role, UUID subjectId, Pageable pageable);
 
-    @Query("SELECT new uz.rivoj.education.dto.response.UserDetailsDTO(u.phoneNumber, u.avatar, u.name, u.surname) " +
+    @Query("SELECT new uz.rivoj.education.dto.response.UserDetailsDTO(CAST(u.id AS string),u.phoneNumber, u.avatar, u.name, u.surname,CAST(u.role AS string)) " +
             "FROM users u " +
             "JOIN student_info s ON s.student.id = u.id " +
             "WHERE u.role = :role AND s.subject.id = :subjectId")
     Page<UserDetailsDTO> findStudentsByRoleAndSubjectId(UserRole role, UUID subjectId, Pageable pageable);
 
-    @Query("SELECT new uz.rivoj.education.dto.response.UserDetailsDTO(u.phoneNumber, u.avatar, u.name, u.surname) " +
+
+    @Query("SELECT new uz.rivoj.education.dto.response.UserDetailsDTO(CAST(u.id AS string), u.phoneNumber, u.avatar, u.name, u.surname,CAST(u.role AS string)) " +
             "FROM users u " +
             "WHERE u.role = :role")
     Page<UserDetailsDTO> findByRole(UserRole role, Pageable pageable);
@@ -71,6 +72,23 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
             "JOIN student_info s ON s.student.id = u.id " +
             "WHERE u.role = :role AND s.subject.id = :subjectId")
     Page<UserEntity> findStudentsBySubjectId(UserRole role, UUID subjectId, Pageable pageable);
+
+    @Query("SELECT u.id FROM users u " +
+            "JOIN teacher_info ti ON ti.teacher.id = u.id " +
+            "WHERE u.role = :role AND ti.subject.id = :subjectId")
+    Optional<List<UUID>> findUserIdesIdBySubjectId(@Param("role") UserRole role, @Param("subjectId") UUID subjectId);
+
+    @Query("SELECT u.id FROM users u " +
+            "JOIN teacher_info ti ON ti.teacher.id = u.id " +
+            "WHERE u.role = :role")
+    Optional<List<UUID>> findTeacherIdes(@Param("role") UserRole role);
+
+
+    Page<UserEntity> findUserEntitiesByRole(UserRole role, Pageable pageable);
+    @Query("SELECT u FROM users u " +
+            "JOIN student_info s ON s.student.id = u.id " +
+            "WHERE u.role = :role AND s.subject.id = :subjectId")
+    Page<UserEntity> findStudentsBYRoleAndSubjectId(UserRole role, UUID subjectId, Pageable pageable);
 
 
 }

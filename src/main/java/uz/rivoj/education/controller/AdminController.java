@@ -19,6 +19,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -37,15 +38,15 @@ public class AdminController {
 
     @PostMapping("/add-student")
     public ResponseEntity<String> addStudent(@RequestBody StudentCR studentCR){
-        return ResponseEntity.status(HttpStatus.CREATED).body(studentService.addStudent(studentCR));
+        return studentService.addStudent(studentCR);
     }
     @PostMapping("/add-teacher")
     public ResponseEntity<String> addTeacher(@RequestBody TeacherCR teacherInfo){
-        return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.createTeacher(teacherInfo));
+        return teacherService.createTeacher(teacherInfo);
     }
     @PostMapping("/add-admin")
-    public ResponseEntity<String> addAdmin(@RequestBody UserCR adminDto){
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.addAdmin(adminDto));
+    public ResponseEntity<String> addAdmin(@RequestBody UserCR adminDto) throws ExecutionException, InterruptedException {
+        return userService.addAdmin(adminDto);
     }
 
     @PostMapping("/create-subject")

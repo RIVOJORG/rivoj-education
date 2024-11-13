@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,16 +17,20 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.AdminCR;
 import uz.rivoj.education.dto.request.AuthDto;
+import uz.rivoj.education.dto.request.ChatCR;
 import uz.rivoj.education.dto.request.UserCR;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.UserStatus;
+import uz.rivoj.education.exception.CustomException;
 import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.*;
+import uz.rivoj.education.service.firebase.FirebaseService;
 import uz.rivoj.education.service.jwt.JwtUtil;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
@@ -39,9 +45,10 @@ public class UserService {
     private final UploadService uploadService;
     private final LessonRepository lessonRepository;
     private final CommentRepository commentRepository;
+    private final FirebaseService firebaseService;
 
 
-    public String add(UserCR dto) {
+    public String add(UserCR dto) throws ExecutionException, InterruptedException {
         Optional<UserEntity> userEntity = userRepository.findByPhoneNumber(dto.getPhoneNumber());
         if (userEntity.isPresent()) {
             throw new DataAlreadyExistsException("User already exists");
@@ -61,7 +68,7 @@ public class UserService {
         throw new AuthenticationCredentialsNotFoundException("password didn't match");
     }
 
-    public String addAdmin(UserCR userDto) {
+    public ResponseEntity<String> addAdmin(UserCR userDto) {
         if(userRepository.findByPhoneNumber(userDto.getPhoneNumber()).isPresent()) {
             throw  new DataAlreadyExistsException("User already exists");
         }
@@ -75,7 +82,21 @@ public class UserService {
                 .build();
         UserResponse userResponse = modelMapper.map(userRepository.save(user), UserResponse.class);
         userResponse.setId(user.getId());
-        return "Created";
+
+        try {
+            firebaseService.createUser(new UserDetailsDTO(String.valueOf(user.getId()),user.getPhoneNumber(),user.getAvatar(),user.getName(),user.getSurname(),String.valueOf(user.getRole())));
+        } catch (ExecutionException | InterruptedException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unable to create user on Firebase! \n" + e.getMessage());
+        }
+        Optional<List<UUID>> optionalTeacherIdes = userRepository.findTeacherIdes(UserRole.TEACHER);
+        optionalTeacherIdes.ifPresent(teacherIdes -> teacherIdes.forEach(teacherId -> {
+            try {
+                firebaseService.createChat(new ChatCR(String.valueOf(teacherId), String.valueOf(user.getId())), String.valueOf(UUID.randomUUID()));
+            } catch (ExecutionException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }));
+        return ResponseEntity.status(HttpStatus.CREATED).body("Successfully created!");
     }
 
     public List<UserResponse> getAll() {
@@ -120,6 +141,39 @@ public class UserService {
         user.setRole(userRole);
         userRepository.save(user);
         return "Successfully updated";
+    }
+
+    public void  createChat(){
+        Pageable pageable = PageRequest.of(0, 100);
+        Page<UserEntity> adminEntities = userRepository.findUserEntitiesByRole(UserRole.ADMIN, pageable);
+        adminEntities.forEach(admin -> {
+            Page<UserEntity> teachers = userRepository.findUserEntitiesByRole(UserRole.TEACHER, pageable);
+            teachers.get().forEach(teacher -> {
+                try {
+                    firebaseService.createUser(new UserDetailsDTO(String.valueOf(teacher.getId()),teacher.getPhoneNumber(),teacher.getAvatar(),teacher.getName(),teacher.getSurname(),String.valueOf(teacher.getRole())));
+                    firebaseService.createUser(new UserDetailsDTO(String.valueOf(admin.getId()),admin.getPhoneNumber(),admin.getAvatar(),admin.getName(),admin.getSurname(),String.valueOf(admin.getRole())));
+                    firebaseService.createChat(new ChatCR(String.valueOf(admin.getId()),String.valueOf(teacher.getId())),String.valueOf(UUID.randomUUID()));
+                } catch (ExecutionException | InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+        });
+        Page<UserEntity> teachers = userRepository.findUserEntitiesByRole(UserRole.TEACHER, pageable);
+        teachers.get().forEach(teacher -> {
+            Optional<TeacherInfo> byTeacherId = teacherInfoRepository.findByTeacher_Id(teacher.getId());
+            Page<UserEntity> students = userRepository.findStudentsBYRoleAndSubjectId(UserRole.STUDENT, byTeacherId.get().getSubject().getId(), pageable);
+            students.get().forEach(student -> {
+                try {
+                    firebaseService.createUser(new UserDetailsDTO(String.valueOf(teacher.getId()),teacher.getPhoneNumber(),teacher.getAvatar(),teacher.getName(),teacher.getSurname(),String.valueOf(teacher.getRole())));
+                    firebaseService.createUser(new UserDetailsDTO(String.valueOf(student.getId()),student.getPhoneNumber(),student.getAvatar(),student.getName(),student.getSurname(),String.valueOf(student.getRole())));
+                    firebaseService.createChat(new ChatCR(String.valueOf(student.getId()),String.valueOf(teacher.getId())),String.valueOf(UUID.randomUUID()));
+                } catch (ExecutionException | InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        });
+
     }
 
     public Object getUserDetails(UUID userId) {
@@ -221,16 +275,15 @@ public class UserService {
         return userRepository.findTeachers(UserRole.TEACHER);
     }
 
-
-
-
-
     public Map<String, Object> getUsersByRoleAndSubjectId(UserRole role, UUID subjectId, Pageable pageable) {
         Page<UserDetailsDTO> userPage;
 
-        if (role == UserRole.TEACHER) {
+        if (role == UserRole.TEACHER && subjectId != null) {
             userPage = userRepository.findTeachersByRoleAndSubjectId(role, subjectId, pageable);
-        } else if (role == UserRole.STUDENT) {
+        } else if (role == UserRole.TEACHER) {
+            userPage = userRepository.findByRole(role, pageable);
+        }
+        else if (role == UserRole.STUDENT) {
             userPage = userRepository.findStudentsByRoleAndSubjectId(role, subjectId, pageable);
         } else if (role == UserRole.ADMIN) {
             userPage = userRepository.findByRole(role, pageable);
@@ -260,7 +313,8 @@ public class UserService {
         String filename = userEntity.getName() + "_ProfilePicture";
         String avatarPath = uploadService.uploadFile(picture, filename);
         userEntity.setAvatar(avatarPath);
-        userRepository.save(userEntity);
+        UserEntity save = userRepository.save(userEntity);
+        firebaseService.updateUser(new UserDetailsDTO(String.valueOf(save.getId()),save.getPhoneNumber(),save.getAvatar(),save.getName(),save.getSurname(),String.valueOf(save.getRole())));
         return "Profile picture changed";
     }
 
@@ -276,7 +330,8 @@ public class UserService {
         }if(adminUpdate.getPhoneNumber() != null){
             admin.setPhoneNumber(adminUpdate.getPhoneNumber());
         }
-        userRepository.save(admin);
+        UserEntity save = userRepository.save(admin);
+        firebaseService.updateUser(new UserDetailsDTO(String.valueOf(save.getId()),save.getPhoneNumber(),save.getAvatar(),save.getName(),save.getSurname(),String.valueOf(save.getRole())));
         return "Profile successfully changed!";
     }
 
@@ -341,6 +396,7 @@ public class UserService {
             default:
                 throw new IllegalArgumentException("Unsupported role for deletion: " + role);
         }
+        firebaseService.deleteUser(String.valueOf(userId));
         return "Deleted!";
     }
 
