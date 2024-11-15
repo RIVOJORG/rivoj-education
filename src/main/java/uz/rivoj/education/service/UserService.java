@@ -187,7 +187,7 @@ public class UserService {
             TeacherResponse teacherResponse = modelMapper.map(user, TeacherResponse.class);
             teacherResponse.setSubject(SubjectResponse.builder().title(teacherInfo.getSubject().getTitle()).id(teacherInfo.getSubject().getId()).build());
             teacherResponse.setAbout(teacherInfo.getAbout());
-            teacherResponse.setId(teacherInfo.getId());
+            teacherResponse.setId(user.getId());
             teacherResponse.setBirthday(teacherInfo.getTeacher().getBirthday());
             return teacherResponse;
         } else {
@@ -197,7 +197,7 @@ public class UserService {
             studentResponse.setBirth(studentInfo.getStudent().getBirthday());
             studentResponse.setSubjectId(studentInfo.getSubject().getId());
             studentResponse.setCurrentLessonId(studentInfo.getLesson().getId());
-            studentResponse.setId(studentInfo.getId());
+            studentResponse.setId(user.getId());
             studentResponse.setCurrentModuleId(studentInfo.getCurrentModule().getId());
             studentResponse.setCurrentLessonNumber(studentInfo.getLesson().getNumber());
             studentResponse.setCurrentModuleNumber(studentInfo.getCurrentModule().getNumber());
