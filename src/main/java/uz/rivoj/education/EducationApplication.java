@@ -5,23 +5,24 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Objects;
+import java.io.InputStream;
 
 @SpringBootApplication
 public class EducationApplication {
 	public static void main(String[] args) throws IOException {
-        ClassLoader classLoader = EducationApplication.class.getClassLoader();
-        File file = new File(Objects.requireNonNull(classLoader.getResource("fireBaseKeySDK.json").getFile()));
-        FileInputStream serviceAccount = new FileInputStream(file.getAbsolutePath());
-        FirebaseOptions options = new FirebaseOptions.Builder()
-                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                .build();
-        FirebaseApp.initializeApp(options);
-        SpringApplication.run(EducationApplication.class, args);
+            ClassLoader classLoader = EducationApplication.class.getClassLoader();
+            InputStream serviceAccountStream = classLoader.getResourceAsStream("fireBaseKeySDK.json");
+
+            if (serviceAccountStream == null) {
+                    throw new IOException("Firebase service account key not found in classpath");
+            }
+
+            FirebaseOptions options = new FirebaseOptions.Builder()
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccountStream))
+                    .build();
+            FirebaseApp.initializeApp(options);
+            SpringApplication.run(EducationApplication.class, args);
     }
 
 }
