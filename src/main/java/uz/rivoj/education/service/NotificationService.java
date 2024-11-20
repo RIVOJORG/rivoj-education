@@ -26,13 +26,13 @@ public class NotificationService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
-    public NotificationResponse create(NotificationCR notificationCR){
-        UserEntity user = userRepository.findById(notificationCR.getUserId()).orElseThrow(
-                () -> new DataNotFoundException("User not found"));
-        NotificationEntity notificationEntity = modelMapper.map(notificationCR, NotificationEntity.class);
-        notificationEntity.setUser(user);
-        return modelMapper.map(notificationRepository.save(notificationEntity), NotificationResponse.class);
-    }
+//    public NotificationResponse create(NotificationCR notificationCR){
+//        UserEntity user = userRepository.findById(notificationCR.getUserId()).orElseThrow(
+//                () -> new DataNotFoundException("User not found"));
+//        NotificationEntity notificationEntity = modelMapper.map(notificationCR, NotificationEntity.class);
+//        notificationEntity.setUser(user);
+//        return modelMapper.map(notificationRepository.save(notificationEntity), NotificationResponse.class);
+//    }
 
     public String delete(UUID notificationId){
         NotificationEntity notificationEntity = notificationRepository.findById(notificationId).orElseThrow(

@@ -1,27 +1,20 @@
 package uz.rivoj.education.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.*;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.entity.*;
-import uz.rivoj.education.entity.enums.AttendanceStatus;
 import uz.rivoj.education.entity.enums.UserStatus;
 import uz.rivoj.education.service.*;
+import uz.rivoj.education.service.firebase.FirebaseService;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 
 @RestController
@@ -34,6 +27,7 @@ public class AdminController {
     private final CommentService commentService;
     private final NotificationService notificationService;
     private final SubjectService subjectService;
+    private final FirebaseService firebaseService;
 
 
     @PostMapping("/add-student")
@@ -53,10 +47,10 @@ public class AdminController {
     public ResponseEntity<SubjectResponse> createSubject(@RequestBody SubjectCR createRequest){
         return ResponseEntity.status(HttpStatus.CREATED).body(subjectService.create(createRequest));
     }
-    @PostMapping("/create-notification")
-    public ResponseEntity<NotificationResponse> createNotification(@RequestBody NotificationCR notificationCR){
-        return ResponseEntity.status(HttpStatus.CREATED).body(notificationService.create(notificationCR));
-    }
+//    @PostMapping("/create-notification")
+//    public ResponseEntity<NotificationResponse> createNotification(@RequestBody NotificationCR notificationCR){
+//        return ResponseEntity.status(HttpStatus.CREATED).body(notificationService.create(notificationCR));
+//    }
 
     @PutMapping("/update-role{userPhoneNumber}")
     public ResponseEntity<String> updateRole(@PathVariable String userPhoneNumber, @RequestParam UserRole userRole){
@@ -124,6 +118,16 @@ public class AdminController {
     ){
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userService.updateProfile(adminUpdate, UUID.fromString(principal.getName())));
+    }
+
+    @PostMapping("/sendNotificationTopic")
+    public ResponseEntity<String> sendNotificationTopic(@RequestBody NotificationCR notificationCR){
+        return firebaseService.sendNotificationTopic(notificationCR);
+    }
+
+    @PostMapping("/sendNotificationUsers")
+    public ResponseEntity<String> sendNotificationUsers(@RequestBody NotificationCR notificationCR){
+        return firebaseService.sendNotificationUsers(notificationCR);
     }
 
 
