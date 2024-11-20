@@ -1,16 +1,14 @@
-package uz.rivoj.education.dto.response;
+package uz.rivoj.education.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import uz.rivoj.education.entity.UserRole;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class JwtResponse {
-    private String token;
+public class TokenRefreshDTO {
     private String refreshToken;
 }

@@ -15,10 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import uz.rivoj.education.dto.request.AdminCR;
-import uz.rivoj.education.dto.request.AuthDto;
-import uz.rivoj.education.dto.request.ChatCR;
-import uz.rivoj.education.dto.request.UserCR;
+import uz.rivoj.education.dto.request.*;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.UserStatus;
@@ -48,7 +45,7 @@ public class UserService {
     private final FirebaseService firebaseService;
 
 
-    public String add(UserCR dto) throws ExecutionException, InterruptedException {
+    public JwtResponse add(UserCR dto) throws ExecutionException, InterruptedException {
         Optional<UserEntity> userEntity = userRepository.findByPhoneNumber(dto.getPhoneNumber());
         if (userEntity.isPresent()) {
             throw new DataAlreadyExistsException("User already exists");
@@ -56,16 +53,31 @@ public class UserService {
         UserEntity map = modelMapper.map(dto, UserEntity.class);
         map.setPassword(passwordEncoder.encode(map.getPassword()));
         userRepository.save(map);
-        return "Successfully signed up";
+
+        List<String> tokens = jwtUtil.generateToken(map);
+        return new JwtResponse(tokens.get(0), tokens.get(1));
     }
 
     public JwtResponse signIn(AuthDto dto) {
         UserEntity user = userRepository.findByPhoneNumber(dto.getPhoneNumber())
                 .orElseThrow(() -> new DataNotFoundException("user not found"));
-      if (passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-            return new JwtResponse(jwtUtil.generateToken(user),user.getRole());
+        if (passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+            List<String> tokens = jwtUtil.generateToken(user);
+            return new JwtResponse(tokens.get(0),tokens.get(1));
         }
         throw new AuthenticationCredentialsNotFoundException("password didn't match");
+    }
+
+    public JwtResponse tokenRefresh(TokenRefreshDTO request) {
+        String id = jwtUtil.extractToken(request.getRefreshToken()).getBody().getSubject();
+        System.out.println(id);
+        UserEntity user = userRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new DataNotFoundException("user not found!!!"));
+        if(jwtUtil.checkRefreshToken(user, request.getRefreshToken())){
+            List<String> tokens = jwtUtil.generateToken(user);
+            return new JwtResponse(tokens.get(0), tokens.get(1));
+        }
+        throw new AuthenticationCredentialsNotFoundException("refresh token didn't match");
     }
 
     public ResponseEntity<String> addAdmin(UserCR userDto) {
@@ -80,6 +92,7 @@ public class UserService {
                 .role(UserRole.ADMIN)
                 .userStatus(UserStatus.UNBLOCK)
                 .build();
+        jwtUtil.generateToken(user);
         UserResponse userResponse = modelMapper.map(userRepository.save(user), UserResponse.class);
         userResponse.setId(user.getId());
 
