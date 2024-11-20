@@ -65,7 +65,7 @@ public class ChatService {
                         .chatId(chatEntity.getId())
                         .lastMessage(getLastMessageFromChat(chatEntity.getId()))
                         .name(user.getName())
-                        .studentAvatar(studentInfo.getAvatar())
+                        .studentAvatar(studentInfo.getStudent().getAvatar())
                         .surname(user.getSurname())
                         .build();
                 chatResponseList.add(chatResponse);

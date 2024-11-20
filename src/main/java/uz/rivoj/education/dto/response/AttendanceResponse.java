@@ -10,7 +10,7 @@ import java.util.UUID;
 @Setter
 @Builder
 public class AttendanceResponse {
-    private UUID Id;
+    private UUID id;
     private UUID lesson_id;
     private UUID student_id;
     private UUID teacher_id;

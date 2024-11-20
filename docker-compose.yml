@@ -12,6 +12,9 @@ services:
       DB_PASSWORD: 1
     depends_on:
       - db
+    volumes:
+      - ./src/main/resources/fireBaseKeySDK.json:/app/fireBaseKeySDK.json 
+
   db:
     image: postgres
     ports:
@@ -22,6 +25,7 @@ services:
       POSTGRES_DB: rivojstorage
     volumes:
       - pg_data:/var/lib/postgresql/data
+
 volumes:
   pg_data:
 

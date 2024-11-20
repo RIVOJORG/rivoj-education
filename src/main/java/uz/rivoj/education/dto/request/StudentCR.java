@@ -3,6 +3,7 @@ package uz.rivoj.education.dto.request;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,6 +17,6 @@ public class StudentCR {
     private String phoneNumber;
     private String password;
     private LocalDate birthday;
-    private String subject;
-    private Integer starterModule;
+    private UUID subjectId;
+    private UUID starterModuleId;
 }

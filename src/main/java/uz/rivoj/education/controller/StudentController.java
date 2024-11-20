@@ -9,11 +9,10 @@ import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.AttendanceCR;
 import uz.rivoj.education.dto.request.StudentUpdate;
 import uz.rivoj.education.dto.response.*;
-import uz.rivoj.education.entity.UserRole;
+import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.service.*;
 import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -23,7 +22,6 @@ public class StudentController {
     private final AttendanceService attendanceService;
     private final ModuleService moduleService;
     private  final StudentService studentService;
-    private final CommentService commentService;
 
 
     @GetMapping("/getAllLessonsOfModule")
@@ -38,12 +36,17 @@ public class StudentController {
     @PostMapping(value = "/upload-homework",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
             produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> uploadHomework(
+    public ResponseEntity<?> uploadHomework(
             Principal principal,
             @ModelAttribute AttendanceCR attendanceCR,
             @RequestPart List<MultipartFile> files
     ){
-        return ResponseEntity.ok(studentService.uploadHomework(attendanceCR, UUID.fromString(principal.getName()), files));
+        try {
+            String result = studentService.uploadHomework(attendanceCR, UUID.fromString(principal.getName()), files);
+            return ResponseEntity.ok(result);
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @PutMapping(value = "/update-profile")
@@ -55,16 +58,6 @@ public class StudentController {
                 .body(studentService.updateProfile(studentUpdate, UUID.fromString(principal.getName())));
     }
 
-    @PutMapping(value = "/update-profile-picture",
-            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
-    )
-    public ResponseEntity<String> updateProfilePicture(
-            Principal principal,
-            @RequestParam("picture") MultipartFile picture
-    ) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(studentService.updateProfilePicture(picture, UUID.fromString(principal.getName())));
-    }
 
     @GetMapping("/get-homework-by-lesson-id")
     public  ResponseEntity<AttendanceResponse>  getHomeworkByLessonId(Principal principal,@RequestParam UUID lessonId){
@@ -72,14 +65,8 @@ public class StudentController {
     }
 
 
-
-
-//    @GetMapping("/getProgressByModule")
-//    public ResponseEntity<ProgressResponse>  getProgressByModule(Principal principal,@RequestParam UUID moduleId){
-//        return ResponseEntity.ok(studentService.getStudentProgress(moduleId, UUID.fromString(principal.getName())));
-//    }
     @GetMapping("/getProgressByModule")
-    public ResponseEntity<List<ProgressResponse>>  getProgressByModule2(Principal principal){
+    public ResponseEntity<List<ProgressResponse>> getProgressByModule(Principal principal){
         return ResponseEntity.ok(studentService.getStudentProgress(UUID.fromString(principal.getName())));
     }
 
@@ -92,6 +79,8 @@ public class StudentController {
     public ResponseEntity<JwtResponse> checkVerification(@RequestParam Integer code){
         return ResponseEntity.ok(studentService.checkOTP(code));
     }
+
+
 
 
 }

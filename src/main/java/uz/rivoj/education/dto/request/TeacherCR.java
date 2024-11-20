@@ -4,6 +4,8 @@ package uz.rivoj.education.dto.request;
 import lombok.*;
 import uz.rivoj.education.entity.SubjectEntity;
 
+import java.util.UUID;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -15,6 +17,6 @@ public class TeacherCR {
     private String surname;
     private String phoneNumber;
     private String password;
-    private String  subject;
+    private UUID subjectId;
     private String about;
 }

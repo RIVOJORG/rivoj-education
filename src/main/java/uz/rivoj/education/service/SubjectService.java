@@ -45,7 +45,9 @@ public class SubjectService {
             moduleEntity.setNumber(i);
             moduleRepository.save(moduleEntity);
         }
-        return modelMapper.map(createRequest, SubjectResponse.class);
+        SubjectResponse subjectResponse = modelMapper.map(createRequest, SubjectResponse.class);
+        subjectResponse.setId(subjectEntity.getId());
+        return subjectResponse;
     }
 
     public String delete(UUID subjectId){
@@ -85,5 +87,13 @@ public class SubjectService {
                 .orElseThrow(() -> new DataNotFoundException("Subject not found with this id: " + subjectId));
         return subjectEntity.getTitle();
 
+    }
+
+    public String changeSubjectTitle(UUID subjectId, String subjectName) {
+        SubjectEntity subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> new DataNotFoundException("Subject not found with this id: " + subjectId));
+        subject.setTitle(subjectName);
+        subjectRepository.save(subject);
+        return "Successfully changed!";
     }
 }

@@ -22,7 +22,6 @@ public class LessonResponse {
     private String title;
     private String source;
     private String cover;
-    private UUID moduleId;
     private String description;
     private List<String> additionalLinks;
     private TeacherInfoResponse teacherInfo;

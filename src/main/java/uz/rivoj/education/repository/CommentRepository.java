@@ -15,4 +15,8 @@ public interface CommentRepository extends JpaRepository<CommentEntity, UUID> {
     Optional<List<CommentEntity>> findByLessonId(UUID lessonId);
 
     Page<CommentEntity> findByLessonId(UUID lessonId, Pageable page);
+    Optional<List<CommentEntity>> findByOwnerId(UUID ownerId);
+
+
+    void deleteAllByLessonId(UUID lessonId);
 }

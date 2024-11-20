@@ -17,8 +17,7 @@ public class TeacherInfo extends BaseEntity {
     private UserEntity teacher;
     @ManyToOne(fetch = FetchType.EAGER)
     private SubjectEntity subject;
-    private String avatar;
     private String about;
-    private LocalDate birthday;
+
 
 }

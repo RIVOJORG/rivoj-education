@@ -5,6 +5,7 @@ import lombok.*;
 import uz.rivoj.education.entity.enums.UserStatus;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,9 +14,11 @@ import java.time.LocalDate;
 @Builder
 @ToString
 public class AdminResponse {
+    private UUID id;
     private String name;
     private String surname;
     private String avatar;
     private String phoneNumber;
+    private LocalDate birthday;
     private UserStatus userStatus;
 }

@@ -2,7 +2,7 @@ package uz.rivoj.education.dto.request;
 
 import lombok.*;
 
-import java.util.UUID;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,7 +11,7 @@ import java.util.UUID;
 @ToString
 @Builder
 public class NotificationCR {
-    private UUID userId;
-    private String title;
-    private String description;
+    private List<String> fcmList;
+    private String messageTitle;
+    private String messageBody;
 }
