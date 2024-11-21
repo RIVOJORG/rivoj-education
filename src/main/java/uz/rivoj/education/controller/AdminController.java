@@ -121,8 +121,8 @@ public class AdminController {
     }
 
     @PostMapping("/sendNotificationTopic")
-    public ResponseEntity<String> sendNotificationTopic(@RequestBody NotificationCR notificationCR){
-        return firebaseService.sendNotificationTopic(notificationCR);
+    public ResponseEntity<String> sendNotificationTopic(@RequestBody NotificationDto notificationDto){
+        return firebaseService.sendNotificationTopic(notificationDto);
     }
 
     @PostMapping("/sendNotificationUsers")

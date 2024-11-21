@@ -10,12 +10,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.ChatCR;
 import uz.rivoj.education.dto.request.NotificationCR;
+import uz.rivoj.education.dto.request.NotificationDto;
 import uz.rivoj.education.dto.response.UserDetailsDTO;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 
@@ -75,12 +77,14 @@ public class FirebaseService {
     }
 
 
-    public void sendMessageToTopic(String topic, String messageTitle, String messageBody) {
+    public void sendMessageToTopic(String topic, Map<String, String> notificationData) {
         try {
             JsonObject payload = new JsonObject();
             JsonObject notification = new JsonObject();
-            notification.addProperty("body", messageBody);
-            notification.addProperty("title", messageTitle);
+
+            for (Map.Entry<String, String> entry : notificationData.entrySet()) {
+                notification.addProperty(entry.getKey(), entry.getValue());
+            }
 
             JsonObject messageObject = new JsonObject();
             messageObject.add("notification", notification);
@@ -118,10 +122,10 @@ public class FirebaseService {
         }
     }
 
-    public ResponseEntity<String> sendNotificationTopic(NotificationCR notificationCR) {
-        notificationCR.getFcmList().forEach(topic -> {
+    public ResponseEntity<String> sendNotificationTopic(NotificationDto notificationDto) {
+        notificationDto.getTopic().forEach(topic -> {
             try {
-                sendMessageToTopic(topic,notificationCR.getMessageTitle(),notificationCR.getMessageBody());
+                sendMessageToTopic(topic,notificationDto.getData());
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
