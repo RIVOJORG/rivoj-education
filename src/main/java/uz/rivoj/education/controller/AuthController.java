@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uz.rivoj.education.dto.request.AuthDto;
+import uz.rivoj.education.dto.request.TokenRefreshDTO;
 import uz.rivoj.education.dto.response.JwtResponse;
 import uz.rivoj.education.service.UserService;
 
@@ -21,6 +22,11 @@ public class AuthController {
     @PostMapping("/sign-in")
     public ResponseEntity<JwtResponse> signIn(@Valid @RequestBody AuthDto request) {
         return ResponseEntity.ok(userService.signIn(request));
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<JwtResponse> refreshToken(@Valid @RequestBody TokenRefreshDTO request){
+        return ResponseEntity.ok(userService.tokenRefresh(request));
     }
 
 }
