@@ -47,10 +47,6 @@ public class AdminController {
     public ResponseEntity<SubjectResponse> createSubject(@RequestBody SubjectCR createRequest){
         return ResponseEntity.status(HttpStatus.CREATED).body(subjectService.create(createRequest));
     }
-//    @PostMapping("/create-notification")
-//    public ResponseEntity<NotificationResponse> createNotification(@RequestBody NotificationCR notificationCR){
-//        return ResponseEntity.status(HttpStatus.CREATED).body(notificationService.create(notificationCR));
-//    }
 
     @PutMapping("/update-role{userPhoneNumber}")
     public ResponseEntity<String> updateRole(@PathVariable String userPhoneNumber, @RequestParam UserRole userRole){
@@ -125,10 +121,7 @@ public class AdminController {
         return firebaseService.sendNotificationTopic(notificationDto);
     }
 
-    @PostMapping("/sendNotificationUsers")
-    public ResponseEntity<String> sendNotificationUsers(@RequestBody NotificationCR notificationCR){
-        return firebaseService.sendNotificationUsers(notificationCR);
-    }
+
 
 
 
