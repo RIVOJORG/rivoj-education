@@ -11,24 +11,28 @@ import java.io.InputStream;
 
 @SpringBootApplication
 public class EducationApplication {
+
     public static void main(String[] args) throws IOException {
-        // Firebase konfiguratsiyasi faylini resources papkasidan olish
-        String firebaseConfigPath = "fireBaseKeySDK.json"; 
+        // Firebase konfiguratsiyasi uchun yo'l
+        String firebaseConfigPath = "/app/fireBaseKeySDK.json"; // Docker konteyneridagi to'g'ri yo'l
 
         try (InputStream serviceAccountStream = EducationApplication.class.getClassLoader().getResourceAsStream(firebaseConfigPath)) {
             if (serviceAccountStream == null) {
                 throw new IOException("Firebase service account key not found in resources directory: " + firebaseConfigPath);
             }
 
+            // Firebase konfiguratsiyasini o'rnatish
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccountStream))
                     .build();
 
+            // Firebase ilovasini boshlash
             FirebaseApp.initializeApp(options);
         } catch (IOException e) {
             throw new IOException("Error initializing Firebase: " + e.getMessage(), e);
         }
 
+        // Spring Boot ilovasini ishga tushurish
         SpringApplication.run(EducationApplication.class, args);
     }
 }

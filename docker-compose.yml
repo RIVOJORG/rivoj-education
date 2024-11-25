@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   app:
     build:
@@ -13,7 +15,8 @@ services:
     depends_on:
       - db
     volumes:
-      - ./src/main/resources/fireBaseKeySDK.json:/app/fireBaseKeySDK.json   # Agar kerak bo'lsa
+      - ./src/main/resources/fireBaseKeySDK.json:/app/fireBaseKeySDK.json
+
 
   db:
     image: postgres
