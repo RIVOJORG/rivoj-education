@@ -55,6 +55,18 @@ public class UserService {
         return "Successfully signed up";
     }
 
+    public JwtResponse tokenRefresh(TokenRefreshDTO request) {
+        String id = jwtUtil.extractToken(request.getRefreshToken()).getBody().getSubject();
+        System.out.println(id);
+        UserEntity user = userRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new DataNotFoundException("user not found!!!"));
+        if(jwtUtil.checkRefreshToken(user, request.getRefreshToken())){
+            List<String> tokens = jwtUtil.generateToken(user);
+            return new JwtResponse(tokens.get(0), tokens.get(1),user.getRole());
+        }
+        throw new AuthenticationCredentialsNotFoundException("refresh token didn't match");
+    }
+
     public JwtResponse signIn(AuthDto dto) {
         UserEntity user = userRepository.findByPhoneNumber(dto.getPhoneNumber())
                 .orElseThrow(() -> new DataNotFoundException("user not found"));
