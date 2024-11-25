@@ -67,15 +67,7 @@ public class UserService {
         throw new AuthenticationCredentialsNotFoundException("refresh token didn't match");
     }
 
-    public JwtResponse signIn(AuthDto dto) {
-        UserEntity user = userRepository.findByPhoneNumber(dto.getPhoneNumber())
-                .orElseThrow(() -> new DataNotFoundException("user not found"));
-        if (passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-            List<String> tokens = jwtUtil.generateToken(user);
-            return new JwtResponse(tokens.get(0),tokens.get(1),user.getRole());
-        }
-        throw new AuthenticationCredentialsNotFoundException("password didn't match");
-    }
+
 
     public ResponseEntity<String> addAdmin(UserCR userDto) {
         if(userRepository.findByPhoneNumber(userDto.getPhoneNumber()).isPresent()) {
