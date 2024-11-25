@@ -5,24 +5,29 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
 import java.io.IOException;
 import java.io.InputStream;
 
 @SpringBootApplication
 public class EducationApplication {
-	public static void main(String[] args) throws IOException {
-            ClassLoader classLoader = EducationApplication.class.getClassLoader();
-            InputStream serviceAccountStream = classLoader.getResourceAsStream("fireBaseKeySDK.json");
+    public static void main(String[] args) throws IOException {
+        // Firebase xizmatini sozlash uchun resurslardan faylni olish
+        InputStream serviceAccountStream = EducationApplication.class.getResourceAsStream("/fireBaseKeySDK.json");
 
-            if (serviceAccountStream == null) {
-                    throw new IOException("Firebase service account key not found in classpath");
-            }
+        if (serviceAccountStream == null) {
+            throw new IOException("Firebase service account key not found in resources.");
+        }
 
-            FirebaseOptions options = new FirebaseOptions.Builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccountStream))
-                    .build();
-            FirebaseApp.initializeApp(options);
-            SpringApplication.run(EducationApplication.class, args);
+        // Firebase sozlamalarini o'rnatish
+        FirebaseOptions options = new FirebaseOptions.Builder()
+                .setCredentials(GoogleCredentials.fromStream(serviceAccountStream))
+                .build();
+
+        // Firebase dasturini ishga tushurish
+        FirebaseApp.initializeApp(options);
+
+        // Spring Boot dasturini ishga tushurish
+        SpringApplication.run(EducationApplication.class, args);
     }
-
 }
