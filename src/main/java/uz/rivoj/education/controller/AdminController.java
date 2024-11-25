@@ -47,10 +47,6 @@ public class AdminController {
     public ResponseEntity<SubjectResponse> createSubject(@RequestBody SubjectCR createRequest){
         return ResponseEntity.status(HttpStatus.CREATED).body(subjectService.create(createRequest));
     }
-//    @PostMapping("/create-notification")
-//    public ResponseEntity<NotificationResponse> createNotification(@RequestBody NotificationCR notificationCR){
-//        return ResponseEntity.status(HttpStatus.CREATED).body(notificationService.create(notificationCR));
-//    }
 
     @PutMapping("/update-role{userPhoneNumber}")
     public ResponseEntity<String> updateRole(@PathVariable String userPhoneNumber, @RequestParam UserRole userRole){
@@ -69,8 +65,6 @@ public class AdminController {
             @PathVariable String newPassword) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.changePassword(userId,newPassword));
     }
-
-
 
     @GetMapping("/get-all-subjects")
     public List<SubjectResponse> getAllSubject(){
@@ -120,15 +114,7 @@ public class AdminController {
                 .body(userService.updateProfile(adminUpdate, UUID.fromString(principal.getName())));
     }
 
-    @PostMapping("/sendNotificationTopic")
-    public ResponseEntity<String> sendNotificationTopic(@RequestBody NotificationCR notificationCR){
-        return firebaseService.sendNotificationTopic(notificationCR);
-    }
 
-    @PostMapping("/sendNotificationUsers")
-    public ResponseEntity<String> sendNotificationUsers(@RequestBody NotificationCR notificationCR){
-        return firebaseService.sendNotificationUsers(notificationCR);
-    }
 
 
 

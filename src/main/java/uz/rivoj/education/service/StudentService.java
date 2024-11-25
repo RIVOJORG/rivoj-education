@@ -288,7 +288,7 @@ public class StudentService {
             UserEntity user = userRepository.findByPhoneNumber(verificationCode.getPhoneNumber())
                     .orElseThrow(() -> new DataNotFoundException("User not found!"));
             List<String> tokens = jwtUtil.generateToken(user);
-            return new JwtResponse(tokens.get(0),tokens.get(1));
+            return new JwtResponse(tokens.get(0),tokens.get(1),user.getRole());
         }throw  new RuntimeException("Verification code expired!");
     }
 

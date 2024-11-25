@@ -19,7 +19,6 @@ import uz.rivoj.education.dto.request.*;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.UserStatus;
-import uz.rivoj.education.exception.CustomException;
 import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.*;
@@ -45,7 +44,7 @@ public class UserService {
     private final FirebaseService firebaseService;
 
 
-    public JwtResponse add(UserCR dto) throws ExecutionException, InterruptedException {
+    public String add(UserCR dto) throws ExecutionException, InterruptedException {
         Optional<UserEntity> userEntity = userRepository.findByPhoneNumber(dto.getPhoneNumber());
         if (userEntity.isPresent()) {
             throw new DataAlreadyExistsException("User already exists");
@@ -53,19 +52,7 @@ public class UserService {
         UserEntity map = modelMapper.map(dto, UserEntity.class);
         map.setPassword(passwordEncoder.encode(map.getPassword()));
         userRepository.save(map);
-
-        List<String> tokens = jwtUtil.generateToken(map);
-        return new JwtResponse(tokens.get(0), tokens.get(1));
-    }
-
-    public JwtResponse signIn(AuthDto dto) {
-        UserEntity user = userRepository.findByPhoneNumber(dto.getPhoneNumber())
-                .orElseThrow(() -> new DataNotFoundException("user not found"));
-        if (passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-            List<String> tokens = jwtUtil.generateToken(user);
-            return new JwtResponse(tokens.get(0),tokens.get(1));
-        }
-        throw new AuthenticationCredentialsNotFoundException("password didn't match");
+        return "Successfully signed up";
     }
 
     public JwtResponse tokenRefresh(TokenRefreshDTO request) {
@@ -75,9 +62,19 @@ public class UserService {
                 .orElseThrow(() -> new DataNotFoundException("user not found!!!"));
         if(jwtUtil.checkRefreshToken(user, request.getRefreshToken())){
             List<String> tokens = jwtUtil.generateToken(user);
-            return new JwtResponse(tokens.get(0), tokens.get(1));
+            return new JwtResponse(tokens.get(0), tokens.get(1),user.getRole());
         }
         throw new AuthenticationCredentialsNotFoundException("refresh token didn't match");
+    }
+
+    public JwtResponse signIn(AuthDto dto) {
+        UserEntity user = userRepository.findByPhoneNumber(dto.getPhoneNumber())
+                .orElseThrow(() -> new DataNotFoundException("user not found"));
+        if (passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+            List<String> tokens = jwtUtil.generateToken(user);
+            return new JwtResponse(tokens.get(0),tokens.get(1),user.getRole());
+        }
+        throw new AuthenticationCredentialsNotFoundException("password didn't match");
     }
 
     public ResponseEntity<String> addAdmin(UserCR userDto) {
@@ -92,7 +89,6 @@ public class UserService {
                 .role(UserRole.ADMIN)
                 .userStatus(UserStatus.UNBLOCK)
                 .build();
-        jwtUtil.generateToken(user);
         UserResponse userResponse = modelMapper.map(userRepository.save(user), UserResponse.class);
         userResponse.setId(user.getId());
 
@@ -163,8 +159,8 @@ public class UserService {
             Page<UserEntity> teachers = userRepository.findUserEntitiesByRole(UserRole.TEACHER, pageable);
             teachers.get().forEach(teacher -> {
                 try {
-                    firebaseService.createUser(new UserDetailsDTO(String.valueOf(teacher.getId()),teacher.getPhoneNumber(),teacher.getAvatar(),teacher.getName(),teacher.getSurname(),String.valueOf(teacher.getRole())));
-                    firebaseService.createUser(new UserDetailsDTO(String.valueOf(admin.getId()),admin.getPhoneNumber(),admin.getAvatar(),admin.getName(),admin.getSurname(),String.valueOf(admin.getRole())));
+//                    firebaseService.createUser(new UserDetailsDTO(String.valueOf(teacher.getId()),teacher.getPhoneNumber(),teacher.getAvatar(),teacher.getName(),teacher.getSurname(),String.valueOf(teacher.getRole())));
+//                    firebaseService.createUser(new UserDetailsDTO(String.valueOf(admin.getId()),admin.getPhoneNumber(),admin.getAvatar(),admin.getName(),admin.getSurname(),String.valueOf(admin.getRole())));
                     firebaseService.createChat(new ChatCR(String.valueOf(admin.getId()),String.valueOf(teacher.getId())),String.valueOf(UUID.randomUUID()));
                 } catch (ExecutionException | InterruptedException e) {
                     throw new RuntimeException(e);
@@ -178,8 +174,8 @@ public class UserService {
             Page<UserEntity> students = userRepository.findStudentsBYRoleAndSubjectId(UserRole.STUDENT, byTeacherId.get().getSubject().getId(), pageable);
             students.get().forEach(student -> {
                 try {
-                    firebaseService.createUser(new UserDetailsDTO(String.valueOf(teacher.getId()),teacher.getPhoneNumber(),teacher.getAvatar(),teacher.getName(),teacher.getSurname(),String.valueOf(teacher.getRole())));
-                    firebaseService.createUser(new UserDetailsDTO(String.valueOf(student.getId()),student.getPhoneNumber(),student.getAvatar(),student.getName(),student.getSurname(),String.valueOf(student.getRole())));
+//                    firebaseService.createUser(new UserDetailsDTO(String.valueOf(teacher.getId()),teacher.getPhoneNumber(),teacher.getAvatar(),teacher.getName(),teacher.getSurname(),String.valueOf(teacher.getRole())));
+//                    firebaseService.createUser(new UserDetailsDTO(String.valueOf(student.getId()),student.getPhoneNumber(),student.getAvatar(),student.getName(),student.getSurname(),String.valueOf(student.getRole())));
                     firebaseService.createChat(new ChatCR(String.valueOf(student.getId()),String.valueOf(teacher.getId())),String.valueOf(UUID.randomUUID()));
                 } catch (ExecutionException | InterruptedException e) {
                     throw new RuntimeException(e);

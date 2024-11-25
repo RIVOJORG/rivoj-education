@@ -1,17 +1,13 @@
 {
   "type": "service_account",
   "project_id": "rivoj-edu",
-  "private_key_id": "e38b2eb406a51fec45b78243533e18c051b07d55",
-  "private_key":
-  "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDr73quvGqPRy/4\nAZzaJ4s6iUWmaWnun01xvq6U+TL/agLhrtYNLB6wuUuetNkyy3CMhHS5eVz19TSN\nd1DMXRBG6lyQWnu9lFYe/8hDdc/+h5H2e/gyLjyl8skP3UgjEAjoi5QeeuHAtL92\n2rhI75LjmxM2d2zbMpZ86g6+yZLJimlyOUPMkaeVzJA7pG+HdmEKwAyvTeZMe38d\ncN4+BXkcKtRZ7Oor5veVc+ARhhXpKlUyxM+s9CBEi9cb+LMYCB/zulg3jpj+i7Gg\nDAepRwYs0HqH/7TQPPzhXIkBcmhFCkuGRPH9I4C/C/aiMxXhAd18jpu6wlFXlJ+Q\nUqwBou+HAgMBAAECggEAFdk+fjH6mDwaaBgWI2moDgqqRYfbhHqCHHdxCWCuZVK2\n45liPyQHz4vJQfAzcO3ABXM6r/ZaMni7niIffF1d5YNMgR2v+dVjyEkdjYm6cjKx\nxKakTFlVynRaRDrUtFKG0KokVFJC16qlVGday35MFwHEXLXggcgEgZrXNLnL+xfF\nuVHFXD85O/Hb0YWahzZK6hwPjHK87+QWa4GOnZMjN5IXd1dvudslztPT0edr3kWp\np21mZebyWJGEYoEwtp5Iq23EdyQcGW5VNp6QgDO7TGaP+WenP7WFkgWMTHhQp2Zw\n9SW6h8jUtMOJ8aXJo0dKK7NGjuHcLGUeUbnnDvSgCQKBgQD2x8DRkTuBP4GkEluH\n4qiNyyUY1jMCVzL3MQmY+wkngXQtNDo9d5zTnbnmKSZQ3cq/Cf3gzCstcgDig5tz\nBLoIM53EQYwda9PC0hlvRpOAvNOczVyT97pBGekLVstq7HWYPmgoWkwBLgKASAqv\nC0PrGMzi5zfxi0pknDr+eFwPxQKBgQD0wAEgx0U28xPislCfOcwBi/9GVXG54GcD\n3rzPRjOrdqKdeCrDQlIAHUiQl3Wr6slsWoHDP+POxxM/AKexC7ZlStQSgnM5U0JY\neKp1rhHnCkBs2j82+c024lulED3o+/0AEYu6bdizbMAe8a90f7yeyUTahdMM/ByP\nR/CrQ7DK2wKBgDhOQU9PjL0jqUevLJUngP/BLviovsC09prx5Fe0R1VtMv2xYexu\nYyjhXu4Fy4k94amO9Q8aZmubDFqiXpByrqN6a2/A6OA5nvpfh5AdEUCZVMr9DDdy\nmVuLNuHwbr85rmcLLiau25KVVdrBFTb1Igz8/ppy2Q/SkSm9f7RZ799lAoGBAMw8\n4XQZ9c9J/yEgzhhhIbV0vvxRVwrWkQBwwbxyB7Ig2MhxO7YfRNBln2VRjtd8oMMz\nr69gRFkMVSoxAL7EWFukmt4rT73ZlbbAUvbK4JOdQW/UnAXjZPVU5UcUC6W9ij2h\nZqmW+suXh6cK5fBgm+UhbbyxChJ+29JRJSu12/UbAoGAcjGxIZq0N9ft8fckHicS\nSt1Xvg0Z5xufZxFgBFMyTCHvLTHFLB/10ZgInwqJ/j2FcX3O37y/tCDdoVLtC6VN\n9xcFLrt715WZlRqrWDSGaJzDJKcNyYgYRJBRzzySFSZGDmrv9Lc5QXXUrWKOS4Xf\ncJNVdv3C5M2mlh7UXYH4fa0=\n-----END PRIVATE KEY-----\n",
-  "client_email":
-  "firebase-adminsdk-gbdu1@rivoj-edu.iam.gserviceaccount.com",
+  "private_key_id": "113c302f5881731ddafb0dac50d4923eb6c8ed57",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDkHBVMG5IekuYI\nG88WOvBFfiJZFCVYdOQ834ERCj4Tigh5Gv56z0uZpB1LMDdm6kFPrPhjA9j4Z8gF\nKfBhJ4nLW38n9dGe88dSKGNsSPbaYAII3T4pfz68bGMPs1Iv1n5QuVBPCVNLlxEA\n8D8TqmA6hpwolIXa1Qu1W4ccL9u4CASfjUoT0Oz/Il/dEsN6AI4dzKmlPgCqo4k9\nqJ1K32WvjtCUm0oiBsMK+wSeFP/yipvQ7a8CUIJQaAFHkeaoHl/C4SOKYBKpVDtx\n7sm6m917LyohiqD5k1HPVn9eAIplITxXpIxL7AVPuoEoelO3xpJYQ8JLGD7ukfz6\nFJL6f6CrAgMBAAECggEAFzV0RUYY29t+ZBzQOSbOA4QN4ppWImXiQv9Kln1AS6Sj\nsA67DavBuWQlRt0lBeeXtY+XxhtCHCQTCdN2jawELRimG167cTzEbuuFEiNqWlWi\nX1yDUp2LuIgenB5Wol9kgroYHbKJMwuvwzSudkXDfLDteoOCCv3aLx2c5ZVI+bRF\n88DVBW8+8bm8CjtdiBCXez1SV+z5ta5Xd5qtsWNM2FfRmQlU/uTmi/m+l1qPWAxS\nOqAVYUAiT3bqDRqzyE4D/pEgg3Gu5MVzRcJTw9cDp6bBQN1Lft8vGCTSZGOvJfP7\nbOef4t3qtJy8DT25r4NieQqZPypb1wpV1+x3PdHa4QKBgQD3qJGCKQCouqBZZIhp\nYNbcIe3Q7fUiauNuI+Zx8+iH6/yN+2xaxST4xqGDLPOVzgkdeCOLXB2RXAkYbrCD\nyASOMVZXsw6cqhndKqfSwC+tNFag+3IAUA8XoFb/yEn2y/4Yz9+B8X71O7fp2SMo\nkkk15N3Pg7AqPRXU2IjlFgr3/QKBgQDryvSv35e9Ft8sjq1f9K94tYFDF3H2QeX+\nTvbyhDqofTYLR9UsKuYwNA9i/jdszoUXfvCICEWKO20iILjPVVvXiQ2E3sI+nii0\nxK6QxXzycIYwF9632ECU0LWwEPMZwUCSOEHcpcJjD+Kfht1GlnnAtxTGowaaPq9q\nO5BRgm+3xwKBgQDtFceuljgWTwsAaNiaIOWvuR9ketjISRFOODn87uW1cTnGZmH1\nh3N8YRLvc9IAoExjlMZaPCXmKPhgFl8O2SVbRmoE7NpZKhI2gwZEIE3D/y3LUMty\n9zFricifdwsvo1uuPxoV2K2UcMYArSkWRuylFmMtrECyPuYua9ipjm+TtQKBgEZK\nlZEMdb6v3833pqWxWtIAQc2PYrDHyll6jtGTK61ozkCkpF7rVv3NtzyKjllIY5Ky\ni9/xn1FrD8iZup5MUvm46KfQhFWIbpgc/fE4flwDwWz64LErrWzvnwois2XdH3O3\ng6LUY1OGu8dUvAg7+YXCzlW86c33m/FuWkKCQO2nAoGAIzgHUovCjiZ4x04Gz8fw\noToEUoHsInih6w8Q1MpY7pFUg711cLc/0xEEQQGLd555i3J24Ie2YKrg8Duyj3WD\n54GKibc642txRhuz/wDpouEF5JUK/kfL4dTQw3KReGKA0jeyMbzpkktL3x78ms2E\nG9r7SVjaQAY/uKVhIplyKKk=\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-gbdu1@rivoj-edu.iam.gserviceaccount.com",
   "client_id": "106817446942827735670",
   "auth_uri": "https://accounts.google.com/o/oauth2/auth",
   "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url":
-  "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url":
-  "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-gbdu1%40rivoj-edu.iam.gserviceaccount.com",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-gbdu1%40rivoj-edu.iam.gserviceaccount.com",
   "universe_domain": "googleapis.com"
 }

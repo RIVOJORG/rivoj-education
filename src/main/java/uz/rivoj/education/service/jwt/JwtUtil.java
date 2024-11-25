@@ -52,7 +52,6 @@ public class JwtUtil {
         return tokens;
 
     }
-
     public String generateRefreshToken(UserEntity user) {
         Date iat = new Date();
         String token = Jwts.builder()
@@ -71,7 +70,6 @@ public class JwtUtil {
         redisTemplate.opsForValue().set(user.getId() + "r", token);
         return token;
     }
-
     public boolean checkRefreshToken(UserEntity user, String token){
         String oldRefreshToken = redisTemplate.opsForValue().get(user.getId() + "r");
         Date expiration = extractToken(oldRefreshToken).getBody().getExpiration();

@@ -6,16 +6,20 @@ import com.google.cloud.firestore.Firestore;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.ChatCR;
 import uz.rivoj.education.dto.request.NotificationCR;
+import uz.rivoj.education.dto.request.NotificationDto;
 import uz.rivoj.education.dto.response.UserDetailsDTO;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 
@@ -53,48 +57,36 @@ public class FirebaseService {
         dbFirestore.collection("ChatRoom").document(chatId).delete();
     }
 
-    public void sendNotificationToUsers(String fcmToken, String messageTitle, String messageBody) {
+    public ResponseEntity<String> sendNotification(NotificationDto notificationDto){
         try {
-            JsonObject payload = new JsonObject();
-            JsonObject notification = new JsonObject();
-            notification.addProperty("body", messageBody);
-            notification.addProperty("title", messageTitle);
+            for (String destination : notificationDto.getDestinations()) {
+                JsonObject payload = new JsonObject();
+                JsonObject notification = new JsonObject();
+                for (Map.Entry<String, String> entry : notificationDto.getData().entrySet()) {
+                    notification.addProperty(entry.getKey(), entry.getValue());
+                }
+                JsonObject messageObject = new JsonObject();
+                messageObject.add("notification", notification);
 
-            JsonObject messageObject = new JsonObject();
-            messageObject.add("notification", notification);
-            messageObject.addProperty("token", fcmToken);
+                if (notificationDto.isTopic()) {
+                    messageObject.addProperty("topic", destination);
+                } else {
+                    messageObject.addProperty("token", destination);
+                }
 
-            payload.add("message", messageObject);
+                payload.add("message", messageObject);
 
-            sendFCMRequest(payload, getAccessToken());
-            System.out.println("Xabar muvaffaqiyatli yuborildi.");
+                sendFCMRequest(payload, getAccessToken());
+            }
+            return ResponseEntity.ok(notificationDto.isTopic() ? "Topicga muvaffaqiyatli yuborildi." : "Xabar muvaffaqiyatli yuborildi.");
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("Xabarni yuborishda xatolik: " + e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Xabarni yuborishda xatolik: " + e.getMessage());
         }
     }
 
-
-    public void sendMessageToTopic(String topic, String messageTitle, String messageBody) {
-        try {
-            JsonObject payload = new JsonObject();
-            JsonObject notification = new JsonObject();
-            notification.addProperty("body", messageBody);
-            notification.addProperty("title", messageTitle);
-
-            JsonObject messageObject = new JsonObject();
-            messageObject.add("notification", notification);
-            messageObject.addProperty("topic", topic);
-
-            payload.add("message", messageObject);
-
-            sendFCMRequest(payload, getAccessToken());
-            System.out.println("Topicga muvaffaqiyatli yuborildi.");
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("Topicga yuborishda xatolik: " + e.getMessage());
-        }
-    }
     private void sendFCMRequest(JsonObject payload, String accessToken) throws Exception {
         URL url = new URL("https://fcm.googleapis.com/v1/projects/rivoj-edu/messages:send");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -118,26 +110,6 @@ public class FirebaseService {
         }
     }
 
-    public ResponseEntity<String> sendNotificationTopic(NotificationCR notificationCR) {
-        notificationCR.getFcmList().forEach(topic -> {
-            try {
-                sendMessageToTopic(topic,notificationCR.getMessageTitle(),notificationCR.getMessageBody());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
-        return ResponseEntity.ok().build();
-    }
-    public ResponseEntity<String> sendNotificationUsers(NotificationCR notificationCR) {
-        notificationCR.getFcmList().forEach(fcm -> {
-            try {
-                sendNotificationToUsers(fcm,notificationCR.getMessageTitle(),notificationCR.getMessageBody());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
-        return ResponseEntity.ok().build();
-    }
 
     public String getAccessToken() throws IOException {
         String serviceAccountFilePath = "src/main/resources/fireBaseKeySDK.json";
