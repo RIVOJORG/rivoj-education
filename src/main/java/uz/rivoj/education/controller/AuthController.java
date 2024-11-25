@@ -18,6 +18,13 @@ import uz.rivoj.education.service.UserService;
 @RequiredArgsConstructor
 public class AuthController {
     private final UserService userService;
+    @PostMapping("/sign-in")
+    public ResponseEntity<JwtResponse> signIn(@Valid @RequestBody AuthDto request) {
+        return ResponseEntity.ok(userService.signIn(request));
+    }
 
-
+    @PostMapping("/refresh-token")
+    public ResponseEntity<JwtResponse> refreshToken(@Valid @RequestBody TokenRefreshDTO request){
+        return ResponseEntity.ok(userService.tokenRefresh(request));
+    }
 }
