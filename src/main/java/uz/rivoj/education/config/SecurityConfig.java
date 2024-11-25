@@ -38,6 +38,7 @@ public class SecurityConfig {
     private final ObjectMapper objectMapper;
     private final String[] WHITE_LIST = {
             "/api/v1/auth/sign-in",
+            "/api/v1/auth/refresh-token",
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html",
