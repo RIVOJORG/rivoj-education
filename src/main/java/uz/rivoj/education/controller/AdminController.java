@@ -66,8 +66,6 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.changePassword(userId,newPassword));
     }
 
-
-
     @GetMapping("/get-all-subjects")
     public List<SubjectResponse> getAllSubject(){
         return subjectService.getAll();
@@ -114,11 +112,6 @@ public class AdminController {
     ){
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userService.updateProfile(adminUpdate, UUID.fromString(principal.getName())));
-    }
-
-    @PostMapping("/sendNotificationTopic")
-    public ResponseEntity<String> sendNotificationTopic(@RequestBody NotificationDto notificationDto){
-        return firebaseService.sendNotificationTopic(notificationDto);
     }
 
 

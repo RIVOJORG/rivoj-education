@@ -150,8 +150,8 @@ public class UserService {
             Page<UserEntity> teachers = userRepository.findUserEntitiesByRole(UserRole.TEACHER, pageable);
             teachers.get().forEach(teacher -> {
                 try {
-                    firebaseService.createUser(new UserDetailsDTO(String.valueOf(teacher.getId()),teacher.getPhoneNumber(),teacher.getAvatar(),teacher.getName(),teacher.getSurname(),String.valueOf(teacher.getRole())));
-                    firebaseService.createUser(new UserDetailsDTO(String.valueOf(admin.getId()),admin.getPhoneNumber(),admin.getAvatar(),admin.getName(),admin.getSurname(),String.valueOf(admin.getRole())));
+//                    firebaseService.createUser(new UserDetailsDTO(String.valueOf(teacher.getId()),teacher.getPhoneNumber(),teacher.getAvatar(),teacher.getName(),teacher.getSurname(),String.valueOf(teacher.getRole())));
+//                    firebaseService.createUser(new UserDetailsDTO(String.valueOf(admin.getId()),admin.getPhoneNumber(),admin.getAvatar(),admin.getName(),admin.getSurname(),String.valueOf(admin.getRole())));
                     firebaseService.createChat(new ChatCR(String.valueOf(admin.getId()),String.valueOf(teacher.getId())),String.valueOf(UUID.randomUUID()));
                 } catch (ExecutionException | InterruptedException e) {
                     throw new RuntimeException(e);
@@ -165,8 +165,8 @@ public class UserService {
             Page<UserEntity> students = userRepository.findStudentsBYRoleAndSubjectId(UserRole.STUDENT, byTeacherId.get().getSubject().getId(), pageable);
             students.get().forEach(student -> {
                 try {
-                    firebaseService.createUser(new UserDetailsDTO(String.valueOf(teacher.getId()),teacher.getPhoneNumber(),teacher.getAvatar(),teacher.getName(),teacher.getSurname(),String.valueOf(teacher.getRole())));
-                    firebaseService.createUser(new UserDetailsDTO(String.valueOf(student.getId()),student.getPhoneNumber(),student.getAvatar(),student.getName(),student.getSurname(),String.valueOf(student.getRole())));
+//                    firebaseService.createUser(new UserDetailsDTO(String.valueOf(teacher.getId()),teacher.getPhoneNumber(),teacher.getAvatar(),teacher.getName(),teacher.getSurname(),String.valueOf(teacher.getRole())));
+//                    firebaseService.createUser(new UserDetailsDTO(String.valueOf(student.getId()),student.getPhoneNumber(),student.getAvatar(),student.getName(),student.getSurname(),String.valueOf(student.getRole())));
                     firebaseService.createChat(new ChatCR(String.valueOf(student.getId()),String.valueOf(teacher.getId())),String.valueOf(UUID.randomUUID()));
                 } catch (ExecutionException | InterruptedException e) {
                     throw new RuntimeException(e);

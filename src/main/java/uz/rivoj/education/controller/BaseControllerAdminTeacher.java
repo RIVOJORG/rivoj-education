@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.LessonCR;
 import uz.rivoj.education.dto.request.NotificationCR;
+import uz.rivoj.education.dto.request.NotificationDto;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.dto.update.LessonUpdateDTO;
 import uz.rivoj.education.entity.UserRole;
@@ -19,7 +20,7 @@ import uz.rivoj.education.service.firebase.FirebaseService;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
+import java.util.concurrent.ExecutionException;
 
 
 @RestController
@@ -139,9 +140,9 @@ public class BaseControllerAdminTeacher {
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
         return ResponseEntity.ok(userService.getUsersByRoleAndSubjectId(role, subjectId, pageable));
     }
-    @PostMapping("/sendNotificationUsers")
-    public ResponseEntity<String> sendNotificationUsers(@RequestBody NotificationCR notificationCR){
-        return firebaseService.sendNotificationUsers(notificationCR);
+    @PostMapping("/sendNotification")
+    public ResponseEntity<String> sendNotification(@RequestBody NotificationDto notificationDto) {
+        return firebaseService.sendNotification(notificationDto);
     }
 
 
