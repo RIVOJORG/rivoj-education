@@ -55,16 +55,25 @@ public class FirebaseService {
         dbFirestore.collection("ChatRoom").document(chatId).delete();
     }
 
-    public ResponseEntity<String> sendNotification(NotificationDto notificationDto){
+    public ResponseEntity<String> sendNotification(NotificationDto notificationDto) {
         try {
             for (String destination : notificationDto.getDestinations()) {
                 JsonObject payload = new JsonObject();
+
                 JsonObject notification = new JsonObject();
-                for (Map.Entry<String, String> entry : notificationDto.getData().entrySet()) {
-                    notification.addProperty(entry.getKey(), entry.getValue());
+                notification.addProperty("title", notificationDto.getTitle());
+                notification.addProperty("body", notificationDto.getBody());
+
+                JsonObject data = new JsonObject();
+                if (notificationDto.getData() != null) {
+                    for (Map.Entry<String, String> entry : notificationDto.getData().entrySet()) {
+                        data.addProperty(entry.getKey(), entry.getValue());
+                    }
                 }
+
                 JsonObject messageObject = new JsonObject();
                 messageObject.add("notification", notification);
+                messageObject.add("data", data);
 
                 if (notificationDto.isTopic()) {
                     messageObject.addProperty("topic", destination);
@@ -73,9 +82,9 @@ public class FirebaseService {
                 }
 
                 payload.add("message", messageObject);
-
                 sendFCMRequest(payload, getAccessToken());
             }
+
             return ResponseEntity.ok(notificationDto.isTopic() ? "Topicga muvaffaqiyatli yuborildi." : "Xabar muvaffaqiyatli yuborildi.");
         } catch (Exception e) {
             e.printStackTrace();
@@ -84,6 +93,7 @@ public class FirebaseService {
                     .body("Xabarni yuborishda xatolik: " + e.getMessage());
         }
     }
+
 
     private void sendFCMRequest(JsonObject payload, String accessToken) throws Exception {
         URL url = new URL("https://fcm.googleapis.com/v1/projects/rivoj-edu/messages:send");
@@ -110,7 +120,7 @@ public class FirebaseService {
 
 
     public String getAccessToken() throws IOException {
-        String serviceAccountFilePath = "app/fireBaseKeySDK.json";
+        String serviceAccountFilePath = "src/main/resources/fireBaseKeySDK.json";
         FileInputStream serviceAccountStream = new FileInputStream(serviceAccountFilePath);
         GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccountStream)
                 .createScoped(Arrays.asList(
