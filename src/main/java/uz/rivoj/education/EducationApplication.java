@@ -6,33 +6,27 @@ import com.google.firebase.FirebaseOptions;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 @SpringBootApplication
 public class EducationApplication {
-
-    public static void main(String[] args) throws IOException {
-        // Firebase konfiguratsiyasi uchun yo'l
-        String firebaseConfigPath = "/app/fireBaseKeySDK.json"; // Docker konteyneridagi to'g'ri yo'l
-
-        try (InputStream serviceAccountStream = EducationApplication.class.getClassLoader().getResourceAsStream(firebaseConfigPath)) {
-            if (serviceAccountStream == null) {
-                throw new IOException("Firebase service account key not found in resources directory: " + firebaseConfigPath);
-            }
-
-            // Firebase konfiguratsiyasini o'rnatish
+    public static void main(String[] args) {
+        try {
+            String firebaseKeyPath = "/app/fireBaseKeySDK.json";
+            FileInputStream serviceAccount = new FileInputStream(firebaseKeyPath);
             FirebaseOptions options = new FirebaseOptions.Builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccountStream))
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .build();
 
-            // Firebase ilovasini boshlash
             FirebaseApp.initializeApp(options);
+
         } catch (IOException e) {
-            throw new IOException("Error initializing Firebase: " + e.getMessage(), e);
+            System.err.println("Firebase service account keyni yuklashda xatolik: " + e.getMessage());
+            e.printStackTrace();
+            System.exit(1);
         }
 
-        // Spring Boot ilovasini ishga tushurish
         SpringApplication.run(EducationApplication.class, args);
     }
 }

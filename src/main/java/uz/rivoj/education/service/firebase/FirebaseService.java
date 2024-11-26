@@ -25,8 +25,6 @@ import java.util.concurrent.ExecutionException;
 
 @Service
 public class FirebaseService {
-    @Value("${firebase.secret}")
-    private String privateKey;
     public void createUser(UserDetailsDTO user) throws ExecutionException, InterruptedException {
         Firestore dbFirestore = FirestoreClient.getFirestore();
         dbFirestore.collection("UserTable").document(user.getUserId()).set(user);
