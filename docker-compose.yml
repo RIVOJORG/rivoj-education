@@ -15,7 +15,7 @@ services:
     depends_on:
       - db
     volumes:
-      - ./src/main/resources/fireBaseKeySDK.json:/app/fireBaseKeySDK.json
+      - ./etc/secrets/fireBaseKeySDK.json:/app/fireBaseKeySDK.json
 
 
   db:
