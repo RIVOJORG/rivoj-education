@@ -110,12 +110,8 @@ public class FirebaseService {
 
 
     public String getAccessToken() throws IOException {
-        String serviceAccountFilePath = "src/main/resources/fireBaseKeySDK.json";
-
-
+        String serviceAccountFilePath = "app/fireBaseKeySDK.json";
         FileInputStream serviceAccountStream = new FileInputStream(serviceAccountFilePath);
-
-
         GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccountStream)
                 .createScoped(Arrays.asList(
                         "https://www.googleapis.com/auth/userinfo.email",
