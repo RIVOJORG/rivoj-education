@@ -1,16 +1,13 @@
 package uz.rivoj.education.service.firebase;
 
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.auth.oauth2.OAuth2Credentials;
 import com.google.cloud.firestore.Firestore;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.gson.JsonObject;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.request.ChatCR;
-import uz.rivoj.education.dto.request.NotificationCR;
 import uz.rivoj.education.dto.request.NotificationDto;
 import uz.rivoj.education.dto.response.UserDetailsDTO;
 
@@ -18,7 +15,6 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -56,8 +52,12 @@ public class FirebaseService {
     }
 
     public ResponseEntity<String> sendNotification(NotificationDto notificationDto) {
-        try {
-            for (String destination : notificationDto.getDestinations()) {
+        StringBuilder errorReport = new StringBuilder();
+        int successCount = 0;
+        int failureCount = 0;
+
+        for (String destination : notificationDto.getDestinations()) {
+            try {
                 JsonObject payload = new JsonObject();
 
                 JsonObject notification = new JsonObject();
@@ -82,17 +82,27 @@ public class FirebaseService {
                 }
 
                 payload.add("message", messageObject);
-                sendFCMRequest(payload, getAccessToken());
-            }
 
-            return ResponseEntity.ok(notificationDto.isTopic() ? "Topicga muvaffaqiyatli yuborildi." : "Xabar muvaffaqiyatli yuborildi.");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Xabarni yuborishda xatolik: " + e.getMessage());
+                sendFCMRequest(payload, getAccessToken());
+                successCount++;
+            } catch (Exception e) {
+                failureCount++;
+                errorReport.append("Xatolik ").append(destination).append(": ").append(e.getMessage()).append("\n");
+            }
         }
+
+        String resultMessage = String.format(
+                "Muvaffaqiyatli yuborilganlar: %d\nMuvaffaqiyatsizlar: %d\nXatoliklar:\n%s",
+                successCount, failureCount, errorReport
+        );
+
+        if (failureCount == 0) {
+            return ResponseEntity.ok(resultMessage);
+        }
+
+        return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).body(resultMessage);
     }
+
 
 
     private void sendFCMRequest(JsonObject payload, String accessToken) throws Exception {
@@ -107,7 +117,6 @@ public class FirebaseService {
             byte[] input = payload.toString().getBytes("utf-8");
             os.write(input, 0, input.length);
         }
-
         try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"))) {
             String inputLine;
             StringBuffer response = new StringBuffer();
@@ -128,10 +137,8 @@ public class FirebaseService {
                         "https://www.googleapis.com/auth/firebase.database",
                         "https://www.googleapis.com/auth/firebase.messaging"
                 ));
-
-        if (credentials instanceof OAuth2Credentials) {
-            OAuth2Credentials oAuth2Credentials = (OAuth2Credentials) credentials;
-            return oAuth2Credentials.refreshAccessToken().getTokenValue();
+        if (credentials != null) {
+            return credentials.refreshAccessToken().getTokenValue();
         } else {
             throw new IOException("Unable to get credentials from the service account.");
         }

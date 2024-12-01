@@ -212,6 +212,8 @@ public class UserService {
             studentResponse.setCurrentModuleNumber(studentInfo.getCurrentModule().getNumber());
             studentResponse.setTotalCoins(studentInfo.getCoin());
             studentResponse.setTotalScore(studentInfo.getTotalScore());
+            studentResponse.setSubjectName(studentInfo.getSubject().getTitle());
+            studentResponse.setStatus(user.getUserStatus());
             return studentResponse;
         }
 

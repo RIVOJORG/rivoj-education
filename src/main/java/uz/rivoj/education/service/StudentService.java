@@ -117,16 +117,8 @@ public class StudentService {
         if (studentUpdate.getSurname() != null) {
             userEntity.setSurname(studentUpdate.getSurname());
         }
-        if (studentUpdate.getPhoneNumber() != null) {
-            System.out.println("studentUpdate.getPhoneNumber() = " + studentUpdate.getPhoneNumber());
-            System.out.println("studentUpdate.getPhoneNumber().isEmpty() = " + studentUpdate.getPhoneNumber().isEmpty());
-            userEntity.setPhoneNumber(studentUpdate.getPhoneNumber());
-        }
         if (studentUpdate.getName() != null) {
             userEntity.setName(studentUpdate.getName());
-        }
-        if (studentUpdate.getPassword() != null) {
-            userEntity.setPassword(passwordEncoder.encode(studentUpdate.getPassword()));
         }
         UserEntity save = userRepository.save(userEntity);
         studentInfoRepository.save(studentInfo);
