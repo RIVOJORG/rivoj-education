@@ -89,21 +89,34 @@ public class ProgressService {
 //    }
 
 
-    public RankingPageResponse getTop10Students() {
+    public RankingPageResponse getTop10Students(UUID userId) {
+        StudentInfo studentInfo = studentInfoRepository.findByStudentId(userId)
+                .orElseThrow(() -> new DataNotFoundException("Student not found"));
         PageRequest pageRequest = PageRequest.of(0, 10);
         Page<StudentInfo> page = studentInfoRepository.findTop10ByOrderByTotalScoreDesc(pageRequest);
-        List<StudentInfo> sortedStudents = page.getContent();
-        return mapToBestStudentResponse(sortedStudents);
+        List<StudentInfo> topStudents = page.getContent();
+
+        if (topStudents.stream().noneMatch(s -> s.getStudent().getId().equals(userId))) {
+            topStudents.add(studentInfo);
+        }
+        return mapToBestStudentResponse(topStudents);
     }
 
     public RankingPageResponse getTop10StudentsBySubject(UUID userId) {
         StudentInfo studentInfo = studentInfoRepository.findByStudentId(userId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found"));
 
-        List<StudentInfo> list = studentInfoRepository.findTop10BySubject_idOrderByTotalScoreDesc(studentInfo.getSubject().getId(), PageRequest.of(0, 10))
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        List<StudentInfo> topStudents = studentInfoRepository
+                .findTop10BySubject_idOrderByTotalScoreDesc(studentInfo.getSubject().getId(), pageRequest)
                 .orElseThrow(() -> new DataNotFoundException("Students not found"));
-        return mapToBestStudentResponse(list);
+        if (topStudents.stream().noneMatch(s -> s.getStudent().getId().equals(userId))) {
+            topStudents.add(studentInfo);
+        }
+
+        return mapToBestStudentResponse(topStudents);
     }
+
 
     private RankingPageResponse mapToBestStudentResponse(List<StudentInfo> list) {
         List<BestStudentResponse> bestStudentResponseList = new ArrayList<>();

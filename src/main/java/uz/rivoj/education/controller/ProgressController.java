@@ -21,9 +21,10 @@ public class ProgressController {
     private final DiscountService discountService;
 
     @GetMapping("/get-top10")
-    public RankingPageResponse getRankingPage(){
-        return progressService.getTop10Students();
+    public RankingPageResponse getRankingPage(Principal principal) {
+        return progressService.getTop10Students(UUID.fromString(principal.getName()));
     }
+
     @GetMapping("/get-top10-by-subject")
     public RankingPageResponse getTop10StudentBySubject(Principal principal){
         return progressService.getTop10StudentsBySubject(UUID.fromString(principal.getName()));
