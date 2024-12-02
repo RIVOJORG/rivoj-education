@@ -11,4 +11,6 @@ import java.util.*;
 @ToString
 public class RankingPageResponse {
     private List<BestStudentResponse> bestStudents;
+    private int userOrder;
+    private int userRank;
 }
