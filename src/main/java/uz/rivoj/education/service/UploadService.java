@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import org.apache.tika.Tika;
 import java.util.UUID;
 
 @Service
@@ -22,10 +22,19 @@ public class UploadService {
     @Value("${do.spaces.bucket}")
     private String doSpaceBucket;
 
+
+
     public String uploadFile(MultipartFile file, String fileName) throws IOException {
         String absFilePath = "meta-data/";
-        String contentType = Objects.requireNonNull(file.getContentType()).split("/")[1];
-        System.out.println(contentType);
+
+        Tika tika = new Tika();
+        String contentType = tika.detect(file.getInputStream());
+        if (contentType == null || contentType.equals("application/octet-stream")) {
+            contentType = "bin";
+        } else {
+            contentType = contentType.split("/")[1];
+        }
+
         String uniquePath = absFilePath + UUID.randomUUID() + "_" + fileName + "." + contentType;
 
         InitiateMultipartUploadRequest initRequest = new InitiateMultipartUploadRequest(doSpaceBucket, uniquePath);
@@ -37,8 +46,10 @@ public class UploadService {
 
         try {
             long filePosition = 0;
+
             for (int i = 1; filePosition < contentLength; i++) {
-                partSize = Math.min(partSize, (contentLength - filePosition));
+                long currentPartSize = Math.min(partSize, (contentLength - filePosition));
+
                 UploadPartRequest uploadRequest = new UploadPartRequest()
                         .withBucketName(doSpaceBucket)
                         .withKey(uniquePath)
@@ -46,16 +57,18 @@ public class UploadService {
                         .withPartNumber(i)
                         .withFileOffset(filePosition)
                         .withInputStream(file.getInputStream())
-                        .withPartSize(partSize);
+                        .withPartSize(currentPartSize);
 
                 UploadPartResult uploadResult = s3Client.uploadPart(uploadRequest);
                 partETags.add(uploadResult.getPartETag());
-                filePosition += partSize;
+
+                filePosition += currentPartSize;
             }
+
             CompleteMultipartUploadRequest compRequest = new CompleteMultipartUploadRequest(
                     doSpaceBucket, uniquePath, initResponse.getUploadId(), partETags);
-
             s3Client.completeMultipartUpload(compRequest);
+
             s3Client.setObjectAcl(doSpaceBucket, uniquePath, CannedAccessControlList.PublicRead);
 
             return fileLink + "/" + uniquePath;
@@ -65,6 +78,7 @@ public class UploadService {
             throw new IOException("Failed to upload file", e);
         }
     }
+
 
     public void deleteFile(String fileUrl) {
         System.out.println("Delete ishladi");
