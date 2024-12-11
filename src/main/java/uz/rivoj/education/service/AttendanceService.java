@@ -26,6 +26,7 @@ import java.util.*;
 import static uz.rivoj.education.entity.enums.AttendanceStatus.*;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AttendanceService {
     private final AttendanceRepository attendanceRepository;
