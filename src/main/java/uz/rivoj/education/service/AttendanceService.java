@@ -3,11 +3,7 @@ package uz.rivoj.education.service;
 import jakarta.persistence.Version;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.rivoj.education.dto.response.AttendanceResponse;
@@ -15,7 +11,6 @@ import uz.rivoj.education.dto.response.AttendanceSpecialResponse;
 import uz.rivoj.education.dto.response.UncheckedAttendanceResponse;
 import uz.rivoj.education.dto.update.CheckAttendanceDTO;
 import uz.rivoj.education.entity.*;
-import uz.rivoj.education.entity.enums.AttendanceStatus;
 import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.*;
@@ -37,15 +32,20 @@ public class AttendanceService {
 
 
     @Transactional
-    public AttendanceSpecialResponse findByAttendanceId(UUID attendanceId) {
+    public AttendanceSpecialResponse findByAttendanceById(UUID attendanceId) {
         AttendanceEntity attendance = attendanceRepository.findById(attendanceId)
                 .orElseThrow(() -> new DataNotFoundException("Attendance not found with this id: " + attendanceId));
-
         AttendanceSpecialResponse response = attendanceRepository.findAttendanceDetailsById(attendanceId);
-
-        List<String> answers = attendance.getAnswers();
-        response.setAnswers(answers);
-
+        response.setAnswers(attendance.getAnswers());
+        if(attendance.getTeacher() != null) {
+            TeacherInfo teacherInfo = attendance.getTeacher();
+            response.setTeacherAvatar(teacherInfo.getTeacher().getAvatar());
+            response.setTeacherName(teacherInfo.getTeacher().getName());
+            response.setTeacherSurname(teacherInfo.getTeacher().getSurname());
+        }
+        response.setCoin(attendance.getCoin());
+        response.setScore(attendance.getScore());
+        response.setFeedBack(attendance.getFeedBack());
         return response;
     }
 
@@ -129,7 +129,6 @@ public class AttendanceService {
     public List<UncheckedAttendanceResponse> getUncheckedAttendances(UUID teacherId) {
         TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(teacherId)
                 .orElseThrow(() -> new DataNotFoundException("Teacher not found with this id: " + teacherId));
-
         List<UncheckedAttendanceResponse> attendanceResponseList = new ArrayList<>();
         Optional<List<AttendanceEntity>> uncheckedAttendanceList = attendanceRepository.findUncheckedAttendanceBySubjectId(teacherInfo.getSubject().getId());
         uncheckedAttendanceList.ifPresent(attendanceEntities -> attendanceEntities.forEach(attendanceEntity -> {
