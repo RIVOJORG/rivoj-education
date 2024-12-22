@@ -7,16 +7,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import uz.rivoj.education.dto.error.ErrorDTO;
-import uz.rivoj.education.exception.DataAlreadyExistsException;
-import uz.rivoj.education.exception.DataNotFoundException;
-import uz.rivoj.education.exception.NotEnoughFundsException;
-import uz.rivoj.education.exception.WrongPasswordException;
+import uz.rivoj.education.exception.*;
+
 import java.nio.file.AccessDeniedException;
 
 @ControllerAdvice
@@ -92,5 +91,8 @@ public class GlobalExceptionHandler {
         });
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorDTO(errors.toString().trim(), 400));
     }
-
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorDTO> handleAuthenticationException(AuthenticationException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorDTO(e.getMessage(), 401));
+    }
 }

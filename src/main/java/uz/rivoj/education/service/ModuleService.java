@@ -3,6 +3,7 @@ package uz.rivoj.education.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.rivoj.education.dto.response.*;
@@ -180,5 +181,9 @@ public class ModuleService {
         module.setNumber(moduleNumber);
         moduleRepository.save(module);
         return "Successfully changed";
+    }
+
+    public ResponseEntity<Integer> getModuleCountOfSubject(UUID subjectId) {
+        return ResponseEntity.ok(moduleRepository.countBySubject_Id(subjectId));
     }
 }

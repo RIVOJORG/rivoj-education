@@ -37,14 +37,24 @@ public interface AttendanceRepository extends JpaRepository<AttendanceEntity, UU
             "ORDER BY l.number")
     List<AttendanceDTO> findAttendanceByStudentIdAndModuleId(@Param("studentId") UUID studentId, @Param("moduleId") UUID moduleId);
 
+//    @Query("SELECT new uz.rivoj.education.dto.response.AttendanceSpecialResponse(" +
+//            "s.student.name , s.student.surname , s.student.avatar , " +
+//            "m.number , l.number , subj.title, " +
+//            "a.status ) " +
+//            "FROM attendance a " +
+//            "JOIN a.student s " +
+//            "LEFT JOIN a.teacher t " +
+//            "JOIN a.lesson l " +
+//            "JOIN l.module m " +
+//            "JOIN m.subject subj " +
+//            "WHERE a.id = :attendanceId")
+//    AttendanceSpecialResponse findAttendanceDetailsById(@Param("attendanceId") UUID attendanceId);
     @Query("SELECT new uz.rivoj.education.dto.response.AttendanceSpecialResponse(" +
-            "s.student.name AS studentName, s.student.surname AS studentSurname, s.student.avatar AS studentAvatar, " +
-            "t.teacher.name AS teacherName, t.teacher.surname AS teacherSurname, t.teacher.avatar AS teacherAvatar, " +
-            "m.number AS moduleNumber, l.number AS lessonNumber, subj.title AS subject, " +
-            "a.feedBack AS feedBack, a.score AS score, a.coin AS coin, a.status AS status) " +
+            "s.student.name , s.student.surname , s.student.avatar , " +
+            "m.number , l.number , subj.title, " +
+            "a.status) " +
             "FROM attendance a " +
             "JOIN a.student s " +
-            "JOIN a.teacher t " +
             "JOIN a.lesson l " +
             "JOIN l.module m " +
             "JOIN m.subject subj " +

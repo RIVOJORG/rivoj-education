@@ -242,7 +242,7 @@ public class StudentService {
             progressResponse.setModuleNumber(moduleEntity.getNumber());
             if (lessonEntities.isPresent() && !lessonEntities.get().isEmpty()) {
                 List<LessonEntity> lessons = lessonEntities.get();
-                progressResponse.setLessonCount(lessons.size() + 1);
+                progressResponse.setLessonCount(lessons.size());
                 List<Integer> scoreList = new ArrayList<>();
                 lessons.forEach(lessonEntity -> {
                     Optional<AttendanceEntity> attendance = attendanceRepository.findByStudentIdAndLessonId(studentInfo.getId(), lessonEntity.getId());
@@ -373,7 +373,7 @@ public Map<String, Object> getStatistics(UUID moduleId, String searchTerm, int p
         responseMap.put("pageSize", studentInfoPage.getSize());
         responseMap.put("hasPreviousPage", studentInfoPage.hasPrevious());
         responseMap.put("hasNextPage", studentInfoPage.hasNext());
-        responseMap.put("lessonCount", lessonRepository.getLessonCount(moduleId)+1);
+        responseMap.put("lessonCount", lessonRepository.getLessonCount(moduleId));
         responseMap.put("data", studentStatisticsDTOList);
 
         return responseMap;

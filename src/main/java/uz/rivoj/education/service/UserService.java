@@ -19,6 +19,7 @@ import uz.rivoj.education.dto.request.*;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.UserStatus;
+import uz.rivoj.education.exception.AuthenticationException;
 import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.*;
@@ -69,13 +70,14 @@ public class UserService {
 
     public JwtResponse signIn(AuthDto dto) {
         UserEntity user = userRepository.findByPhoneNumber(dto.getPhoneNumber())
-                .orElseThrow(() -> new DataNotFoundException("user not found"));
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
         if (passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
             List<String> tokens = jwtUtil.generateToken(user);
-            return new JwtResponse(tokens.get(0),tokens.get(1),user.getRole());
+            return new JwtResponse(tokens.get(0), tokens.get(1), user.getRole());
         }
-        throw new AuthenticationCredentialsNotFoundException("password didn't match");
+        throw new AuthenticationException("password didn't match");
     }
+
 
     public ResponseEntity<String> addAdmin(UserCR userDto) {
         if(userRepository.findByPhoneNumber(userDto.getPhoneNumber()).isPresent()) {

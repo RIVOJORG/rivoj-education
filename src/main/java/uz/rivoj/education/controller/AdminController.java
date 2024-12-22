@@ -25,9 +25,8 @@ public class AdminController {
     private final UserService userService;
     private final TeacherService teacherService;
     private final CommentService commentService;
-    private final NotificationService notificationService;
     private final SubjectService subjectService;
-    private final FirebaseService firebaseService;
+    private final ModuleService moduleService;
 
 
     @PostMapping("/add-student")
@@ -39,7 +38,7 @@ public class AdminController {
         return teacherService.createTeacher(teacherInfo);
     }
     @PostMapping("/add-admin")
-    public ResponseEntity<String> addAdmin(@RequestBody UserCR adminDto) throws ExecutionException, InterruptedException {
+    public ResponseEntity<String> addAdmin(@RequestBody UserCR adminDto) {
         return userService.addAdmin(adminDto);
     }
 
@@ -97,7 +96,6 @@ public class AdminController {
         return ResponseEntity.status(200).body(userService.getTeachers());
     }
 
-
     @PutMapping("/change-SubjectTitle/{subjectId}/{subjectName}")
     public ResponseEntity<String> changeSubjectTitle(
             @PathVariable UUID subjectId,
@@ -114,9 +112,10 @@ public class AdminController {
                 .body(userService.updateProfile(adminUpdate, UUID.fromString(principal.getName())));
     }
 
-
-
-
+    @GetMapping("/get-ModuleCountOfSubject")
+    public ResponseEntity<Integer> getModuleCountOfSubject(UUID subjectId){
+        return moduleService.getModuleCountOfSubject(subjectId);
+    }
 
 
 
