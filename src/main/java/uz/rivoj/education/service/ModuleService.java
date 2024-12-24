@@ -187,7 +187,7 @@ public class ModuleService {
 
     public ResponseEntity<List<ModuleDetailsDTO>> getModuleDetailsOfSubject(UUID subjectId) {
         subjectRepository.findById(subjectId).orElseThrow(() -> new DataNotFoundException("Subject not found with this id => " + subjectId));
-        Optional<List<ModuleEntity>> modules = moduleRepository.findBySubject_Id(subjectId);
+        Optional<List<ModuleEntity>> modules = moduleRepository.findAllBySubject_IdOrderByNumberAsc(subjectId);
         if(modules.isPresent()){
             List<ModuleDetailsDTO> moduleDetailsList = modules.get().stream()
                     .map(module -> new ModuleDetailsDTO(

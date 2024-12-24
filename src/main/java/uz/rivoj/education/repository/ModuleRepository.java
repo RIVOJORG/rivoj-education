@@ -17,6 +17,5 @@ public interface ModuleRepository extends JpaRepository<ModuleEntity, UUID> {
     Optional<ModuleEntity> findTopBySubjectAndNumberLessThanOrderByNumberDesc(SubjectEntity subject, Integer number);
     Integer countBySubject_Id(UUID subjectId);
 
-    Optional<List<ModuleEntity>> findBySubject_Id(UUID subjectId);
 }
 
