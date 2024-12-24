@@ -84,14 +84,15 @@ public class ModuleService {
     public List<LessonResponse> getAllAccessibleLessonsOfUser(UUID userId, UUID moduleId) {
         StudentInfo studentInfo = studentRepository.findByStudentId(userId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found with this id => " + userId));
+        int currentModuleNumber = studentInfo.getCurrentModule().getNumber();
         List<ModuleResponse> allModules = getAllModulesOfStudent(userId);
         List<LessonResponse> responseList = new ArrayList<>();
-        int currentLesson = studentInfo.getLesson().getNumber();
+        int currentLessonNumber = studentInfo.getLesson().getNumber();
         allModules.forEach(module -> {
             if (Objects.equals(module.getModule_id(),moduleId)) {
                 List<LessonResponse> lessonResponseList = getAllLessonsByModule(moduleId);
                 for (LessonResponse lessonResponse : lessonResponseList) {
-                    if (currentLesson < lessonResponse.getNumber()) {
+                    if (currentLessonNumber < lessonResponse.getNumber() && currentModuleNumber <= module.getModuleNumber()) {
                         lessonResponse.setSource(null);
                     }
                     responseList.add(lessonResponse);
