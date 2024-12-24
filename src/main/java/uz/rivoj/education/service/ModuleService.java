@@ -92,7 +92,8 @@ public class ModuleService {
             if (Objects.equals(module.getModule_id(),moduleId)) {
                 List<LessonResponse> lessonResponseList = getAllLessonsByModule(moduleId);
                 for (LessonResponse lessonResponse : lessonResponseList) {
-                    if (currentLessonNumber < lessonResponse.getNumber() && currentModuleNumber <= module.getModuleNumber()) {
+                    if ((currentLessonNumber < lessonResponse.getNumber() && currentModuleNumber == module.getModuleNumber())
+                        || (currentModuleNumber < module.getModuleNumber())) {
                         lessonResponse.setSource(null);
                     }
                     responseList.add(lessonResponse);
