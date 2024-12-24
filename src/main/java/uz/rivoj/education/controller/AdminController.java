@@ -9,12 +9,10 @@ import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.UserStatus;
 import uz.rivoj.education.service.*;
-import uz.rivoj.education.service.firebase.FirebaseService;
-
 import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
+
 
 
 @RestController
@@ -112,10 +110,11 @@ public class AdminController {
                 .body(userService.updateProfile(adminUpdate, UUID.fromString(principal.getName())));
     }
 
-    @GetMapping("/get-ModuleCountOfSubject")
-    public ResponseEntity<Integer> getModuleCountOfSubject(UUID subjectId){
-        return moduleService.getModuleCountOfSubject(subjectId);
+    @GetMapping("/get-ModuleDetailsOfSubject")
+    public ResponseEntity<List<ModuleDetailsDTO>> getModuleDetailsOfSubject(@RequestParam UUID subjectId) {
+        return moduleService.getModuleDetailsOfSubject(subjectId);
     }
+
 
 
 

@@ -185,7 +185,19 @@ public class ModuleService {
         return "Successfully changed";
     }
 
-    public ResponseEntity<Integer> getModuleCountOfSubject(UUID subjectId) {
-        return ResponseEntity.ok(moduleRepository.countBySubject_Id(subjectId));
+    public ResponseEntity<List<ModuleDetailsDTO>> getModuleDetailsOfSubject(UUID subjectId) {
+        subjectRepository.findById(subjectId).orElseThrow(() -> new DataNotFoundException("Subject not found with this id => " + subjectId));
+        Optional<List<ModuleEntity>> modules = moduleRepository.findBySubject_Id(subjectId);
+        if(modules.isPresent()){
+            List<ModuleDetailsDTO> moduleDetailsList = modules.get().stream()
+                    .map(module -> new ModuleDetailsDTO(
+                            module.getId(),
+                            module.getNumber()
+                    ))
+                    .toList();
+            return ResponseEntity.ok().body(moduleDetailsList);
+        }
+        throw new DataNotFoundException("Module not found for this subject => " + subjectId);
     }
+
 }
