@@ -74,7 +74,6 @@ public class SubjectService {
 
     @Transactional
     public List<SubjectResponse> getAll() {
-        uploadService.deleteFile("asdas");
         List<SubjectResponse> list = new ArrayList<>();
         for (SubjectEntity subjectEntity : subjectRepository.findAll()) {
             list.add(modelMapper.map(subjectEntity, SubjectResponse.class));

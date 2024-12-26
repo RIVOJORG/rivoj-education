@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uz.rivoj.education.dto.request.ChatCR;
 import uz.rivoj.education.dto.request.TeacherCR;
 import uz.rivoj.education.dto.request.TeacherUpdate;
@@ -15,7 +16,6 @@ import uz.rivoj.education.dto.response.TeacherResponse;
 import uz.rivoj.education.dto.response.UserDetailsDTO;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.UserStatus;
-import uz.rivoj.education.exception.CustomException;
 import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.SubjectRepository;
@@ -39,6 +39,7 @@ public class TeacherService {
     private final UploadService uploadService;
     private final FirebaseService firebaseService;
 
+    @Transactional
     public ResponseEntity<String> createTeacher(TeacherCR teacherCr) {
         Optional<UserEntity> userByPhoneNumber = userRepository.findByPhoneNumber(teacherCr.getPhoneNumber());
         if(userByPhoneNumber.isPresent()){
@@ -60,17 +61,29 @@ public class TeacherService {
         
         try {
             firebaseService.createUser(new UserDetailsDTO(String.valueOf(savedUser.getId()),savedUser.getPhoneNumber(),savedUser.getAvatar(),savedUser.getName(),savedUser.getSurname(),String.valueOf(savedUser.getRole())));
+            System.out.println("User created");
         } catch (ExecutionException | InterruptedException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unable to create user on Firebase! \n" + e.getMessage());
         }
-        Optional<List<UUID>> optionalStudentIdes = userRepository.findUserIdesIdBySubjectId(UserRole.STUDENT,teacherCr.getSubjectId());
-        optionalStudentIdes.ifPresent(studentIdes -> studentIdes.forEach(studentId -> {
-            try {
-                firebaseService.createChat(new ChatCR(String.valueOf(studentId), String.valueOf(savedUser.getId())), String.valueOf(UUID.randomUUID()));
-            } catch (ExecutionException | InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }));
+        Optional<List<UUID>> optionalStudentIdes = userRepository.findStudentIdesBySubjectId(UserRole.STUDENT,teacherCr.getSubjectId());
+        System.out.println("optionalStudentIdes.isEmpty() = " + optionalStudentIdes.isEmpty());
+        System.out.println("optionalStudentIdes.get().isEmpty() = " + optionalStudentIdes.get().isEmpty());
+        if (optionalStudentIdes.isPresent()) {
+            optionalStudentIdes.get().forEach(studentId -> {
+                System.out.println("studentId = " + studentId);
+                try {
+                    firebaseService.createChat(
+                            new ChatCR(String.valueOf(studentId), String.valueOf(savedUser.getId())),
+                            String.valueOf(UUID.randomUUID())
+                    );
+                    System.out.println("Chat created for student ID: " + studentId);
+                } catch (ExecutionException | InterruptedException e) {
+                    throw new RuntimeException("Failed to create chat for student ID: " + studentId, e);
+                }
+            });
+        } else {
+            System.out.println("No students found for subject ID: " + teacherCr.getSubjectId());
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body("Successfully created!");
     }
 

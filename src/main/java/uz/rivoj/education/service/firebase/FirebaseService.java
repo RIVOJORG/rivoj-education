@@ -1,7 +1,9 @@
 package uz.rivoj.education.service.firebase;
 
+import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.WriteResult;
 import com.google.firebase.cloud.FirestoreClient;
 import com.google.gson.JsonObject;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -23,7 +26,8 @@ import java.util.concurrent.ExecutionException;
 public class FirebaseService {
     public void createUser(UserDetailsDTO user) throws ExecutionException, InterruptedException {
         Firestore dbFirestore = FirestoreClient.getFirestore();
-        dbFirestore.collection("UserTable").document(user.getUserId()).set(user);
+        ApiFuture<WriteResult> userTable = dbFirestore.collection("UserTable").document(user.getUserId()).set(user);
+        System.out.println(userTable.get().getUpdateTime());
     }
 
     public void deleteUser(String userId) {
@@ -38,8 +42,13 @@ public class FirebaseService {
 
     public void createChat(ChatCR chatMembers, String chatId) throws ExecutionException, InterruptedException {
         Firestore dbFirestore = FirestoreClient.getFirestore();
-        dbFirestore.collection("ChatRoom").document(chatId).set(chatMembers);
 
+        Map<String, Object> chatData = new HashMap<>();
+        chatData.put("member1", chatMembers.getMember1());
+        chatData.put("member2", chatMembers.getMember2());
+        chatData.put("latestMessageDate", chatMembers.getLatestMessageDate());
+        System.out.println("chatId = " + chatId);
+        dbFirestore.collection("ChatRoom").document(chatId).set(chatData).get();
     }
     public void updateChat(ChatCR chatMembers,String chatId){
         Firestore dbFirestore = FirestoreClient.getFirestore();
@@ -129,7 +138,7 @@ public class FirebaseService {
 
 
     public String getAccessToken() throws IOException {
-        String serviceAccountFilePath = "/app/fireBaseKeySDK.json";
+        String serviceAccountFilePath = "src/main/resources/fireBaseKeySDK.json";
         FileInputStream serviceAccountStream = new FileInputStream(serviceAccountFilePath);
         GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccountStream)
                 .createScoped(Arrays.asList(

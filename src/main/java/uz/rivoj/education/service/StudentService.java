@@ -1,12 +1,10 @@
 package uz.rivoj.education.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,7 +17,6 @@ import uz.rivoj.education.dto.request.StudentUpdate;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.UserStatus;
-import uz.rivoj.education.exception.CustomException;
 import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.*;
@@ -93,7 +90,7 @@ public class StudentService {
         } catch (ExecutionException | InterruptedException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unable to create user on Firebase! \n" + e.getMessage());
         }
-        Optional<List<UUID>> optionalTeachersId = userRepository.findUserIdesIdBySubjectId(UserRole.TEACHER,studentCR.getSubjectId());
+        Optional<List<UUID>> optionalTeachersId = userRepository.findTeacherIdesIdBySubjectId(UserRole.TEACHER,studentCR.getSubjectId());
         optionalTeachersId.ifPresent(teacherIdes -> teacherIdes.forEach(teacherId -> {
             try {
                 firebaseService.createChat(new ChatCR(String.valueOf(teacherId), String.valueOf(savedUser.getId())), String.valueOf(UUID.randomUUID()));

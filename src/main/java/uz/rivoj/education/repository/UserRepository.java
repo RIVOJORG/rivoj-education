@@ -73,10 +73,16 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
             "WHERE u.role = :role AND s.subject.id = :subjectId")
     Page<UserEntity> findStudentsBySubjectId(UserRole role, UUID subjectId, Pageable pageable);
 
+    @Query("SELECT u.id " +
+            "FROM users u " +
+            "JOIN student_info s ON s.student.id = u.id " +
+            "WHERE u.role = :role AND s.subject.id = :subjectId")
+    Optional<List<UUID>> findStudentIdesBySubjectId(UserRole role, UUID subjectId);
+
     @Query("SELECT u.id FROM users u " +
             "JOIN teacher_info ti ON ti.teacher.id = u.id " +
             "WHERE u.role = :role AND ti.subject.id = :subjectId")
-    Optional<List<UUID>> findUserIdesIdBySubjectId(@Param("role") UserRole role, @Param("subjectId") UUID subjectId);
+    Optional<List<UUID>> findTeacherIdesIdBySubjectId(@Param("role") UserRole role, @Param("subjectId") UUID subjectId);
 
     @Query("SELECT u.id FROM users u " +
             "JOIN teacher_info ti ON ti.teacher.id = u.id " +
