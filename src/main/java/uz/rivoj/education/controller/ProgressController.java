@@ -20,6 +20,11 @@ public class ProgressController {
     private final ProgressService progressService;
     private final DiscountService discountService;
 
+    @GetMapping("/get-top3-by-lesson{lessonId}")
+    public RankingPageResponse getTop3ByLesson(@PathVariable UUID lessonId){
+        return progressService.getTop3ByLesson(lessonId);
+    }
+
     @GetMapping("/get-top10")
     public RankingPageResponse getRankingPage(){
         return progressService.getTop10Students();
