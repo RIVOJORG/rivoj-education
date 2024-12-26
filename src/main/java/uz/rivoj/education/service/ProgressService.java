@@ -3,19 +3,13 @@ package uz.rivoj.education.service;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.entity.*;
-import uz.rivoj.education.entity.enums.AttendanceStatus;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -88,6 +82,24 @@ public class ProgressService {
 //                .build();
 //    }
 
+    public RankingPageResponse getTop3ByLesson(UUID lessonId) {
+        List<AttendanceEntity> topAttendances = attendanceRepository.findTop3ByLessonId(lessonId);
+
+        List<BestStudentResponse> bestStudentResponses = topAttendances.stream()
+                .map(attendance -> BestStudentResponse.builder()
+                        .avatar(attendance.getStudent().getStudent().getAvatar())
+                        .name(attendance.getStudent().getStudent().getName())
+                        .surname(attendance.getStudent().getStudent().getSurname())
+                        .percentage(attendance.getScore())
+                        .build())
+                .toList();
+
+        return RankingPageResponse.builder()
+                .bestStudents(bestStudentResponses)
+                .userOrder(0)
+                .userRank(0)
+                .build();
+    }
 
     public RankingPageResponse getTop10Students(UUID userId) {
         StudentInfo studentInfo = studentInfoRepository.findByStudentId(userId)
