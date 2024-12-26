@@ -13,8 +13,11 @@ import java.util.Map;
 @ToString
 @Builder
 public class NotificationDto {
-    private List<String> topic;
+    private String title;
+    private String body;
+    private List<String> destinations;
     private Map<String, String> data;
+    private boolean isTopic;
 
 
     }

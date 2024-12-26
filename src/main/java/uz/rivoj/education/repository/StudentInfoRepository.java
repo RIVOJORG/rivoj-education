@@ -16,10 +16,10 @@ public interface StudentInfoRepository extends JpaRepository<StudentInfo, UUID> 
     Optional<List<StudentInfo>> findByCurrentModule_Id(UUID currentModule_id);
     Page<StudentInfo> findBySubject_Id(UUID subjectId, Pageable pageable);
     Optional<List<StudentInfo>> findTop10BySubject_idOrderByTotalScoreDesc(UUID subjectId, Pageable pageable);
-    Page<StudentInfo> findTop10ByOrderByTotalScoreDesc(Pageable pageable);
+    Optional<List<StudentInfo>> findAllByOrderByTotalScoreDesc();
     StudentInfo findByStudent_Id(UUID studentId);
     Optional<List<StudentInfo>> findBySubject_Id(UUID subjectId);
-
+    Optional<List<StudentInfo>> findAllBySubject_idOrderByTotalScoreDesc(UUID subjectId);
 
 
     @Query("SELECT si FROM student_info si JOIN FETCH si.student student WHERE si.subject.id = :subjectId AND " +

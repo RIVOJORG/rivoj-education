@@ -32,8 +32,7 @@ public class TeacherController {
         return ResponseEntity.status(200).body(attendanceService.checkAttendance(checkAttendanceDTO,UUID.fromString(principal.getName())));
     }
 
-
-    @PutMapping(value = "/update_profile", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/update_profile")
     public ResponseEntity<TeacherResponse> updateProfile(
             @ModelAttribute TeacherUpdate teacherUpdate,
             Principal principal){

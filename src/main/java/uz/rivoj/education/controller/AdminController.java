@@ -9,12 +9,10 @@ import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.entity.*;
 import uz.rivoj.education.entity.enums.UserStatus;
 import uz.rivoj.education.service.*;
-import uz.rivoj.education.service.firebase.FirebaseService;
-
 import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
+
 
 
 @RestController
@@ -25,9 +23,8 @@ public class AdminController {
     private final UserService userService;
     private final TeacherService teacherService;
     private final CommentService commentService;
-    private final NotificationService notificationService;
     private final SubjectService subjectService;
-    private final FirebaseService firebaseService;
+    private final ModuleService moduleService;
 
 
     @PostMapping("/add-student")
@@ -39,7 +36,7 @@ public class AdminController {
         return teacherService.createTeacher(teacherInfo);
     }
     @PostMapping("/add-admin")
-    public ResponseEntity<String> addAdmin(@RequestBody UserCR adminDto) throws ExecutionException, InterruptedException {
+    public ResponseEntity<String> addAdmin(@RequestBody UserCR adminDto) {
         return userService.addAdmin(adminDto);
     }
 
@@ -47,10 +44,6 @@ public class AdminController {
     public ResponseEntity<SubjectResponse> createSubject(@RequestBody SubjectCR createRequest){
         return ResponseEntity.status(HttpStatus.CREATED).body(subjectService.create(createRequest));
     }
-//    @PostMapping("/create-notification")
-//    public ResponseEntity<NotificationResponse> createNotification(@RequestBody NotificationCR notificationCR){
-//        return ResponseEntity.status(HttpStatus.CREATED).body(notificationService.create(notificationCR));
-//    }
 
     @PutMapping("/update-role{userPhoneNumber}")
     public ResponseEntity<String> updateRole(@PathVariable String userPhoneNumber, @RequestParam UserRole userRole){
@@ -69,8 +62,6 @@ public class AdminController {
             @PathVariable String newPassword) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.changePassword(userId,newPassword));
     }
-
-
 
     @GetMapping("/get-all-subjects")
     public List<SubjectResponse> getAllSubject(){
@@ -103,7 +94,6 @@ public class AdminController {
         return ResponseEntity.status(200).body(userService.getTeachers());
     }
 
-
     @PutMapping("/change-SubjectTitle/{subjectId}/{subjectName}")
     public ResponseEntity<String> changeSubjectTitle(
             @PathVariable UUID subjectId,
@@ -120,16 +110,10 @@ public class AdminController {
                 .body(userService.updateProfile(adminUpdate, UUID.fromString(principal.getName())));
     }
 
-    @PostMapping("/sendNotificationTopic")
-    public ResponseEntity<String> sendNotificationTopic(@RequestBody NotificationDto notificationDto){
-        return firebaseService.sendNotificationTopic(notificationDto);
+    @GetMapping("/get-ModuleDetailsOfSubject")
+    public ResponseEntity<List<ModuleDetailsDTO>> getModuleDetailsOfSubject(@RequestParam UUID subjectId) {
+        return moduleService.getModuleDetailsOfSubject(subjectId);
     }
-
-    @PostMapping("/sendNotificationUsers")
-    public ResponseEntity<String> sendNotificationUsers(@RequestBody NotificationCR notificationCR){
-        return firebaseService.sendNotificationUsers(notificationCR);
-    }
-
 
 
 

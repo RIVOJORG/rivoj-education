@@ -117,16 +117,8 @@ public class StudentService {
         if (studentUpdate.getSurname() != null) {
             userEntity.setSurname(studentUpdate.getSurname());
         }
-        if (studentUpdate.getPhoneNumber() != null) {
-            System.out.println("studentUpdate.getPhoneNumber() = " + studentUpdate.getPhoneNumber());
-            System.out.println("studentUpdate.getPhoneNumber().isEmpty() = " + studentUpdate.getPhoneNumber().isEmpty());
-            userEntity.setPhoneNumber(studentUpdate.getPhoneNumber());
-        }
         if (studentUpdate.getName() != null) {
             userEntity.setName(studentUpdate.getName());
-        }
-        if (studentUpdate.getPassword() != null) {
-            userEntity.setPassword(passwordEncoder.encode(studentUpdate.getPassword()));
         }
         UserEntity save = userRepository.save(userEntity);
         studentInfoRepository.save(studentInfo);
@@ -250,7 +242,7 @@ public class StudentService {
             progressResponse.setModuleNumber(moduleEntity.getNumber());
             if (lessonEntities.isPresent() && !lessonEntities.get().isEmpty()) {
                 List<LessonEntity> lessons = lessonEntities.get();
-                progressResponse.setLessonCount(lessons.size() + 1);
+                progressResponse.setLessonCount(lessons.size());
                 List<Integer> scoreList = new ArrayList<>();
                 lessons.forEach(lessonEntity -> {
                     Optional<AttendanceEntity> attendance = attendanceRepository.findByStudentIdAndLessonId(studentInfo.getId(), lessonEntity.getId());
@@ -288,7 +280,7 @@ public class StudentService {
             UserEntity user = userRepository.findByPhoneNumber(verificationCode.getPhoneNumber())
                     .orElseThrow(() -> new DataNotFoundException("User not found!"));
             List<String> tokens = jwtUtil.generateToken(user);
-            return new JwtResponse(tokens.get(0),tokens.get(1));
+            return new JwtResponse(tokens.get(0),tokens.get(1),user.getRole());
         }throw  new RuntimeException("Verification code expired!");
     }
 
@@ -381,7 +373,7 @@ public Map<String, Object> getStatistics(UUID moduleId, String searchTerm, int p
         responseMap.put("pageSize", studentInfoPage.getSize());
         responseMap.put("hasPreviousPage", studentInfoPage.hasPrevious());
         responseMap.put("hasNextPage", studentInfoPage.hasNext());
-        responseMap.put("lessonCount", lessonRepository.getLessonCount(moduleId)+1);
+        responseMap.put("lessonCount", lessonRepository.getLessonCount(moduleId));
         responseMap.put("data", studentStatisticsDTOList);
 
         return responseMap;

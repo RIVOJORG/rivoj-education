@@ -9,14 +9,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import uz.rivoj.education.dto.request.LessonCR;
+import uz.rivoj.education.dto.request.NotificationDto;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.dto.update.LessonUpdateDTO;
 import uz.rivoj.education.entity.UserRole;
 import uz.rivoj.education.service.*;
+import uz.rivoj.education.service.firebase.FirebaseService;
+
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
 
 
 @RestController
@@ -25,6 +27,7 @@ import java.util.UUID;
 
 public class BaseControllerAdminTeacher {
     private final AttendanceService attendanceService;
+    private final FirebaseService firebaseService;
     private final StudentService studentService;
     private final LessonService lessonService;
     private final ModuleService moduleService;
@@ -116,7 +119,7 @@ public class BaseControllerAdminTeacher {
 
     @GetMapping("/get-attendance/{id}")
     public ResponseEntity<AttendanceSpecialResponse> getAttendanceById(@PathVariable UUID id) {
-        return ResponseEntity.ok(attendanceService.findByAttendanceId(id));
+        return ResponseEntity.ok(attendanceService.findByAttendanceById(id));
     }
     @PutMapping("/change-ModuleNumber/{moduleId}/{moduleNumber}")
     public ResponseEntity<String> changeModuleNumber(
@@ -135,6 +138,11 @@ public class BaseControllerAdminTeacher {
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
         return ResponseEntity.ok(userService.getUsersByRoleAndSubjectId(role, subjectId, pageable));
     }
+    @PostMapping("/sendNotification")
+    public ResponseEntity<String> sendNotification(@RequestBody NotificationDto notificationDto) {
+        return firebaseService.sendNotification(notificationDto);
+    }
+
 
 
 }

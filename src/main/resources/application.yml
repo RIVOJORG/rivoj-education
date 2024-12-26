@@ -1,7 +1,5 @@
 server:
   port: 8080
-  volumes:
-      - ./src/main/resources/fireBaseKeySDK.json:/app/fireBaseKeySDK.json
   ssl:
     key-store-type: PKCS12
     key-store: /app/keystore.p12
@@ -44,7 +42,7 @@ springdoc:
     doc-expansion: none
 firebase:
   credentials:
-    path: src/main/resources/fireBaseKeySDK.json
+    path: /app/fireBaseKeySDK.json
   secret: -----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDr73quvGqPRy/4\nAZzaJ4s6iUWmaWnun01xvq6U+TL/agLhrtYNLB6wuUuetNkyy3CMhHS5eVz19TSN\nd1DMXRBG6lyQWnu9lFYe/8hDdc/+h5H2e/gyLjyl8skP3UgjEAjoi5QeeuHAtL92\n2rhI75LjmxM2d2zbMpZ86g6+yZLJimlyOUPMkaeVzJA7pG+HdmEKwAyvTeZMe38d\ncN4+BXkcKtRZ7Oor5veVc+ARhhXpKlUyxM+s9CBEi9cb+LMYCB/zulg3jpj+i7Gg\nDAepRwYs0HqH/7TQPPzhXIkBcmhFCkuGRPH9I4C/C/aiMxXhAd18jpu6wlFXlJ+Q\nUqwBou+HAgMBAAECggEAFdk+fjH6mDwaaBgWI2moDgqqRYfbhHqCHHdxCWCuZVK2\n45liPyQHz4vJQfAzcO3ABXM6r/ZaMni7niIffF1d5YNMgR2v+dVjyEkdjYm6cjKx\nxKakTFlVynRaRDrUtFKG0KokVFJC16qlVGday35MFwHEXLXggcgEgZrXNLnL+xfF\nuVHFXD85O/Hb0YWahzZK6hwPjHK87+QWa4GOnZMjN5IXd1dvudslztPT0edr3kWp\np21mZebyWJGEYoEwtp5Iq23EdyQcGW5VNp6QgDO7TGaP+WenP7WFkgWMTHhQp2Zw\n9SW6h8jUtMOJ8aXJo0dKK7NGjuHcLGUeUbnnDvSgCQKBgQD2x8DRkTuBP4GkEluH\n4qiNyyUY1jMCVzL3MQmY+wkngXQtNDo9d5zTnbnmKSZQ3cq/Cf3gzCstcgDig5tz\nBLoIM53EQYwda9PC0hlvRpOAvNOczVyT97pBGekLVstq7HWYPmgoWkwBLgKASAqv\nC0PrGMzi5zfxi0pknDr+eFwPxQKBgQD0wAEgx0U28xPislCfOcwBi/9GVXG54GcD\n3rzPRjOrdqKdeCrDQlIAHUiQl3Wr6slsWoHDP+POxxM/AKexC7ZlStQSgnM5U0JY\neKp1rhHnCkBs2j82+c024lulED3o+/0AEYu6bdizbMAe8a90f7yeyUTahdMM/ByP\nR/CrQ7DK2wKBgDhOQU9PjL0jqUevLJUngP/BLviovsC09prx5Fe0R1VtMv2xYexu\nYyjhXu4Fy4k94amO9Q8aZmubDFqiXpByrqN6a2/A6OA5nvpfh5AdEUCZVMr9DDdy\nmVuLNuHwbr85rmcLLiau25KVVdrBFTb1Igz8/ppy2Q/SkSm9f7RZ799lAoGBAMw8\n4XQZ9c9J/yEgzhhhIbV0vvxRVwrWkQBwwbxyB7Ig2MhxO7YfRNBln2VRjtd8oMMz\nr69gRFkMVSoxAL7EWFukmt4rT73ZlbbAUvbK4JOdQW/UnAXjZPVU5UcUC6W9ij2h\nZqmW+suXh6cK5fBgm+UhbbyxChJ+29JRJSu12/UbAoGAcjGxIZq0N9ft8fckHicS\nSt1Xvg0Z5xufZxFgBFMyTCHvLTHFLB/10ZgInwqJ/j2FcX3O37y/tCDdoVLtC6VN\n9xcFLrt715WZlRqrWDSGaJzDJKcNyYgYRJBRzzySFSZGDmrv9Lc5QXXUrWKOS4Xf\ncJNVdv3C5M2mlh7UXYH4fa0=\n-----END PRIVATE KEY-----\n
 do:
   spaces:

@@ -3,6 +3,7 @@ package uz.rivoj.education.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.rivoj.education.dto.response.*;
@@ -83,14 +84,16 @@ public class ModuleService {
     public List<LessonResponse> getAllAccessibleLessonsOfUser(UUID userId, UUID moduleId) {
         StudentInfo studentInfo = studentRepository.findByStudentId(userId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found with this id => " + userId));
+        int currentModuleNumber = studentInfo.getCurrentModule().getNumber();
         List<ModuleResponse> allModules = getAllModulesOfStudent(userId);
         List<LessonResponse> responseList = new ArrayList<>();
-        int currentLesson = studentInfo.getLesson().getNumber();
+        int currentLessonNumber = studentInfo.getLesson().getNumber();
         allModules.forEach(module -> {
             if (Objects.equals(module.getModule_id(),moduleId)) {
                 List<LessonResponse> lessonResponseList = getAllLessonsByModule(moduleId);
                 for (LessonResponse lessonResponse : lessonResponseList) {
-                    if (currentLesson < lessonResponse.getNumber()) {
+                    if ((currentLessonNumber < lessonResponse.getNumber() && currentModuleNumber == module.getModuleNumber())
+                        || (currentModuleNumber < module.getModuleNumber())) {
                         lessonResponse.setSource(null);
                     }
                     responseList.add(lessonResponse);
@@ -181,4 +184,20 @@ public class ModuleService {
         moduleRepository.save(module);
         return "Successfully changed";
     }
+
+    public ResponseEntity<List<ModuleDetailsDTO>> getModuleDetailsOfSubject(UUID subjectId) {
+        subjectRepository.findById(subjectId).orElseThrow(() -> new DataNotFoundException("Subject not found with this id => " + subjectId));
+        Optional<List<ModuleEntity>> modules = moduleRepository.findAllBySubject_IdOrderByNumberAsc(subjectId);
+        if(modules.isPresent()){
+            List<ModuleDetailsDTO> moduleDetailsList = modules.get().stream()
+                    .map(module -> new ModuleDetailsDTO(
+                            module.getId(),
+                            module.getNumber()
+                    ))
+                    .toList();
+            return ResponseEntity.ok().body(moduleDetailsList);
+        }
+        throw new DataNotFoundException("Module not found for this subject => " + subjectId);
+    }
+
 }

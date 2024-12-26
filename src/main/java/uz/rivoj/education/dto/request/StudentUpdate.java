@@ -14,7 +14,5 @@ import java.time.LocalDate;
 public class StudentUpdate {
     private String name;
     private String surname;
-    private String phoneNumber;
-    private String password;
     private LocalDate birthday;
 }

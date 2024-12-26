@@ -101,21 +101,76 @@ public class ProgressService {
                 .build();
     }
 
-    public RankingPageResponse getTop10Students() {
-        PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<StudentInfo> page = studentInfoRepository.findTop10ByOrderByTotalScoreDesc(pageRequest);
-        List<StudentInfo> sortedStudents = page.getContent();
-        return mapToBestStudentResponse(sortedStudents);
+    public RankingPageResponse getTop10Students(UUID userId) {
+        StudentInfo studentInfo = studentInfoRepository.findByStudentId(userId)
+                .orElseThrow(() -> new DataNotFoundException("Student not found"));
+
+        List<StudentInfo> allRankedStudents = studentInfoRepository.findAllByOrderByTotalScoreDesc()
+                .orElseThrow(() -> new DataNotFoundException("No students found"));
+
+        int userOrder = -1;
+        for (int i = 0; i < allRankedStudents.size(); i++) {
+            if (allRankedStudents.get(i).getStudent().getId().equals(userId)) {
+                userOrder = i;
+                break;
+            }
+        }
+        if (userOrder == -1) {
+            throw new DataNotFoundException("User not found in the ranking");
+        }
+
+        int userRank = userOrder + 1;
+
+        List<StudentInfo> topStudents = allRankedStudents.stream()
+                .limit(10)
+                .collect(Collectors.toList());
+
+        if (userRank > 10) {
+            topStudents.add(studentInfo);
+        }
+
+        RankingPageResponse rankingPageResponse = mapToBestStudentResponse(topStudents);
+        rankingPageResponse.setUserOrder(userOrder);
+        rankingPageResponse.setUserRank(userRank);
+
+        return rankingPageResponse;
     }
+
 
     public RankingPageResponse getTop10StudentsBySubject(UUID userId) {
         StudentInfo studentInfo = studentInfoRepository.findByStudentId(userId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found"));
 
-        List<StudentInfo> list = studentInfoRepository.findTop10BySubject_idOrderByTotalScoreDesc(studentInfo.getSubject().getId(), PageRequest.of(0, 10))
-                .orElseThrow(() -> new DataNotFoundException("Students not found"));
-        return mapToBestStudentResponse(list);
+        List<StudentInfo> allRankedStudents = studentInfoRepository
+                .findAllBySubject_idOrderByTotalScoreDesc(studentInfo.getSubject().getId())
+                .orElseThrow(() -> new DataNotFoundException("No students found for the subject"));
+        int userOrder = -1;
+        for (int i = 0; i < allRankedStudents.size(); i++) {
+            if (allRankedStudents.get(i).getStudent().getId().equals(userId)) {
+                userOrder = i;
+                break;
+            }
+        }
+        if (userOrder == -1) {
+            throw new DataNotFoundException("User not found in the ranking");
+        }
+
+        int userRank = userOrder + 1;
+        List<StudentInfo> topStudents = allRankedStudents.stream().limit(10).collect(Collectors.toList());
+
+        if (userRank > 10) {
+            topStudents.add(studentInfo);
+        }
+        RankingPageResponse rankingPageResponse = mapToBestStudentResponse(topStudents);
+        rankingPageResponse.setUserOrder(userOrder);
+        rankingPageResponse.setUserRank(userRank);
+
+        return rankingPageResponse;
     }
+
+
+
+
 
     private RankingPageResponse mapToBestStudentResponse(List<StudentInfo> list) {
         List<BestStudentResponse> bestStudentResponseList = new ArrayList<>();

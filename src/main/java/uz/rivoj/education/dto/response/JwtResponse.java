@@ -13,4 +13,5 @@ import uz.rivoj.education.entity.UserRole;
 public class JwtResponse {
     private String token;
     private String refreshToken;
+    private UserRole role;
 }

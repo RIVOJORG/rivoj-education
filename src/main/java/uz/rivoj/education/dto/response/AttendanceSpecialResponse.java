@@ -6,6 +6,7 @@ import uz.rivoj.education.entity.enums.AttendanceStatus;
 import java.util.List;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @Builder
@@ -31,30 +32,16 @@ public class AttendanceSpecialResponse {
             String studentName,
             String studentSurname,
             String studentAvatar,
-            String teacherName,
-            String teacherSurname,
-            String teacherAvatar,
             Integer moduleNumber,
             Integer lessonNumber,
             String subject,
-            List<String> answers,
-            String feedBack,
-            Integer score,
-            Integer coin,
             AttendanceStatus status) {
         this.studentName = studentName;
         this.studentSurname = studentSurname;
         this.studentAvatar = studentAvatar;
-        this.teacherName = teacherName;
-        this.teacherSurname = teacherSurname;
-        this.teacherAvatar = teacherAvatar;
         this.moduleNumber = moduleNumber;
         this.lessonNumber = lessonNumber;
         this.subject = subject;
-        this.answers = answers;
-        this.feedBack = feedBack;
-        this.score = score;
-        this.coin = coin;
         this.status = status;
     }
 }
