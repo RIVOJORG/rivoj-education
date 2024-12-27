@@ -82,7 +82,7 @@ public class TeacherService {
         } else {
             System.out.println("No students found for subject ID: " + teacherCr.getSubjectId());
         }
-        Optional<List<UUID>> adminIdesByRole = userRepository.findAdminIdesByRole(UserRole.ADMIN);
+        Optional<List<UUID>> adminIdesByRole = userRepository.findAdminIdesByRole( UserRole.ADMIN);
         if (adminIdesByRole.isPresent()) {
             adminIdesByRole.get().forEach(adminId -> {
                 try {
