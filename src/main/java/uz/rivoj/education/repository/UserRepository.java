@@ -79,6 +79,12 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
             "WHERE u.role = :role AND s.subject.id = :subjectId")
     Optional<List<UUID>> findStudentIdesBySubjectId(UserRole role, UUID subjectId);
 
+    @Query("SELECT u.id " +
+            "FROM users u " +
+            "WHERE u.role = :role")
+    Optional<List<UUID>> findAdminIdesByRole(UserRole role);
+
+
     @Query("SELECT u.id FROM users u " +
             "JOIN teacher_info ti ON ti.teacher.id = u.id " +
             "WHERE u.role = :role AND ti.subject.id = :subjectId")

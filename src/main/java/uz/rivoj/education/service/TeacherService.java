@@ -66,8 +66,6 @@ public class TeacherService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unable to create user on Firebase! \n" + e.getMessage());
         }
         Optional<List<UUID>> optionalStudentIdes = userRepository.findStudentIdesBySubjectId(UserRole.STUDENT,teacherCr.getSubjectId());
-        System.out.println("optionalStudentIdes.isEmpty() = " + optionalStudentIdes.isEmpty());
-        System.out.println("optionalStudentIdes.get().isEmpty() = " + optionalStudentIdes.get().isEmpty());
         if (optionalStudentIdes.isPresent()) {
             optionalStudentIdes.get().forEach(studentId -> {
                 System.out.println("studentId = " + studentId);
@@ -83,6 +81,19 @@ public class TeacherService {
             });
         } else {
             System.out.println("No students found for subject ID: " + teacherCr.getSubjectId());
+        }
+        Optional<List<UUID>> adminIdesByRole = userRepository.findAdminIdesByRole(UserRole.ADMIN);
+        if (adminIdesByRole.isPresent()) {
+            adminIdesByRole.get().forEach(adminId -> {
+                try {
+                    firebaseService.createChat(
+                            new ChatCR(String.valueOf(adminId), String.valueOf(savedUser.getId())),
+                            String.valueOf(UUID.randomUUID())
+                    );
+                } catch (ExecutionException | InterruptedException e) {
+                    throw new RuntimeException("Failed to create chat for admin ID: " , e);
+                }
+            });
         }
         return ResponseEntity.status(HttpStatus.CREATED).body("Successfully created!");
     }
