@@ -66,7 +66,4 @@ public interface AttendanceRepository extends JpaRepository<AttendanceEntity, UU
     Optional<List<AttendanceEntity>> findAllByTeacherId(UUID teacherId);
 
     void deleteALlByLessonId(UUID lesson_id);
-
-    @Query("SELECT a FROM attendance a WHERE a.lesson.id = :lessonId ORDER BY a.score DESC")
-    List<AttendanceEntity> findTop3ByLessonId(UUID lessonId);
 }
