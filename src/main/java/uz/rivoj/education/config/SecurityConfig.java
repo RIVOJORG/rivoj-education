@@ -43,7 +43,8 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/swagger-ui.html",
             "/api/v1/student/sendPhoneNumber{phoneNumber}",
-            "/api/v1/student/checkVerification"
+            "/api/v1/student/checkVerification",
+            "api/v1/mee"
 
     };
 
