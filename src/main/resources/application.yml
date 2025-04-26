@@ -1,5 +1,6 @@
 server:
   port: 8080
+  forward-headers-strategy: native
   ssl:
     key-store-type: PKCS12
     key-store: /app/keystore.p12
@@ -14,7 +15,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:1}
-    url: jdbc:postgresql://${DB_IP:db}:5432/${DB_NAME:rivoj_education_db}
+    url: jdbc:postgresql://${DB_IP:localhost}:5432/${DB_NAME:rivoj_education_db}
   jpa:
     open-in-view: false
     hibernate:
@@ -24,6 +25,9 @@ spring:
       hibernate:
         format_sql: false
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  main:
+    allow-bean-definition-overriding: true
   data:
     redis:
       host: 127.0.0.1
