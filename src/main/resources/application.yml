@@ -12,9 +12,9 @@ spring:
       max-request-size: 1000MB
   datasource:
     driver-class-name: org.postgresql.Driver
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:1}
-    url: jdbc:postgresql://${DB_IP:db}:5432/${DB_NAME:rivoj_education_db}
+    username: rivojuser
+    password: rivojpassword
+    url: jdbc:postgresql://db:5432/rivojdb
   jpa:
     open-in-view: false
     hibernate:
