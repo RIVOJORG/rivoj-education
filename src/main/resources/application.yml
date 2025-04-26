@@ -15,7 +15,6 @@ spring:
     username: rivojuser
     password: rivojpassword
     url: jdbc:postgresql://db:5432/rivojdb
-    
   jpa:
     open-in-view: false
     hibernate:
