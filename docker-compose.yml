@@ -1,9 +1,24 @@
 version: '3.8'
+
 services:
+  db:
+    image: postgres:16
+    container_name: rivoj-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1
+      POSTGRES_DB: rivoj_education_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
   app:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: rivoj-app
     image: rivoj-education-app
     ports:
       - "8080:8080"
@@ -11,20 +26,12 @@ services:
       DB_USERNAME: postgres
       DB_PASSWORD: 1
       DB_NAME: rivoj_education_db
+      DB_IP: db
     depends_on:
       - db
     volumes:
       - ./fireBaseKeySDK.json:/app/fireBaseKeySDK.json
       - ./keystore.p12:/app/keystore.p12
-  db:
-    image: postgres
-    ports:
-      - "5433:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 1
-      POSTGRES_DB: rivoj_education_db
-    volumes:
-      - pg_data:/var/lib/postgresql/data
+
 volumes:
   pg_data:
