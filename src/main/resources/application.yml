@@ -25,7 +25,10 @@ spring:
       hibernate:
         format_sql: false
         dialect: org.hibernate.dialect.PostgreSQLDialect
-
+  data:
+    redis:
+      host: rivoj-redis
+      port: 6379
   main:
     allow-bean-definition-overriding: true
 
