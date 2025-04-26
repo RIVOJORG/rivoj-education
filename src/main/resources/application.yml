@@ -16,6 +16,9 @@ spring:
     password: rivojpassword
     url: jdbc:postgresql://db:5432/rivojdb
   jpa:
+    hibernate:
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+  jpa:
     open-in-view: false
     hibernate:
       ddl-auto: update
