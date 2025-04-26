@@ -15,9 +15,7 @@ spring:
     username: rivojuser
     password: rivojpassword
     url: jdbc:postgresql://db:5432/rivojdb
-  jpa:
-    hibernate:
-      dialect: org.hibernate.dialect.PostgreSQLDialect
+    
   jpa:
     open-in-view: false
     hibernate:
@@ -26,6 +24,7 @@ spring:
     properties:
       hibernate:
         format_sql: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   data:
     redis:
       host: 127.0.0.1
