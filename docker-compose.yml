@@ -15,7 +15,7 @@ services:
     depends_on:
       - db
     volumes:
-      - ./fireBaseKeySDK.json:/app/fireBaseKeySDK.json
+      - ./src/main/resources/fireBaseKeySDK.json:/app/fireBaseKeySDK.json
       - ./keystore.p12:/app/keystore.p12
   db:
     image: postgres
