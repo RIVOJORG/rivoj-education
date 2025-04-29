@@ -1,13 +1,4 @@
 {
   "type": "service_account",
-  "project_id": "rivoj-edu",
-  "private_key_id": "75600c6187b0752bcb9ccf9fc59b1b83e52ab9c4",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC+3FSde4xr6D6S\npClpQEA+2F129UFSVYQs5xEUV9UMgsXRws6NoQI2FwFuB+DAxo3z27iblRMeL7h9\n02bLNmgKwDfUD3984sRujaCOOHRoCraA8I5Rqdx+mD2Vp+aDhKU3S3Eadkqn6hdL\n1zS+7U5p9bR6whUjTeRFVgytAE+6ALhXJqbPCE+cqkuwEEDO0FC//99rIPCq/VEh\nvRESQ8PN94AFHSMOCorMPmhVFvOoQZiUfzX4b6O0t7uxQo1uGX836Go+Sjn5LHi+\n9XxCAw/Y1KSCCU7WmTI70aT/VdICrqAIRvcu+pD01i8KIb+YJR+lHjkbCuIZ+XWR\nd5ffaUp5AgMBAAECggEARXXUSZgMK71TAHVEKOzcNMLziPaK9lbvCpRxb9DjVXFG\nYyedmoetUVggChZN4nqgcM5XKjAfzA2b/BbywyQiyz7XUpLtV9sDmCRs+TVsj+zO\nLLDfarMB7wSi7RM03kppAm2vVO0WEHQuVEiXBqFAt2lXbJGztayEVgOSC2ggm9VE\nHpzn89XtsA13uzsl6LDjjFsVKL2ldk2g/YBf882hM9Nbnd8D/0EZ2QKf7g71RyuQ\nXsIYa3f0cDfuZFEuntQV3TOt+hSFe1PUj2fv2QyJW0DhXyiw4TXTdh7oJ7zOHaln\nQ0XfOQk0M/QbPr1N+E+hN/fR88eCHJPED1X1q8eB/QKBgQDpi7/3OSZyvx8niLyW\nGPMGZ2XRUgbUDOlbK8oQop2RJQnATp5QSOyc4KXJ2HXEE76GsRos8CfkLORZ/WWG\nbqotMMOEW3UWI4u8XSlR5eCaDxhbMkf0sXhfDk1JRgDzGHXYF/HimUlAjDQIOHH0\nqGwSIzHjuFtoQXpq4pJiBDndZwKBgQDRNfjIEida8yBj3qcmImbYicvlHsVyAF9h\na9GFCI9xd131955ItyFfqO/yJUXBh7r2jszuhpizIboAZwy6D7WuNpGaW7+lWBk6\nqCNkbV5AQKhvDKZmgAge0OJ5xTE3X7E1oDpvXjUmEGx+ZM1a+IHKwuxz1FXgIhXI\nvJdBG4TNHwKBgQC6tM+F7DlxmJtmdqkVceKvpu++FM6CrcPM8Ef9XpOLGsod5Hwq\nAPKwQ+QmZpdXZtV1RpZ/gIrTnpP74VlNzKDdudNEt/z18vreXrgO0jDp2NGG7r6Z\nv1tU2tEsl/tgXJixZgspNZRbNvrN65omlpK3OU3EGHly8o3Ub0fJdklwVwKBgQCN\njd4pyRa11CFLUaB5DffWdc3u1hY0X4opyaD3SWZ9GI4L2iJQAxDiv9SyW4PKQYNA\nRjjk/08cjSpkEVWsIusD2EpGTePrBSP060UfM1z9ToJouP9yBRj5eM50I/d8BxRJ\nO4OuTOjbO2udTakg71oqjh8c9EOypn1k2C3jULJXcwKBgH/ye/oz00vGmagU1p5t\nUccfSOiX0aKO0c9KU8bKeyMY6Gh7p8edb2pN28VJu+5SwzoIwQHniHc509t4T6oX\nIu70aIa4P4LDy6wrCFU1R2RVEzDoYNE61FLc12nYSeeVDckIjRka8qnhVrgkIbYr\nIIXHyp0/QpJsFUhM+fGKwpa2\n-----END PRIVATE KEY-----\n",
-  "client_email": "firebase-adminsdk-fbsvc@rivoj-edu.iam.gserviceaccount.com",
-  "client_id": "114982547424673560561",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40rivoj-edu.iam.gserviceaccount.com",
   "universe_domain": "googleapis.com"
 }
