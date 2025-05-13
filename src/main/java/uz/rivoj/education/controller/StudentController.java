@@ -39,8 +39,7 @@ public class StudentController {
     public ResponseEntity<?> uploadHomework(
             Principal principal,
             @ModelAttribute AttendanceCR attendanceCR,
-            @RequestPart List<MultipartFile> files
-    ){
+            @RequestPart List<MultipartFile> files){
         try {
             String result = studentService.uploadHomework(attendanceCR, UUID.fromString(principal.getName()), files);
             return ResponseEntity.ok(result);
@@ -52,8 +51,7 @@ public class StudentController {
     @PutMapping(value = "/update-profile")
     public ResponseEntity<StudentResponse> updateProfile(
             @ModelAttribute StudentUpdate studentUpdate,
-            Principal principal
-    ){
+            Principal principal){
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(studentService.updateProfile(studentUpdate, UUID.fromString(principal.getName())));
     }
@@ -63,7 +61,6 @@ public class StudentController {
     public  ResponseEntity<AttendanceResponse>  getHomeworkByLessonId(Principal principal,@RequestParam UUID lessonId){
         return ResponseEntity.ok(attendanceService.getAttendanceByLessonId(UUID.fromString(principal.getName()),lessonId));
     }
-
 
     @GetMapping("/getProgressByModule")
     public ResponseEntity<List<ProgressResponse>> getProgressByModule(Principal principal){

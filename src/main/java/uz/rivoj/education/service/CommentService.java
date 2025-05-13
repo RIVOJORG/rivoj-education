@@ -56,8 +56,6 @@ public class CommentService {
         return "Successfully deleted";
     }
 
-
-
     public LessonResponse getLessonWithComments(UUID lessonId) {
         LessonEntity lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new DataNotFoundException("Lesson not found"));

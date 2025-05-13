@@ -34,8 +34,7 @@ public class TeacherController {
 
     @PutMapping(value = "/update_profile")
     public ResponseEntity<TeacherResponse> updateProfile(
-            @ModelAttribute TeacherUpdate teacherUpdate,
-            Principal principal){
+            @ModelAttribute TeacherUpdate teacherUpdate, Principal principal){
         return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.updateProfile(teacherUpdate, UUID.fromString(principal.getName())));
     }
 

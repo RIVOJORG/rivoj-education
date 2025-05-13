@@ -4,7 +4,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-
 import uz.rivoj.education.entity.ModuleEntity;
 import uz.rivoj.education.entity.StudentInfo;
 import uz.rivoj.education.entity.TeacherInfo;
@@ -17,7 +16,6 @@ import uz.rivoj.education.repository.ModuleRepository;
 import uz.rivoj.education.repository.StudentInfoRepository;
 import uz.rivoj.education.repository.SubjectRepository;
 import uz.rivoj.education.repository.TeacherInfoRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,8 +33,8 @@ public class SubjectService {
 
 
     public SubjectResponse create(SubjectCR createRequest) {
-        if (subjectRepository.existsByTitle(createRequest.getTitle())){
-            throw new DataAlreadyExistsException("Subject already exists with this title: " + createRequest.getTitle());}
+        if (subjectRepository.existsByTitle(createRequest.getTitle()))
+            throw new DataAlreadyExistsException("Subject already exists with this title: " + createRequest.getTitle());
         SubjectEntity subjectEntity = modelMapper.map(createRequest, SubjectEntity.class);
         subjectRepository.save(subjectEntity);
         for (int i = 1; i <= createRequest.getModuleCount(); i++) {

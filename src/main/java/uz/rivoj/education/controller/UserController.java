@@ -24,12 +24,9 @@ public class UserController {
     private final CommentService commentService;
     private final UserService userService;
 
-
     @PostMapping("/create-comment")
     public ResponseEntity<CommentResponse> createComment(
-            @RequestBody CommentCR createRequest,
-            Principal principal
-    ){
+            @RequestBody CommentCR createRequest, Principal principal){
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.create(createRequest, UUID.fromString(principal.getName())));
     }
 
@@ -37,7 +34,6 @@ public class UserController {
     public ResponseEntity<?> getUserDetails(Principal principal){
         return ResponseEntity.ok(userService.getUserDetails(UUID.fromString(principal.getName())));
     }
-
 
     @GetMapping("/get-comments")
     public  ResponseEntity<Map<String, Object>>  getCommentsOfLesson(
@@ -51,18 +47,14 @@ public class UserController {
     public void editComment(Principal principal,@RequestParam UUID commentId, @RequestParam String text){
         commentService.editComment(UUID.fromString(principal.getName()), commentId,text);
     }
+
     @DeleteMapping("/delete-comment")
     public void editComment(Principal principal,@RequestParam UUID commentId){
         commentService.deleteComment(UUID.fromString(principal.getName()), commentId);
     }
 
-    @PutMapping(value = "/update-profile-picture",
-            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
-    )
-    public ResponseEntity<String> updateProfilePicture(
-            Principal principal,
-            @RequestParam("picture") MultipartFile picture
-    ) {
+    @PutMapping(value = "/update-profile-picture", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<String> updateProfilePicture(Principal principal, @RequestParam("picture") MultipartFile picture) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userService.updateProfilePicture(picture, UUID.fromString(principal.getName())));
     }

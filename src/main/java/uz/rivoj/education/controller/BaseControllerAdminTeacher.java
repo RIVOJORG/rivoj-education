@@ -15,7 +15,6 @@ import uz.rivoj.education.dto.update.LessonUpdateDTO;
 import uz.rivoj.education.entity.UserRole;
 import uz.rivoj.education.service.*;
 import uz.rivoj.education.service.firebase.FirebaseService;
-
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -33,8 +32,6 @@ public class BaseControllerAdminTeacher {
     private final ModuleService moduleService;
     private final UserService userService;
 
-
-
     @PostMapping(value = "/create-lesson",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<LessonResponse> createLesson(
             @RequestParam("title") String title,
@@ -43,8 +40,7 @@ public class BaseControllerAdminTeacher {
             @RequestParam("description") String description,
             @RequestParam("additionalLinks") List<String> additionalLinks,
             @RequestParam("coverOfLesson") MultipartFile coverOfLesson,
-            @RequestParam("lessonVideo") MultipartFile lessonVideo
-    ) {
+            @RequestParam("lessonVideo") MultipartFile lessonVideo) {
         return ResponseEntity.status(HttpStatus.CREATED).body(lessonService.create(new LessonCR(title,teacherId,moduleId,description,additionalLinks,coverOfLesson,lessonVideo)));
     }
 
@@ -58,9 +54,7 @@ public class BaseControllerAdminTeacher {
             @RequestParam(value = "description", required = false) String description,
             @RequestParam(value = "additionalLinks", required = false) List<String> additionalLinks,
             @RequestParam(value = "coverOfLesson",required = false) MultipartFile coverOfLesson,
-            @RequestParam(value = "lessonVideo",required = false) MultipartFile lessonVideo
-
-    ) {
+            @RequestParam(value = "lessonVideo",required = false) MultipartFile lessonVideo) {
         return ResponseEntity.status(HttpStatus.OK).body(lessonService.updateLesson(new LessonUpdateDTO(id,teacherId,title,description,additionalLinks,coverOfLesson,lessonVideo)));
     }
 
@@ -99,6 +93,7 @@ public class BaseControllerAdminTeacher {
     public ResponseEntity<String> deleteModule(@PathVariable UUID moduleId){
         return ResponseEntity.status(200).body(moduleService.delete(moduleId));
     }
+
     @DeleteMapping("/delete-lesson{lessonId}")
     public ResponseEntity<String> deleteLesson(@PathVariable UUID lessonId){
         return ResponseEntity.status(200).body(lessonService.delete(lessonId));
@@ -123,8 +118,7 @@ public class BaseControllerAdminTeacher {
     }
     @PutMapping("/change-ModuleNumber/{moduleId}/{moduleNumber}")
     public ResponseEntity<String> changeModuleNumber(
-            @PathVariable UUID moduleId,
-            @PathVariable Integer moduleNumber) {
+            @PathVariable UUID moduleId, @PathVariable Integer moduleNumber) {
         return ResponseEntity.status(HttpStatus.OK).body(moduleService.changeModuleNumber(moduleId,moduleNumber));
     }
 
@@ -134,7 +128,6 @@ public class BaseControllerAdminTeacher {
             @RequestParam(required = false) UUID subjectId,
             @RequestParam(defaultValue = "1") int pageNumber,
             @RequestParam(defaultValue = "20") int pageSize) {
-
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
         return ResponseEntity.ok(userService.getUsersByRoleAndSubjectId(role, subjectId, pageable));
     }
@@ -142,7 +135,4 @@ public class BaseControllerAdminTeacher {
     public ResponseEntity<String> sendNotification(@RequestBody NotificationDto notificationDto) {
         return firebaseService.sendNotification(notificationDto);
     }
-
-
-
 }

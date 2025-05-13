@@ -61,9 +61,7 @@ public class NotificationService {
     public List<NotificationResponse> getMyNotifications(UUID id){
         List<NotificationResponse> notificationsById = new ArrayList<>();
         Optional<List<NotificationEntity>> notificationList = notificationRepository.findAllByUserId(id);
-        if(notificationList.isEmpty()){
-            throw new DataNotFoundException("notification not found");
-        }
+        if(notificationList.isEmpty()) throw new DataNotFoundException("notification not found");
         for (NotificationEntity e :notificationList.get() ){
             notificationsById.add(modelMapper.map(e, NotificationResponse.class));
         }

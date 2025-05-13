@@ -31,10 +31,12 @@ public class AdminController {
     public ResponseEntity<String> addStudent(@RequestBody StudentCR studentCR){
         return studentService.addStudent(studentCR);
     }
+
     @PostMapping("/add-teacher")
     public ResponseEntity<String> addTeacher(@RequestBody TeacherCR teacherInfo){
         return teacherService.createTeacher(teacherInfo);
     }
+
     @PostMapping("/add-admin")
     public ResponseEntity<String> addAdmin(@RequestBody UserCR adminDto) {
         return userService.addAdmin(adminDto);
@@ -52,14 +54,12 @@ public class AdminController {
 
     @PutMapping("/change-phoneNumber/{userId}/{newPhoneNumber}")
     public ResponseEntity<String> changePhoneNumber(
-            @PathVariable UUID userId,
-            @PathVariable String newPhoneNumber) {
+            @PathVariable UUID userId, @PathVariable String newPhoneNumber) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.changePhoneNumber(userId, newPhoneNumber));
     }
     @PutMapping("/change-password/{userId}/{newPassword}")
     public ResponseEntity<String> changePassword(
-            @PathVariable UUID userId,
-            @PathVariable String newPassword) {
+            @PathVariable UUID userId, @PathVariable String newPassword) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.changePassword(userId,newPassword));
     }
 
@@ -88,7 +88,6 @@ public class AdminController {
         return ResponseEntity.status(204).body(userService.deleteUser(userId));
     }
 
-
     @GetMapping("/getTeachers")
     public ResponseEntity<List<TeacherDTO>> getTeachers(){
         return ResponseEntity.status(200).body(userService.getTeachers());
@@ -103,9 +102,7 @@ public class AdminController {
 
     @PutMapping(value = "/update-profile")
     public ResponseEntity<String > updateProfile(
-            @ModelAttribute AdminCR adminUpdate,
-            Principal principal
-    ){
+            @ModelAttribute AdminCR adminUpdate, Principal principal){
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userService.updateProfile(adminUpdate, UUID.fromString(principal.getName())));
     }
