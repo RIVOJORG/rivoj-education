@@ -14,10 +14,8 @@ import uz.rivoj.education.entity.*;
 import uz.rivoj.education.exception.DataAlreadyExistsException;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.*;
-
 import java.time.LocalDateTime;
 import java.util.*;
-
 import static uz.rivoj.education.entity.enums.AttendanceStatus.*;
 
 @Service
@@ -28,8 +26,6 @@ public class AttendanceService {
     private final StudentInfoRepository studentRepository;
     private final TeacherInfoRepository teacherInfoRepository;
     private final ModelMapper modelMapper;
-
-
 
     @Transactional
     public AttendanceSpecialResponse findByAttendanceById(UUID attendanceId) {
@@ -55,9 +51,6 @@ public class AttendanceService {
     }
 
 
-
-
-
     @Version
     @SneakyThrows
     public String checkAttendance(CheckAttendanceDTO checkAttendanceDTO, UUID teacherId) {
@@ -67,20 +60,16 @@ public class AttendanceService {
         AttendanceEntity attendanceEntity = attendanceRepository.findById(checkAttendanceDTO.getAttendanceId())
                 .orElseThrow(() -> new DataNotFoundException("Attendance not found with this id: " + checkAttendanceDTO.getAttendanceId()));
 
-
-        if (attendanceEntity.getStatus() == CHECKED) {
+        if (attendanceEntity.getStatus() == CHECKED)
             throw new DataAlreadyExistsException("Attendance has already been checked");
-        }
 
         StudentInfo studentInfo = attendanceEntity.getStudent();
-        if (studentInfo == null) {
+        if (studentInfo == null)
             throw new DataNotFoundException("Student not found for this attendance");
-        }
 
         int currentCoin = studentInfo.getCoin() != null ? studentInfo.getCoin() : 0;
         int totalScore = studentInfo.getTotalScore() != null ? studentInfo.getTotalScore() : 0;
         int score = checkAttendanceDTO.getScore();
-
 
         attendanceEntity.setStatus(CHECKED);
         attendanceEntity.setScore(score);
@@ -98,7 +87,6 @@ public class AttendanceService {
             currentCoin += coinBonus;
             totalScore += score;
         }
-
 
         studentInfo.setCoin(currentCoin);
         studentInfo.setTotalScore(totalScore);
@@ -119,12 +107,10 @@ public class AttendanceService {
         AttendanceResponse attendanceResponse = modelMapper.map(attendanceEntity, AttendanceResponse.class);
         attendanceResponse.setLesson_id(attendanceEntity.getLesson().getId());
         attendanceResponse.setStudent_id(attendanceEntity.getStudent().getId());
-        if(attendanceEntity.getTeacher() != null){
-            attendanceResponse.setTeacher_id(attendanceEntity.getTeacher().getId());
-        }
+        if(attendanceEntity.getTeacher() != null) attendanceResponse.setTeacher_id(attendanceEntity.getTeacher().getId());
+
         return attendanceResponse;
     }
-
 
     public List<UncheckedAttendanceResponse> getUncheckedAttendances(UUID teacherId) {
         TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(teacherId)
@@ -145,7 +131,5 @@ public class AttendanceService {
             attendanceResponseList.add(attendanceResponse);
         }));
         return attendanceResponseList;
-
-
     }
 }

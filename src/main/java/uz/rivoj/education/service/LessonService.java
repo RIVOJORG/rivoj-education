@@ -38,14 +38,13 @@ public class LessonService {
                 .orElseThrow(() -> new DataNotFoundException("Module not found with this id " + createRequest.getModuleId()));
         TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(createRequest.getTeacherId())
                 .orElseThrow(() -> new DataNotFoundException("Teacher not found with this id " + createRequest.getTeacherId()));
-        if (lessonRepository.existsByModuleAndTitle(moduleEntity, createRequest.getTitle())) {
+        if (lessonRepository.existsByModuleAndTitle(moduleEntity, createRequest.getTitle()))
             throw new DataAlreadyExistsException("Lesson already exists with this title : " + createRequest.getTitle() + " in module id : " + createRequest.getModuleId());
-        }
+
         Optional<List<LessonEntity>> lessonEntities = lessonRepository.findAllByModule_IdOrderByNumberAsc(moduleEntity.getId());
         LessonEntity lesson = modelMapper.map(createRequest, LessonEntity.class);
-        if (lessonEntities.isEmpty()) {
-            lesson.setNumber(1);
-        }else {
+        if (lessonEntities.isEmpty()) lesson.setNumber(1);
+        else {
             List<LessonEntity> lessonEntityList = lessonEntities.get();
             int maxNumber = lessonEntityList.stream()
                     .mapToInt(LessonEntity::getNumber)
@@ -145,9 +144,9 @@ public class LessonService {
 
     public List<CommentResponse> getCommentsByLessonId(UUID lessonId) {
         Optional<List<CommentEntity>> comments = commentRepository.findByLessonId(lessonId);
-        if (comments.isEmpty()) {
+        if (comments.isEmpty())
             throw new DataNotFoundException("Comment not found with this id: " + lessonId);
-        }
+
         return comments.get().stream()
                 .map(this::convertToCommentResponse)
                 .collect(Collectors.toList());
@@ -187,18 +186,11 @@ public class LessonService {
             String fileName = "coverOfLesson"+lesson.getNumber();
             lesson.setCover(uploadService.uploadFile(updateDTO.getCoverOfLesson(),fileName));
         }
-        if(updateDTO.getTitle() != null){
-            lesson.setTitle(updateDTO.getTitle());
-        }
-        if(updateDTO.getAdditionalLinks() != null){
-            lesson.setAdditionalLinks(updateDTO.getAdditionalLinks());
-        }
-        if(updateDTO.getDescription() != null){
-            lesson.setDescription(updateDTO.getDescription());
-        }
-        if(updateDTO.getTeacherId() != null){
-            lesson.setTeacherInfo(teacherInfoRepository.findByTeacher_Id(updateDTO.getTeacherId()).get());
-        }
+        if(updateDTO.getTitle() != null) lesson.setTitle(updateDTO.getTitle());
+
+        if(updateDTO.getAdditionalLinks() != null) lesson.setAdditionalLinks(updateDTO.getAdditionalLinks());
+        if(updateDTO.getDescription() != null) lesson.setDescription(updateDTO.getDescription());
+        if(updateDTO.getTeacherId() != null) lesson.setTeacherInfo(teacherInfoRepository.findByTeacher_Id(updateDTO.getTeacherId()).get());
         lessonRepository.save(lesson);
         return "Successfully updated!";
 
@@ -207,9 +199,9 @@ public class LessonService {
     public List<SpecialLessonResponse> getLessonsByModule(UUID moduleId) {
         ModuleEntity moduleEntity = moduleRepository.findById(moduleId).orElseThrow(() -> new DataNotFoundException("Module not found with this id: " + moduleId));
         Optional<List<LessonEntity>> lessonEntityList = lessonRepository.findAllByModule_IdOrderByNumberAsc(moduleEntity.getId());
-        if(lessonEntityList.isEmpty()){
+        if(lessonEntityList.isEmpty())
             throw new DataNotFoundException("Lessons not found with this id: " + moduleId);
-        }
+
         List<SpecialLessonResponse> list = new ArrayList<>();
         for (LessonEntity lessonEntity : lessonEntityList.get()) {
             SpecialLessonResponse response = modelMapper.map(lessonEntity, SpecialLessonResponse.class);

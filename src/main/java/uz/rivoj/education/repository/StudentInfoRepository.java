@@ -21,7 +21,6 @@ public interface StudentInfoRepository extends JpaRepository<StudentInfo, UUID> 
     Optional<List<StudentInfo>> findBySubject_Id(UUID subjectId);
     Optional<List<StudentInfo>> findAllBySubject_idOrderByTotalScoreDesc(UUID subjectId);
 
-
     @Query("SELECT si FROM student_info si JOIN FETCH si.student student WHERE si.subject.id = :subjectId AND " +
             "(COALESCE(:searchTerm, '') = '' OR " +
             "LOWER(student.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +

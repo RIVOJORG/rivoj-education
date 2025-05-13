@@ -23,13 +23,11 @@ import uz.rivoj.education.repository.*;
 import org.springframework.data.domain.Pageable;
 import uz.rivoj.education.service.firebase.FirebaseService;
 import uz.rivoj.education.service.jwt.JwtUtil;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
-
 import static uz.rivoj.education.entity.enums.AttendanceStatus.CHECKED;
 import static uz.rivoj.education.entity.enums.AttendanceStatus.UNCHECKED;
 
@@ -53,9 +51,8 @@ public class StudentService {
 
 
     public ResponseEntity<String> addStudent(StudentCR studentCR) {
-        if (userRepository.findByPhoneNumber(studentCR.getPhoneNumber()).isPresent()) {
-            throw new DataAlreadyExistsException("Student already exists with this phone number: " + studentCR.getPhoneNumber());
-        }
+        if (userRepository.findByPhoneNumber(studentCR.getPhoneNumber()).isPresent()) throw new DataAlreadyExistsException("Student already exists with this phone number: " + studentCR.getPhoneNumber());
+
         SubjectEntity subject = subjectRepository.findById(studentCR.getSubjectId())
                 .orElseThrow(() -> new DataNotFoundException("Subject not found with this id: " + studentCR.getSubjectId()));
 
@@ -108,15 +105,9 @@ public class StudentService {
                 .orElseThrow(() -> new DataNotFoundException("Student not found!"));
         UserEntity userEntity = userRepository.findById(studentId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found!"));
-        if (studentUpdate.getBirthday() != null) {
-            studentInfo.getStudent().setBirthday(studentUpdate.getBirthday());
-        }
-        if (studentUpdate.getSurname() != null) {
-            userEntity.setSurname(studentUpdate.getSurname());
-        }
-        if (studentUpdate.getName() != null) {
-            userEntity.setName(studentUpdate.getName());
-        }
+        if (studentUpdate.getBirthday() != null) studentInfo.getStudent().setBirthday(studentUpdate.getBirthday());
+        if (studentUpdate.getSurname() != null) userEntity.setSurname(studentUpdate.getSurname());
+        if (studentUpdate.getName() != null) userEntity.setName(studentUpdate.getName());
         UserEntity save = userRepository.save(userEntity);
         studentInfoRepository.save(studentInfo);
         StudentResponse response = modelMapper.map(userEntity, StudentResponse.class);
@@ -126,9 +117,6 @@ public class StudentService {
         firebaseService.updateUser(new UserDetailsDTO(String.valueOf(save.getId()),save.getPhoneNumber(),save.getAvatar(),save.getName(),save.getSurname(),String.valueOf(save.getRole())));
         return response;
     }
-
-
-
 
     public List<StudentResponse> getAllMyStudent(int page, int size, UUID teacherId) {
         TeacherInfo teacherInfo = teacherInfoRepository.findByTeacher_Id(teacherId)
@@ -289,11 +277,8 @@ public Map<String, Object> getStatistics(UUID moduleId, String searchTerm, int p
             .orElseThrow(() -> new DataNotFoundException("Module not found!"));
     SubjectEntity subjectEntity = subjectRepository.findByModules_Id(moduleId)
             .orElseThrow(() -> new DataNotFoundException("Subject not found!"));
-    if(searchTerm != null){
-        studentInfoPage = studentInfoRepository.findBySubject_IdWithSearchTerm(subjectEntity.getId(), searchTerm, pageable);
-    }else {
-        studentInfoPage = studentInfoRepository.findBySubject_Id(subjectEntity.getId(),pageable);
-    }
+    if(searchTerm != null) studentInfoPage = studentInfoRepository.findBySubject_IdWithSearchTerm(subjectEntity.getId(), searchTerm, pageable);
+    else studentInfoPage = studentInfoRepository.findBySubject_Id(subjectEntity.getId(),pageable);
 
     List<StudentStatisticsDTO> studentStatisticsDTOList = getStudentStatisticsDTOS(studentInfoPage.getContent(),moduleId);
 
@@ -346,11 +331,8 @@ public Map<String, Object> getStatistics(UUID moduleId, String searchTerm, int p
                 .orElseThrow(() -> new DataNotFoundException("Module not found!"));
         SubjectEntity subjectEntity = subjectRepository.findByModules_Id(moduleId)
                 .orElseThrow(() -> new DataNotFoundException("Subject not found!"));
-        if(searchTerm != null){
-            studentInfoPage = studentInfoRepository.findBySubject_IdWithSearchTerm(subjectEntity.getId(), searchTerm, pageable);
-        }else {
-            studentInfoPage = studentInfoRepository.findBySubject_Id(subjectEntity.getId(),pageable);
-        }
+        if(searchTerm != null) studentInfoPage = studentInfoRepository.findBySubject_IdWithSearchTerm(subjectEntity.getId(), searchTerm, pageable);
+        else studentInfoPage = studentInfoRepository.findBySubject_Id(subjectEntity.getId(),pageable);
 
         List<StudentStatisticsDTO2> studentStatisticsDTOList = new ArrayList<>();
 

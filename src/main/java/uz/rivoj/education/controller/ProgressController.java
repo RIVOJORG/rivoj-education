@@ -30,7 +30,6 @@ public class ProgressController {
         return progressService.getTop10StudentsBySubject(UUID.fromString(principal.getName()));
     }
 
-
     @PostMapping("/create-discount")
     public DiscountResponse createDiscount(@RequestBody DiscountCR discountCR, Principal principal){
         return discountService.create(discountCR, UUID.fromString(principal.getName()));

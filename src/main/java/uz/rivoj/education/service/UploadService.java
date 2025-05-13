@@ -29,11 +29,8 @@ public class UploadService {
 
         Tika tika = new Tika();
         String contentType = tika.detect(file.getInputStream());
-        if (contentType == null || contentType.equals("application/octet-stream")) {
-            contentType = "bin";
-        } else {
-            contentType = contentType.split("/")[1];
-        }
+        if (contentType == null || contentType.equals("application/octet-stream")) contentType = "bin";
+        else contentType = contentType.split("/")[1];
 
         String uniquePath = absFilePath + UUID.randomUUID() + "_" + fileName + "." + contentType;
 

@@ -42,9 +42,7 @@ public class TeacherService {
     @Transactional
     public ResponseEntity<String> createTeacher(TeacherCR teacherCr) {
         Optional<UserEntity> userByPhoneNumber = userRepository.findByPhoneNumber(teacherCr.getPhoneNumber());
-        if(userByPhoneNumber.isPresent()){
-            throw new DataAlreadyExistsException("Phone number already registered!");
-        }
+        if (userByPhoneNumber.isPresent()) throw new DataAlreadyExistsException("Phone number already registered!");
         SubjectEntity subject = subjectRepository.findById(teacherCr.getSubjectId())
                 .orElseThrow(() -> new DataNotFoundException("Subject not found with this title: " + teacherCr.getSubjectId()));
         UserEntity user = modelMapper.map(teacherCr, UserEntity.class);
@@ -105,17 +103,12 @@ public class TeacherService {
                 .orElseThrow(() -> new DataNotFoundException("Teacher not found!"));
         UserEntity userEntity = userRepository.findById(teacherId)
                 .orElseThrow(() -> new DataNotFoundException("Teacher not found!"));
-        if(teacherUpdate.getBirthday() != null){
-            userEntity.setBirthday(teacherUpdate.getBirthday());}
-        if(teacherUpdate.getSurname() != null){
-            userEntity.setSurname(teacherUpdate.getSurname());}
-        if(teacherUpdate.getPhoneNumber() != null){
-            userEntity.setPhoneNumber(teacherUpdate.getPhoneNumber());}
-        if(teacherUpdate.getName() != null){
-            userEntity.setName(teacherUpdate.getName());}
-        if(teacherUpdate.getPassword() != null){
-            userEntity.setPassword(passwordEncoder.encode(teacherUpdate.getPassword()));
-        }
+        if (teacherUpdate.getBirthday() != null) userEntity.setBirthday(teacherUpdate.getBirthday());
+        if (teacherUpdate.getSurname() != null) userEntity.setSurname(teacherUpdate.getSurname());
+        if (teacherUpdate.getPhoneNumber() != null) userEntity.setPhoneNumber(teacherUpdate.getPhoneNumber());
+        if (teacherUpdate.getName() != null) userEntity.setName(teacherUpdate.getName());
+        if (teacherUpdate.getPassword() != null) userEntity.setPassword(passwordEncoder.encode(teacherUpdate.getPassword()));
+
         UserEntity save = userRepository.save(userEntity);
         teacherInfoRepository.save(teacherInfo);
         TeacherResponse response = modelMapper.map(userEntity, TeacherResponse.class);

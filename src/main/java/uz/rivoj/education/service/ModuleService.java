@@ -100,9 +100,7 @@ public class ModuleService {
                 }
             }
         });
-        if(!responseList.isEmpty()){
-            return responseList;
-        }
+        if(!responseList.isEmpty()) return responseList;
         throw  new DataNotFoundException("There is not any accessible lesson for this user!");
     }
 

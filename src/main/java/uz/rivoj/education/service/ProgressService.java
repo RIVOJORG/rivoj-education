@@ -103,9 +103,7 @@ public class ProgressService {
                 break;
             }
         }
-        if (userOrder == -1) {
-            throw new DataNotFoundException("User not found in the ranking");
-        }
+        if (userOrder == -1) throw new DataNotFoundException("User not found in the ranking");
 
         int userRank = userOrder + 1;
 
@@ -113,9 +111,7 @@ public class ProgressService {
                 .limit(10)
                 .collect(Collectors.toList());
 
-        if (userRank > 10) {
-            topStudents.add(studentInfo);
-        }
+        if (userRank > 10) topStudents.add(studentInfo);
 
         RankingPageResponse rankingPageResponse = mapToBestStudentResponse(topStudents);
         rankingPageResponse.setUserOrder(userOrder);
@@ -139,16 +135,13 @@ public class ProgressService {
                 break;
             }
         }
-        if (userOrder == -1) {
-            throw new DataNotFoundException("User not found in the ranking");
-        }
+        if (userOrder == -1) throw new DataNotFoundException("User not found in the ranking");
 
         int userRank = userOrder + 1;
         List<StudentInfo> topStudents = allRankedStudents.stream().limit(10).collect(Collectors.toList());
 
-        if (userRank > 10) {
-            topStudents.add(studentInfo);
-        }
+        if (userRank > 10) topStudents.add(studentInfo);
+
         RankingPageResponse rankingPageResponse = mapToBestStudentResponse(topStudents);
         rankingPageResponse.setUserOrder(userOrder);
         rankingPageResponse.setUserRank(userRank);
@@ -263,9 +256,7 @@ public class ProgressService {
     private int countCompletedLessons(List<LessonEntity> lessonsForModule, StudentInfo studentInfo) {
         int count = 0;
         for (LessonEntity lesson : lessonsForModule) {
-            if (lesson.getNumber() <= studentInfo.getLesson().getNumber()) {
-                count++;
-            }
+            if (lesson.getNumber() <= studentInfo.getLesson().getNumber()) count++;
         }
         return count;
     }

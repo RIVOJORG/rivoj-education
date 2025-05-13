@@ -22,9 +22,6 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
 
     Optional<UserEntity> findByPhoneNumber(String phoneNumber);
 
-
-
-
     boolean existsByPhoneNumber(String phoneNumber);
 
     Page<UserEntity> findAllByRole(UserRole userRole, Pageable pageable);
@@ -40,7 +37,6 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     @Query("SELECT new uz.rivoj.education.dto.response.TeacherDTO(u.name, u.surname, u.id) FROM users u WHERE u.role = :role")
     List<TeacherDTO> findTeachers(@Param("role") UserRole role);
 
-
     @Query("SELECT new uz.rivoj.education.dto.response.UserDetailsDTO(CAST(u.id AS string),u.phoneNumber, u.avatar, u.name, u.surname, CAST(u.role AS string)) " +
             "FROM users u " +
             "JOIN teacher_info t ON t.teacher.id = u.id " +
@@ -52,7 +48,6 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
             "JOIN student_info s ON s.student.id = u.id " +
             "WHERE u.role = :role AND s.subject.id = :subjectId")
     Page<UserDetailsDTO> findStudentsByRoleAndSubjectId(UserRole role, UUID subjectId, Pageable pageable);
-
 
     @Query("SELECT new uz.rivoj.education.dto.response.UserDetailsDTO(CAST(u.id AS string), u.phoneNumber, u.avatar, u.name, u.surname,CAST(u.role AS string)) " +
             "FROM users u " +
@@ -94,7 +89,6 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
             "JOIN teacher_info ti ON ti.teacher.id = u.id " +
             "WHERE u.role = :role")
     Optional<List<UUID>> findTeacherIdes(@Param("role") UserRole role);
-
 
     Page<UserEntity> findUserEntitiesByRole(UserRole role, Pageable pageable);
     @Query("SELECT u FROM users u " +

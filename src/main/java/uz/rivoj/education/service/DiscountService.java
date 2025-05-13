@@ -31,9 +31,9 @@ public class DiscountService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Optional<StudentInfo> studentInfo = studentInfoRepository.findByStudentId(student.getId());
-        if (studentInfo.isEmpty()) {
+        if (studentInfo.isEmpty())
             throw new RuntimeException("Student information not found");
-        }
+
         DiscountEntity discountEntity = modelMapper.map(discountCR, DiscountEntity.class);
         discountEntity.setStudent(studentInfo.get());
         discountRepository.save(discountEntity);
@@ -45,14 +45,14 @@ public class DiscountService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Optional<StudentInfo> studentInfo = studentInfoRepository.findByStudentId(student.getId());
-        if (studentInfo.isEmpty()) {
+        if (studentInfo.isEmpty())
             throw new RuntimeException("Student information not found");
-        }
+
         List<DiscountResponse> list = new ArrayList<>();
         Optional<List<DiscountEntity>> discountsOfStudent = discountRepository.findDiscountEntitiesByStudentId(studentInfo.get().getId());
-        if (discountsOfStudent.isEmpty()) {
+        if (discountsOfStudent.isEmpty())
             throw new RuntimeException("Student discounts not found");
-        }
+
         for (DiscountEntity discount : discountsOfStudent.get()) {
             list.add(modelMapper.map(discount, DiscountResponse.class));
         }
