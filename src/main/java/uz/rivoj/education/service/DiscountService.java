@@ -12,7 +12,7 @@ import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.DiscountRepository;
 import uz.rivoj.education.repository.StudentInfoRepository;
 import uz.rivoj.education.repository.UserRepository;
-
+import org.springframework.cache.annotation.*;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,6 +26,8 @@ public class DiscountService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final StudentInfoRepository studentInfoRepository;
+
+    @CacheEvict(value = "discounts", key = "'studentDiscounts_' + #userId")
     public DiscountResponse create(DiscountCR discountCR, UUID userId){
         UserEntity student = userRepository.findById(UUID.fromString(String.valueOf(userId)))
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -40,6 +42,7 @@ public class DiscountService {
         return modelMapper.map(discountEntity, DiscountResponse.class);
     }
 
+    @Cacheable(value = "discounts", key = "'studentDiscounts_' + #userId")
     public List<DiscountResponse> getDiscountsByStudentId(UUID userId){
         UserEntity student = userRepository.findById(UUID.fromString(String.valueOf(userId)))
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -59,6 +62,7 @@ public class DiscountService {
         return list;
     }
 
+    @CacheEvict(value = "discounts", allEntries = true)
     public String delete(UUID discountId){
         DiscountEntity discountEntity = discountRepository.findById(discountId).orElseThrow(
                 () -> new DataNotFoundException("discount not found"));

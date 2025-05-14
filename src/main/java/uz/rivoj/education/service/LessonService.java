@@ -3,6 +3,9 @@ package uz.rivoj.education.service;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +36,10 @@ public class LessonService {
     private final StudentInfoRepository studentInfoRepository;
 
     @SneakyThrows
+    @Caching(evict = {
+        @CacheEvict(value = "lessons", allEntries = true),
+        @CacheEvict(value = "lessonsByModule", key = "#createRequest.moduleId")
+    })
     public LessonResponse create(LessonCR createRequest)  {
         ModuleEntity moduleEntity = moduleRepository.findById(createRequest.getModuleId())
                 .orElseThrow(() -> new DataNotFoundException("Module not found with this id " + createRequest.getModuleId()));
@@ -70,6 +77,13 @@ public class LessonService {
 
 
     @Transactional
+    @Caching(evict = {
+        @CacheEvict(value = "lessons", allEntries = true),
+        @CacheEvict(value = "lesson", key = "#lessonId"),
+        @CacheEvict(value = "lessonResponse", key = "#lessonId"),
+        @CacheEvict(value = "lessonWithTeacher", key = "#lessonId"),
+        @CacheEvict(value = "commentsByLesson", key = "#lessonId")
+    })
     public String delete(UUID lessonId) {
         LessonEntity lessonToDelete = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new IllegalArgumentException("Lesson not found with id: " + lessonId));
@@ -120,6 +134,7 @@ public class LessonService {
         return "Deleted!";
     }
 
+    @Cacheable(value = "lesson", key = "#lessonId")
     public LessonEntity getLesson(UUID lessonId){
         return lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new DataNotFoundException("Lesson not found with this id: " + lessonId));
@@ -127,6 +142,7 @@ public class LessonService {
 
 
 
+    @Cacheable(value = "lessonResponse", key = "#lessonId")
     public LessonResponse findByLessonId(UUID lessonId){
         LessonEntity lessonEntity = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new DataNotFoundException("Lesson not found with this id: " + lessonId));
@@ -142,6 +158,7 @@ public class LessonService {
 
 
 
+    @Cacheable(value = "commentsByLesson", key = "#lessonId")
     public List<CommentResponse> getCommentsByLessonId(UUID lessonId) {
         Optional<List<CommentEntity>> comments = commentRepository.findByLessonId(lessonId);
         if (comments.isEmpty())
@@ -163,6 +180,7 @@ public class LessonService {
                 .description(comment.getDescription())
                 .build();
     }
+    @Cacheable(value = "lessons")
     public List<LessonResponse> getAll() {
         List<LessonResponse> list = new ArrayList<>();
         for (LessonEntity lesson : lessonRepository.findAll()) {
@@ -196,6 +214,7 @@ public class LessonService {
 
     }
     @Transactional
+    @Cacheable(value = "lessonsByModule", key = "#moduleId")
     public List<SpecialLessonResponse> getLessonsByModule(UUID moduleId) {
         ModuleEntity moduleEntity = moduleRepository.findById(moduleId).orElseThrow(() -> new DataNotFoundException("Module not found with this id: " + moduleId));
         Optional<List<LessonEntity>> lessonEntityList = lessonRepository.findAllByModule_IdOrderByNumberAsc(moduleEntity.getId());
@@ -212,6 +231,7 @@ public class LessonService {
     }
 
     @Transactional
+    @Cacheable(value = "lessonWithTeacher", key = "#lessonId")
     public LessonResponse getLessonById(UUID lessonId) {
         LessonEntity lessonEntity = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new DataNotFoundException("Lesson not found with this id: " + lessonId));
