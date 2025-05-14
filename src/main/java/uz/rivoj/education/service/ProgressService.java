@@ -3,19 +3,14 @@ package uz.rivoj.education.service;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.dto.response.*;
 import uz.rivoj.education.entity.*;
-import uz.rivoj.education.entity.enums.AttendanceStatus;
 import uz.rivoj.education.exception.DataNotFoundException;
 import uz.rivoj.education.repository.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import org.springframework.cache.annotation.*;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -89,6 +84,7 @@ public class ProgressService {
 //    }
 
 
+    @Cacheable(value = "rankings", key = "'top10Students_' + #userId")
     public RankingPageResponse getTop10Students(UUID userId) {
         StudentInfo studentInfo = studentInfoRepository.findByStudentId(userId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found"));
@@ -121,6 +117,7 @@ public class ProgressService {
     }
 
 
+    @Cacheable(value = "rankings", key = "'top10StudentsBySubject_' + #userId")
     public RankingPageResponse getTop10StudentsBySubject(UUID userId) {
         StudentInfo studentInfo = studentInfoRepository.findByStudentId(userId)
                 .orElseThrow(() -> new DataNotFoundException("Student not found"));
@@ -148,10 +145,6 @@ public class ProgressService {
 
         return rankingPageResponse;
     }
-
-
-
-
 
     private RankingPageResponse mapToBestStudentResponse(List<StudentInfo> list) {
         List<BestStudentResponse> bestStudentResponseList = new ArrayList<>();

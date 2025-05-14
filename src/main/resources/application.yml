@@ -1,21 +1,36 @@
 server:
-  port: 8080
-  ssl:
-    key-store-type: PKCS12
-    key-store: /app/keystore.p12
-    key-store-password: 123456
-    key-alias: myapp
+  port: 8083
+  forward-headers-strategy: native
+#  ssl:
+#    key-store-type: PKCS12
+#    key-store: /app/keystore.p12
+#    key-store-password: 123456
+#    key-alias: 1
+
+logging:
+  level:
+    root: INFO
+    uz.rivoj.education: DEBUG
+    org.springframework.web: INFO
+    org.hibernate: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/application.log
+    max-size: 10MB
+    max-history: 30
+
 spring:
   servlet:
     multipart:
       max-file-size: 1000MB
       max-request-size: 1000MB
   datasource:
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_IP:localhost}:5432/${DB_NAME:education}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:1}
-    url: jdbc:postgresql://localhost:5432/rivoj_education_db
-
+    driver-class-name: org.postgresql.Driver
   jpa:
     open-in-view: false
     hibernate:
@@ -24,6 +39,8 @@ spring:
     properties:
       hibernate:
         format_sql: false
+  main:
+    allow-bean-definition-overriding: true
   data:
     redis:
       host: 127.0.0.1
@@ -43,7 +60,7 @@ springdoc:
 firebase:
   credentials:
     path: /app/fireBaseKeySDK.json
-  secret: -----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDGIThyonnFSSvQ\nJff5WhFzSGIRUKqg1k/kkchx/gX8PH81E5MoBGmdO2xK2P+bQPF0aAtU0nCJvjyt\n3xqQ/e8/UllhI6P+5iIwenvQ66jCDxmt6332+6cS6nW6y+f5JEhjw6irl6kuZ+1s\nsPO7sAh4vUgC2FCfT5UqcU4mYtqHGNJCQZ3vowwUuGC+AY0rRm1fEgICJIeXXix1\n8UuV00JfmJPIw0dukziJMlsKfYTQpC+K8SwzVRkYZTSl+NZiRDaLnEbrvppxOjPR\nF0zZJSwEb/kYUKPPmY9qnz8X63T8bQkptmJbDRsfXtytMnW5P5oWAk7YVqpXWy62\nqeaLt5z3AgMBAAECggEAN8zcYoC67eLNOZqv66S/vGma4QiIfbLOHnAmdWBXHDKH\nmxGvxLn1ash1F+Fkn7ubJS82XcXE1y5iVY+7ojE6Y+mT7aVFh0EWSPP+EhmE1l69\nWzuzJs+6PrwUuy65XvQmhR5yTx1wEvdHKXDuvCH4SNT6Rn7Yuf2GY8U0fuAhbqGC\nM7Uz926/46lrO+F2smPd9WMwajAxfBm5NG7nKN2TijPyob96BC60ogxzC5JaWO1R\nnEDMqu/CFv//jmf1S/Cz5o2iGUstnfuSKYXdNF3h7aMH3JhrG+Ox+5vdaIGZ0bLT\nH0RiT8Cmd8RQiTDhsJQKB/OPz6xEiarba2cN4axQkQKBgQD0OgyQ2gTgkT+stqZ+\nfxlDYoJXdQFcUgzIAlpZmP+uoLw6CG5N8dd2h3YbWdcECUqA9BqaU0P4SKslvO3W\nIEXAoTEHs79whA0ikJ0IKrFNoATqfQNVQMuCWI01YyXqoSh5ljMYF+7QtqOJ+fjx\nX+mGgqRDBPbD0QQYMP0t2aCLEQKBgQDPrkxXxVnUWcSZhQMvS88RLxt2MB5lPDBU\naLbbsDbCu3LvrFEC1xPcWUed/yzVDBDBLHHnljRwp90yQ/j3s5uO18qc5xO6EnD6\ndm/z+HB3b+x2HU5EmiASQO5tXmCM94BFu4/APGfqN4n2qSK3g81VZPqXAT9fhJuh\nfjMEkRPXhwKBgGvo3jZ+bls/MlBA3+3SgLoaY5b69t/wzP7uszcVeBuTn7dQlFRS\nQC56CgBpwKxi4o15zetUURr6GMzy3m+XENrdHgnWLQctAZS9KvU5z9+JjcKB/CAG\nIiV0tOfa6Bz0miqm5+qEYJvNpxLG5WzZQRiSzrtiDRpWVyXNN4CzwNDRAoGAbkWQ\nB7KkJdqcRx+XN0+7XNZ0cGbQXNR+nPMU1MVV7kP1nUkTorxssT0+h6fsOBs18jwV\nJvBcW8zl6ECrO2rEmC4ASRtxIAWWs4abnyE1JlXpajXZTxe/G7IaZzwLbA4mr+AN\nTfdE/doLiUr5QhPbvRHm9LMW4TLaJ/+IO06FCJUCgYEAthj7MlfXmhi4TvC2pK0C\n9baOixNYGhgcPhB/9G5pQlfQ6haSTpL7HSLBmgMM5/O23DDlqXfRa1ck0CZvLr+1\nbc/qnAWw2zmPv9i83MIoTaKAxkJs9wh2DBUTEt3gpKT4QcM9zrilA+8FnWOnqwFt\nEQhNnPNgQpCJDJiFmoDtX4k=\n-----END PRIVATE KEY-----\n
+    secret: -----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDGIThyonnFSSvQ\nJff5WhFzSGIRUKqg1k/kkchx/gX8PH81E5MoBGmdO2xK2P+bQPF0aAtU0nCJvjyt\n3xqQ/e8/UllhI6P+5iIwenvQ66jCDxmt6332+6cS6nW6y+f5JEhjw6irl6kuZ+1s\nsPO7sAh4vUgC2FCfT5UqcU4mYtqHGNJCQZ3vowwUuGC+AY0rRm1fEgICJIeXXix1\n8UuV00JfmJPIw0dukziJMlsKfYTQpC+K8SwzVRkYZTSl+NZiRDaLnEbrvppxOjPR\nF0zZJSwEb/kYUKPPmY9qnz8X63T8bQkptmJbDRsfXtytMnW5P5oWAk7YVqpXWy62\nqeaLt5z3AgMBAAECggEAN8zcYoC67eLNOZqv66S/vGma4QiIfbLOHnAmdWBXHDKH\nmxGvxLn1ash1F+Fkn7ubJS82XcXE1y5iVY+7ojE6Y+mT7aVFh0EWSPP+EhmE1l69\nWzuzJs+6PrwUuy65XvQmhR5yTx1wEvdHKXDuvCH4SNT6Rn7Yuf2GY8U0fuAhbqGC\nM7Uz926/46lrO+F2smPd9WMwajAxfBm5NG7nKN2TijPyob96BC60ogxzC5JaWO1R\nnEDMqu/CFv//jmf1S/Cz5o2iGUstnfuSKYXdNF3h7aMH3JhrG+Ox+5vdaIGZ0bLT\nH0RiT8Cmd8RQiTDhsJQKB/OPz6xEiarba2cN4axQkQKBgQD0OgyQ2gTgkT+stqZ+\nfxlDYoJXdQFcUgzIAlpZmP+uoLw6CG5N8dd2h3YbWdcECUqA9BqaU0P4SKslvO3W\nIEXAoTEHs79whA0ikJ0IKrFNoATqfQNVQMuCWI01YyXqoSh5ljMYF+7QtqOJ+fjx\nX+mGgqRDBPbD0QQYMP0t2aCLEQKBgQDPrkxXxVnUWcSZhQMvS88RLxt2MB5lPDBU\naLbbsDbCu3LvrFEC1xPcWUed/yzVDBDBLHHnljRwp90yQ/j3s5uO18qc5xO6EnD6\ndm/z+HB3b+x2HU5EmiASQO5tXmCM94BFu4/APGfqN4n2qSK3g81VZPqXAT9fhJuh\nfjMEkRPXhwKBgGvo3jZ+bls/MlBA3+3SgLoaY5b69t/wzP7uszcVeBuTn7dQlFRS\nQC56CgBpwKxi4o15zetUURr6GMzy3m+XENrdHgnWLQctAZS9KvU5z9+JjcKB/CAG\nIiV0tOfa6Bz0miqm5+qEYJvNpxLG5WzZQRiSzrtiDRpWVyXNN4CzwNDRAoGAbkWQ\nB7KkJdqcRx+XN0+7XNZ0cGbQXNR+nPMU1MVV7kP1nUkTorxssT0+h6fsOBs18jwV\nJvBcW8zl6ECrO2rEmC4ASRtxIAWWs4abnyE1JlXpajXZTxe/G7IaZzwLbA4mr+AN\nTfdE/doLiUr5QhPbvRHm9LMW4TLaJ/+IO06FCJUCgYEAthj7MlfXmhi4TvC2pK0C\n9baOixNYGhgcPhB/9G5pQlfQ6haSTpL7HSLBmgMM5/O23DDlqXfRa1ck0CZvLr+1\nbc/qnAWw2zmPv9i83MIoTaKAxkJs9wh2DBUTEt3gpKT4QcM9zrilA+8FnWOnqwFt\nEQhNnPNgQpCJDJiFmoDtX4k=\n-----END PRIVATE KEY-----\n
 do:
   spaces:
     key: DO00WUMDBQFHKBL2YY27

@@ -138,18 +138,23 @@ public class FirebaseService {
 
 
     public String getAccessToken() throws IOException {
-        String serviceAccountFilePath = "src/main/resources/fireBaseKeySDK.json";
-        FileInputStream serviceAccountStream = new FileInputStream(serviceAccountFilePath);
-        GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccountStream)
-                .createScoped(Arrays.asList(
-                        "https://www.googleapis.com/auth/userinfo.email",
-                        "https://www.googleapis.com/auth/firebase.database",
-                        "https://www.googleapis.com/auth/firebase.messaging"
-                ));
-        if (credentials != null) {
-            return credentials.refreshAccessToken().getTokenValue();
-        } else {
-            throw new IOException("Unable to get credentials from the service account.");
+        try {
+            InputStream serviceAccount = new org.springframework.core.io.ClassPathResource("fireBaseKeySDK.json").getInputStream();
+            GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccount)
+                    .createScoped(Arrays.asList(
+                            "https://www.googleapis.com/auth/userinfo.email",
+                            "https://www.googleapis.com/auth/firebase.database",
+                            "https://www.googleapis.com/auth/firebase.messaging"
+                    ));
+            if (credentials != null) {
+                return credentials.refreshAccessToken().getTokenValue();
+            } else {
+                throw new IOException("Unable to get credentials from the service account.");
+            }
+        } catch (IOException e) {
+            System.err.println("Firebase service account keyni yuklashda xatolik: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
         }
     }
 }
