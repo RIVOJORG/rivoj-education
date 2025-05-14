@@ -3,6 +3,9 @@ package uz.rivoj.education.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import uz.rivoj.education.entity.ModuleEntity;
 import uz.rivoj.education.entity.StudentInfo;
@@ -32,6 +35,7 @@ public class SubjectService {
     private final UploadService uploadService;
 
 
+    @CacheEvict(value = "subjects", allEntries = true)
     public SubjectResponse create(SubjectCR createRequest) {
         if (subjectRepository.existsByTitle(createRequest.getTitle()))
             throw new DataAlreadyExistsException("Subject already exists with this title: " + createRequest.getTitle());
@@ -48,6 +52,11 @@ public class SubjectService {
         return subjectResponse;
     }
 
+    @Caching(evict = {
+        @CacheEvict(value = "subjects", allEntries = true),
+        @CacheEvict(value = "subject", key = "#subjectId"),
+        @CacheEvict(value = "subjectTitle", key = "#subjectId")
+    })
     public String delete(UUID subjectId){
         Optional<List<StudentInfo>> studentInfoList = studentInfoRepository.findBySubject_Id(subjectId);
         studentInfoList.ifPresent(studentInfos -> studentInfos.forEach(studentInfo -> {
@@ -65,12 +74,14 @@ public class SubjectService {
         return "Successfully deleted!" ;
     }
 
+    @Cacheable(value = "subject", key = "#subjectId")
     public SubjectEntity getSubject(UUID subjectId){
         return subjectRepository.findById(subjectId)
                 .orElseThrow(() -> new DataNotFoundException("Subject not found with this id: " + subjectId));
     }
 
     @Transactional
+    @Cacheable(value = "subjects")
     public List<SubjectResponse> getAll() {
         List<SubjectResponse> list = new ArrayList<>();
         for (SubjectEntity subjectEntity : subjectRepository.findAll()) {
@@ -79,6 +90,7 @@ public class SubjectService {
         return list;
     }
 
+    @Cacheable(value = "subjectTitle", key = "#subjectId")
     public String findBySubjectId(UUID subjectId) {
         SubjectEntity subjectEntity = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> new DataNotFoundException("Subject not found with this id: " + subjectId));
@@ -86,6 +98,11 @@ public class SubjectService {
 
     }
 
+    @Caching(evict = {
+        @CacheEvict(value = "subjects", allEntries = true),
+        @CacheEvict(value = "subject", key = "#subjectId"),
+        @CacheEvict(value = "subjectTitle", key = "#subjectId")
+    })
     public String changeSubjectTitle(UUID subjectId, String subjectName) {
         SubjectEntity subject = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> new DataNotFoundException("Subject not found with this id: " + subjectId));

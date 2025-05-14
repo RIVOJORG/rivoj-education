@@ -27,7 +27,7 @@ public class ProgressController {
         UUID userId = UUID.fromString(principal.getName());
         log.info("Getting top 10 students ranking for user: {}", userId);
         RankingPageResponse response = progressService.getTop10Students(userId);
-        log.debug("Retrieved top 10 students ranking with {} entries", 
+        log.debug("Retrieved top 10 students ranking with {} entries",
                 response.getBestStudents() != null ? response.getBestStudents().size() : 0);
         return response;
     }
@@ -37,7 +37,7 @@ public class ProgressController {
         UUID userId = UUID.fromString(principal.getName());
         log.info("Getting top 10 students by subject for user: {}", userId);
         RankingPageResponse response = progressService.getTop10StudentsBySubject(userId);
-        log.debug("Retrieved top 10 students by subject with {} entries", 
+        log.debug("Retrieved top 10 students by subject with {} entries",
                 response.getBestStudents() != null ? response.getBestStudents().size() : 0);
         return response;
     }
@@ -45,11 +45,11 @@ public class ProgressController {
     @PostMapping("/create-discount")
     public DiscountResponse createDiscount(@RequestBody DiscountCR discountCR, Principal principal) {
         UUID userId = UUID.fromString(principal.getName());
-        log.info("Creating discount for user: {}, percentage: {}, coin: {}", userId, 
+        log.info("Creating discount for user: {}, percentage: {}, coin: {}", userId,
                 discountCR.getPercentage(), discountCR.getCoin());
         try {
             DiscountResponse response = discountService.create(discountCR, userId);
-            log.info("Discount created successfully with percentage: {}, coin: {}", 
+            log.info("Discount created successfully with percentage: {}, coin: {}",
                     response.getPercentage(), response.getCoin());
             return response;
         } catch (Exception e) {
